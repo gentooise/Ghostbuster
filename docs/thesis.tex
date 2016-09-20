@@ -1,0 +1,120 @@
+\documentclass[a4paper,12pt]{article}
+%
+% This is to create hyperlinks for index, URLs and citations
+% (now we can use the command \url{...} to create URL with hyperlink)
+% 
+\usepackage{color}
+\usepackage[a4paper,colorlinks=true,urlcolor=blue,citecolor=blue,linkcolor=blue,bookmarks=false]{hyperref}
+%
+% This allows inclusion of pictures.
+% Create figures with PowerPoint and then export them individually
+% in PDF, PNG, JPEG, or GIF format (in order of preference)
+%
+\usepackage[pdftex]{graphicx}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg,.gif}
+%
+% For pasting text files
+%
+%\usepackage{fancyvrb}
+%
+% Used to express formulas like n^th
+%
+%\usepackage{mathtools}
+%
+% For table formatting
+%
+%\usepackage{longtable}
+%\usepackage{makecell}
+%\usepackage{multirow}
+%
+% For plotting results
+%
+%\usepackage{pgfplots}
+%\pgfplotsset{compat=newest}
+%
+% For placing floats
+%
+%\usepackage{placeins}
+%
+% For highlighting new parts
+%
+\usepackage{color}
+%
+% For Appendix section
+%
+\usepackage[titletoc,toc,title]{appendix}
+%
+% phantom space (for abbreviations)
+%
+\usepackage{xspace}
+%
+% Definition of margins
+%
+\usepackage[top=2cm,bottom=2cm,left=2cm,right=2cm]{geometry}
+%
+% Paragraph skip and indent
+%
+\setlength\parskip{\medskipamount}
+\setlength\parindent{0pt}
+%
+% Frequently used abbreviations.
+% - example1: \ie this is an example
+% - example2: the \ipsec protocol
+%
+\def\eg{e.g.\xspace}
+\def\ie{i.e.\xspace}
+\def\myfig#1{Fig.~#1\xspace} % usage: \myfig{\ref{fig:tag}}
+\def\mytab#1{Tab.~#1\xspace}
+
+
+\begin{document}
+
+\title{Pin Control Protection
+\\
+{\normalsize Protecting Linux Kernel Pin Control Subsystem from Pin Control Attack}
+}
+\author{Andrea Genuise (218812)
+\\
+{\normalsize tutor: Abbasi Ali}
+}
+\date{March 2017}
+\maketitle
+
+\vfill
+\rule{\textwidth}{1pt}
+\tableofcontents
+\rule{\textwidth}{1pt}
+\vfill
+
+
+\include{introduction}
+
+\include{background}
+
+%\include{chap3}
+%\include{chap4}
+%...
+
+\begin{thebibliography}{99}
+
+%\bibitem{example}
+%P.~Sangster, L.~Wilson, D.~Liberty,
+%``Virtualized Trusted Platform Architecture Specification'',
+%Specification Version 1.0, Revision 0.26, TCG, September 27, 2011
+%\url{http://www.trustedcomputinggroup.org/wp-content/uploads/TCG_VPWG_Architecture_V1-0_R0-26_FINAL.pdf}
+
+\end{thebibliography}
+
+
+\begin{appendices}
+\setcounter{table}{0}
+\setcounter{figure}{0}
+\renewcommand\thetable{\thesection\arabic{table}}
+\renewcommand\thefigure{\thesection\arabic{figure}}
+
+
+
+\end{appendices}
+
+
+\end{document}
