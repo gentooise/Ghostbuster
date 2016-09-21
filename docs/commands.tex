@@ -1,0 +1,109 @@
+%
+% Phantom space for abbreviations
+%
+\usepackage{xspace}
+%
+% To insert doi identifiers
+%
+\usepackage{doi}
+\renewcommand{\doitext}{DOI }
+%
+% This is to create hyperlinks for index, URLs and citations
+% (now we can use the command \url{...} to create URL with hyperlink)
+% 
+%\usepackage{color}
+%\usepackage[a4paper,colorlinks=true,urlcolor=blue,citecolor=blue,linkcolor=blue,bookmarks=false]{hyperref}
+%
+% This allows inclusion of pictures.
+% Create figures with PowerPoint and then export them individually
+% in PDF, PNG, JPEG, or GIF format (in order of preference)
+%
+%\usepackage[pdftex]{graphicx}
+%\DeclareGraphicsExtensions{.pdf,.png,.jpg,.gif}
+%
+% For pasting text files
+%
+%\usepackage{fancyvrb}
+%
+% Used to express formulas like n^th
+%
+%\usepackage{mathtools}
+%
+% For table formatting
+%
+%\usepackage{longtable}
+%\usepackage{makecell}
+%\usepackage{multirow}
+%
+% For plotting results
+%
+%\usepackage{pgfplots}
+%\pgfplotsset{compat=newest}
+%
+% For placing floats
+%
+%\usepackage{placeins}
+%
+% For Appendix section
+%
+%\usepackage[titletoc,toc,title]{appendix}
+%
+% Definition of margins
+%
+%\usepackage[top=2cm,bottom=2cm,left=2cm,right=2cm]{geometry}
+%
+% Paragraph skip and indent
+%
+%\setlength\parskip{\medskipamount}
+%\setlength\parindent{0pt}
+% 
+% For International System of Units (SI)
+%
+%\usepackage[binary-units]{siunitx}
+%\sisetup{per-mode=symbol} % 1/s instead of s^-1
+%
+% For programming code
+%
+\usepackage{listings}
+\lstset{
+basicstyle=\ttfamily,
+columns=fullflexible,
+xleftmargin=3ex,
+breaklines,
+breakatwhitespace,
+escapechar=`
+}
+
+% Some page parameters
+\setlength{\parskip}{\medskipamount}
+% Horizontal rule
+\newcommand{\HRule}{\rule{\linewidth}{0.2mm}}
+
+
+%
+% Frequently used abbreviations.
+% - example: \ie this is an example
+%
+\def\eg{e.g.\xspace}
+\def\ie{i.e.\xspace}
+\def\myfig#1{Fig.~#1\xspace} % usage: \myfig{\ref{fig:tag}}
+\def\mytab#1{Tab.~#1\xspace}
+\newcommand{\ltx}{\LaTeX\xspace}
+\newcommand{\txw}{TeXworks\xspace}
+\newcommand{\mik}{MikTex\xspace}
+\newcommand{\html}{HTML\xspace}
+\newcommand{\xhtml}{XHTML\xspace}
+\newcommand{\cmd}[1]{\texttt{#1}\xspace}
+% To cite RFC, es. \rfc{822}
+\newcommand{\rfc}[1]{RFC-#1\xspace}
+% To cite file (es. \file{autoexec.bat}) or fake URI (i.e. \file{http://www.lioy.it/})
+% for real URIs use \url o \href
+\newcommand{\file}[1]{\texttt{#1}\xspace}
+% For inline code
+\newcommand{\code}[1]{\lstinline|#1|}
+% Backslash
+\newcommand{\bs}{\textbackslash}
+% Term definition with insertion into the index
+\newcommand{\tdef}[1]{\textit{#1}\index{#1}}
+% Meta-term
+\newcommand{\meta}[1]{\textit{#1}}

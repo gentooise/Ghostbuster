@@ -7,3 +7,5 @@ clean:
 	rm -f *.log
 	rm -f *.toc
 	rm -f *.aux
+	rm -f *.xmpi
+	rm -f *.out
