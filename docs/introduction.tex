@@ -1,3 +1,42 @@
 \chapter{Introduction}
+\label{chap:intro}
 
-TODO Introduction.
+Embedded systems are widely used today in various applications, from consumer such as cars, cell phones, home automation, to critical infrastructures
+like power plants and power grids, water, gas or electricity distribution systems and production systems for food and other products.
+Within the context of an Industrial Control System (ICS), these systems are known as PLCs (Programmable Logic Controllers).
+
+But security for these systems is an open question and could be a more difficult long-term problem than security for desktop and enterprise computing,
+both for their limited capabilities and for the physical side effects a security breach could lead to, including property damage, personal injury, death and
+even environmental or nuclear disaster.
+
+The PLCs control the outside world via their I/O interfaces: therefore, they must be both reliable and secure.
+Digging into their architecture, we know that the I/O interfaces of PLCs (e.g., GPIO, SCI, JTAG, etc.),
+are usually controlled by a so called System on a Chip (SoC), an integrated circuit that combines multiple I/O interfaces.
+In turn, the pins in a SoC are managed by a pin controller, a subsystem of SoC, through which one can configure the operating mode of the pins, such as the input or output mode.
+One of the most peculiar aspects of a pin controller is that its behavior is determined by a set of registers: by altering these registers one can change the behavior
+of the chip in a dramatic way. In \cite{ghostplc}, Abbasi et al. showed how this feature is exploitable by attackers, who can tamper with
+the integrity or the availability of legitimate I/O operations, factually changing how a PLC interacts with the outside world.
+
+Based on these observations, they introduced a novel attack technique against PLCs, called Pin Control Attack.
+The salient features of this new class of attacks are:
+\begin{enumerate}
+	\item It is intrinsically stealth. The alteration of the pin configuration does not generate any interrupt, preventing the Operating System (OS) to react to it.
+	\item It is entirely different in execution from traditional techniques such as manipulation of kernel structures or system call hooking, which are typically
+		monitored by anti-rootkit protection systems.
+	\item It is viable. It is possible to build concrete attack using it.
+\end{enumerate}
+
+To overcome this sophisticated attack, we propose a defensive mechanism to extend the existing Linux Kernel Pin Control Subsystem to be able to detect our novel attack.
+It is a challenging task for two reasons:
+\begin{enumerate}
+	\item The Pin Control lacks hardware interrupts, so is not possible to directly react to any configuration change. More complex detection mechanisms are needed
+		in order to achieve the highest possible detection rate.
+	\item The resources available within an embedded system like a PLC are extremely limited. Therefore, our solution must be extremely agile and light
+		since the smallest delay in the PLC I/O operation can have unintended consequences for the controlled process.
+\end{enumerate}
+
+In \chap \ref{chap:related} we show how Pin Control Attack is different from the majority of attacks in the literature, and discuss the protection mechanisms currently available
+for embedded systems, showing that no one of these is actually capable of detecting the attack.
+In \chap \ref{chap:design} we present the architecture of our proposed Pin Control Protection, then we describe the implemented modules and provide an user manual.
+The \chap \ref{chap:results} provides the results obtained during the experiments, showing the detection rate and the performance overhead on a PLC environment.
+Finally, in \chap \ref{chap:conclusions} we analyse the shortcomings of our defense and the possible future works and improvements.
