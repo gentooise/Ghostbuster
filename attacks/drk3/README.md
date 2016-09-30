@@ -1,5 +1,8 @@
-Exercise 2: Pin Control Attack implementation with LKM.
+Exercise 3: Pin Control Attack implementation with LKM.
 -------------------------------------------------------
+
+Method: GPIO base remap, pin value polling.
+Effect: LED blinking at specified interval.
 
 Target system: RaspberryPi with LED attached on GPIO pin 22 in output mode.
 The PLC logic switch the output every 4 seconds, making the LED blink.
