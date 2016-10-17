@@ -53,13 +53,13 @@
 
 \sommario
 
-Embedded systems use Input/Output to interact with sensors and actuators, thus controlling the physical world within the context of an industrial process.
-Particularly when deployed in mission critical systems, the I/O has to be both reliable and secure.
-The I/O interface (made of pins) is controlled by a set of registers: by altering these registers one can change the behavior of the chip in a dramatic way.
-This feature is exploitable by attackers, who can tamper with the integrity or the availability of legitimate I/O operations,
-factually changing how a PLC interacts with the outside world. This novel kind of attack has been called Pin Control Attack.
-In this thesis we design a possible countermeasure to such an attack, showing its effectiveness and the impact on embedded systems
-which usually have limited resources.
+Recently embedded systems have become more and more integrated with all aspects of our lives, and their security concerns have risen as well.
+They spread in various fields such as electronic devices, home automation, manufacturing and mission critical applications. These systems, in particular PLCs
+deployed within the context of an Industrial Control System, use Input/Output interfaces to interact with the physical world by means of sensors and actuators.
+As demonstrated by a novel kind of attack called Pin Control Attack, one can tamper with the integrity or the availability of legitimate I/O operations,
+factually changing how a PLC interacts with the outside world and possibly causing physical damage to people and environment.
+In this thesis we design and implement a possible countermeasure to the attack for Linux Kernel on an ARM-based Programmable Logic Controller,
+showing its effectiveness and impact on embedded systems which usually have very limited resources.
 
 
 \ringraziamenti
