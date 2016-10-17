@@ -1,4 +1,50 @@
 \chapter{Pin Control Protection Design}
 \label{chap:design}
 
+{\color{red}NB: Just draft chapter.}
+
+In this chapter we first analyse Pin Control Attack in more detail, and then show the design and the implementation of the proposed defense.
+
+\section{Pin Control Attack Analysis}
+
+First, we try to better classify it in order to better understand which type of attack we are going to address.
+
+We assert that our attack cannot be completely categorised using the taxonomy proposed in \cite{taxonomy}, resulting in at least two dimensions with \emph{Unknown} value.
+\begin{enumerate}
+	\item \itemname{Precondition}: we have at least two different variants of Pin Control Attack, which will be discussed in more detail in \chap \ref{chap:design},
+		and they need different precondition. Both need at least \emph{local or remote access} to the system, and an a priori knowledge of the physical process.
+	\item \itemname{Vulnerability}: in our case the exploited vulnerability is basically the lack of hardware interrupts as reaction to hardware configuration changes.
+		This is about the communication between hardware and operating system and, to the best of our knowledge, it has never been addressed before.
+	\item \itemname{Target}: the target layer resides between hardware and firmware/OS. They suggest the generic \emph{device} target for this case.
+	\item \itemname{Attack method}: our attack installs a \emph{malware} inside the PLC. More specifically it is a rootkit that could not be detected
+		with the current available protections, if any.
+	\item \itemname{Effect}: our most dangerous effects are not about code execution, integrity violation or denial of service as for the most of the existing attacks.
+		Our main effects are directly propagated into the physical world surrounding the violated system, as you may notice from example in \chap \ref{chap:intro},
+		and they strongly depends on which type of process the PLC is actually controlling.
+\end{enumerate}
+
+The classification of Pin Control Attack based on the taxonomy proposed by Papp et al. \cite{taxonomy} is summarised in \mytab{\ref{tab:attack_class}}.
+
+\begin{table}[h]
+\begin{center}
+{\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\multicolumn{5}{|c|}{\thead{Pin Control Attack}} \\
+\hline
+\textit{Precondition} & \textit{Vulnerability} & \textit{Target} & \textit{Attack method} & \textit{Effect}\\
+\hline
+Local or Remote Access, Miscellaneous & Unknown & Device & Malware & Unknown \\
+\hline
+\end{tabular}
+\caption{Pin Control Attack classification based on Papp et al. \cite{taxonomy} taxonomy.\label{tab:attack_class}}
+}
+\end{center}
+\end{table}
+
+TODO Continue analysis.
+
+
+\section{Pin Control Protection}
+
 TODO Pin Control Protection Design.
