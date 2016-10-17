@@ -1,6 +1,5 @@
 *.o
 *.ko
-*.pdf
 *.log
 *.toc
 *.aux

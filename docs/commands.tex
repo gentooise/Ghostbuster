@@ -8,6 +8,10 @@
 \usepackage{doi}
 \renewcommand{\doitext}{DOI }
 %
+% Improve citations from biblio
+%
+\usepackage{cite}
+%
 % This is to create hyperlinks for index, URLs and citations
 % (now we can use the command \url{...} to create URL with hyperlink)
 % 
@@ -96,6 +100,10 @@ escapechar=`
 \newcommand{\html}{HTML\xspace}
 \newcommand{\xhtml}{XHTML\xspace}
 \newcommand{\cmd}[1]{\texttt{#1}\xspace}
+
+% Styles
+\newcommand{\itemname}{\textbf}
+
 % To cite RFC, es. \rfc{822}
 \newcommand{\rfc}[1]{RFC-#1\xspace}
 % To cite file (es. \file{autoexec.bat}) or fake URI (i.e. \file{http://www.lioy.it/})

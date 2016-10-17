@@ -1,4 +1,72 @@
 \chapter{Related work}
 \label{chap:related}
 
-TODO Related work.
+In this chapter we summarise the state of the art about security of embedded systems at the time of writing.
+First, we discuss about the attacks of the recent years, showing how the embedded systems security concerns are rising.
+Next, we analyse the defense mechanisms currently available in the literature, realising that they are still in a very early stage of their life.
+
+\section{Attacks}
+
+In the past few years a lot of attacks targeted embedded systems: most notably the infamous Stuxnet \cite{stuxnet} targeting an Iranian nuclear facility in 2010.
+More recently Grandgenett et al. \cite{io-command} analysed the authentication protocol between the RSLogix 5000 software and the PLC, based on a simple challenge-response mechanism.
+Since the protocol lacks freshness in its messages, is vulnerable to replay attacks, through which an attacker could repeat privileged commands to the PLC.
+Furthermore, they found that both the decoding of the challenge and the encoding of the response use an RSA-2048 key which is hard-coded in the RSLogix software,
+and it is actually valid for any Rockwell/Allen Bradley PLC.
+This indicates how the security mechanisms of these systems often have a really poor design, if any.
+
+Papp et al. \cite{taxonomy} analysed the existing attacks on embedded systems, relying on the proceedings of security conferences, with a focus on computer hacking,
+and on the Internet for media reports, blogs and mailing list. They built a taxonomy based on five dimensions: precondition, vulnerability, target, attack method and effect of the attack.
+
+For our purpose, we may classify the attacks found in literature using a simpler criterion based on the attack method. We may distinguish three main categories:
+\begin{enumerate}
+	\item \itemname{Firmware modification}: all the attacks aiming to upload a malicious firmware version (or part of it) in the device belong to this category.
+	\item \itemname{Logic modification}: this category consists of the attacks that modify the PLC logic in some way. In this case the integrity of the firmware is not violated,
+		but a malicious program, or logic, is inserted into the PLC to make it misbehave during the control process.
+	\item \itemname{Control flow modification}: it includes the attacks that alter the normal control flow of a process by leveraging classic programming vulnerabilities
+		such as buffer overflow or expired pointer dereference.
+\end{enumerate}
+
+We briefly report about these different kind of attacks in the following sections.
+
+
+\subsection{Firmware modification attacks}
+
+Almost all modern embedded systems provide a way to update the firmware, and the attackers could exploit this feature to upload its own malicious firmware.
+Basnight et al \cite{firmware-mod} reverse engineered an Allen-Bradley ControlLogix L61 PLC firmware showing how to bypass the
+firmware update validation method and successfully upload a counterfeit firmware.
+Peck et al. \cite{ethernet-vuln} demonstrate how using commonly available software an attacker can write and load his malicious firmware into Ethernet cards of devices
+used in control systems, potentially infecting the entire industrial control system.
+Cui et al. \cite{print-vuln} discovered a vulnerability in the HP-RFU (Remote Firmware Update) feature of LaserJet printers,
+that allows remote attackers to make persistent modifications to the printer's firmware by simply printing to it.
+
+
+\subsection{Logic modification attacks}
+
+Stuxnet \cite{stuxnet} belongs to this category. Along with its several components, mainly used to replicate and control the malware,
+its core is essentially an infected version of a SCADA software library used to program the PLC itself.
+By hooking some of the library functions it is able to load infected code and data blocks into the PLC and hide itself from the operator.
+McLaughlin et al. \cite{dynamic-payload,sabot} evaluated some techniques and implemented a tool (SABOT) to infer the structure of a physical plant and craft a dynamic payload,
+allowing an attacker to cause an unsafe behavior without having a deep \emph{a priori} knowledge of the target physical process.
+Similar techniques might mitigate the precondition needed by an attack, making it even more viable.
+Beresford \cite{siemens-s7} showed how the PLCs and the protocols used for communication in control systems were built without any security in mind,
+and demonstrated that they are affected by many vulnerabilities which may also enable the attacker to know the current configuration and rewrite the PLC logic.
+More recently, Klick et al. \cite{plc-network} used an internet-facing PLC as a network gateway by prepending a backdoor, made of a port scanner and a SOCKS proxy,
+to the existing logic code of the PLC.
+
+
+\subsection{Control flow modification}
+
+Many recent advisories \cite{schneider-bof,rockwell-vuln,rockwell-vuln2,elcsoft-vuln} from ICS-CERT (Industrial Control System Cyber Emergency Response Team)
+report about various programming vulnerabilities affecting both PLC firmwares and control softwares. Most of them allow remote code execution and could be exploited
+without requiring particularly high skills.
+The vulnerabilities discovered by Beresford \cite{siemens-s7} also allow the attacker to insert a payload into the logic and subvert the control flow to execute
+malicious code. Nevertheless, the majority of the PLCs run the applications with root privileges, so it is quite simple for an attacker to get a root shell.
+One of the most dangerous kind of control flow attacks consists of ROP (Return-Oriented Programming) techniques, or similar variants \cite{jop,no-ret}
+which leverage different sequence of instructions equivalent to a return instruction.
+Since code vulnerabilities may affect embedded systems \cite{schneider-bof,rockwell-vuln,rockwell-vuln2,elcsoft-vuln,siemens-s7}, ROP techniques
+are applicable as well. Furthermore, due to the limitations imposed by these systems, is even more challenging to defend against them.
+
+
+\section{Defenses}
+
+
