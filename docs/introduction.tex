@@ -12,6 +12,9 @@ Unfortunately, this could be a more difficult long-term problem with respect to 
 both for the limited capabilities of these systems and for the physical side effects a security breach may lead to, including property damage, personal injury, death and
 even environmental or nuclear disaster.
 
+
+\section{Problem statement}
+
 The PLCs control the outside world via their I/O interfaces: therefore, they must be both reliable and secure.
 Digging into their architecture, we know that the I/O interfaces of PLCs (e.g. GPIO, SCI, JTAG, etc.),
 are usually controlled by a so called System on a Chip (SoC), an integrated circuit that combines multiple I/O interfaces.
@@ -45,6 +48,9 @@ Moreover, the operator of the control system will not be able to see the real te
 so it may likely not notice the intrusion at all.
 Such a condition may lead to an uncontrolled overheating, and if it is not detected in time it could even make the boiler to explode.
 
+
+\section{Aim of the thesis}
+
 To overcome this sophisticated attack, we propose a defensive mechanism to extend the existing Linux Kernel Pin Control Subsystem, frequently used in embedded systems,
 to be able to detect our novel attack. It is a challenging task for two reasons:
 \begin{enumerate}
@@ -53,6 +59,15 @@ to be able to detect our novel attack. It is a challenging task for two reasons:
 	\item The resources available within an embedded system like a PLC are extremely limited. Therefore, our solution must be extremely agile and light
 		since the smallest delay in the PLC I/O operation may have unintended consequences for the controlled process.
 \end{enumerate}
+
+Purpose of this thesis is to provide first a description of Pin Control Attack, discussing preconditions and effects.
+Then, based on the obtained threat model, we want to describe and evaluate the design of a possible defense.
+Finally, we provide an implementation for Linux Kernel on an ARM-based Programmable Logic Controller.
+The implementation will be validated with respect to the following parameters: detection rate and performance overhead.
+An organization of the thesis follows in the next section.
+
+
+\section{Organization}
 
 In \chap \ref{chap:related} we list the known attacks to embedded systems existing in the literature, and then discuss the protection mechanisms currently available.
 As Pin Control Attack is a new kind of attack, to the best of our knowledge, at the time of writing, no one of the existing protections is able to prevent nor detect it.
