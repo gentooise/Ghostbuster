@@ -15,7 +15,10 @@ and it is actually valid for any Rockwell/Allen Bradley PLC.
 This indicates how the security mechanisms of these systems often have a really poor design, if any.
 
 Papp et al. \cite{taxonomy} analysed the existing attacks on embedded systems, relying on the proceedings of security conferences, with a focus on computer hacking,
-and on the Internet for media reports, blogs and mailing list. They built a taxonomy based on five dimensions: precondition, vulnerability, target, attack method and effect of the attack.
+and on the Internet for media reports, blogs and mailing list.
+They built a taxonomy based on five dimensions: precondition, vulnerability, target, attack method and effect of the attack,
+showing that the threats to embedded systems are similar to the ones that affect traditional IT systems.
+However, embedded systems still lack solutions and tools to address these issues, and many ongoing research efforts are trying to deploy and adapt them to the needs of this field.
 
 For our purpose, we may classify the attacks found in literature using a simpler criterion based on the attack method. We may distinguish three main categories:
 \begin{enumerate}
@@ -32,7 +35,7 @@ We briefly report about these different kind of attacks in the following section
 \subsection{Firmware modification attacks}
 
 Almost all modern embedded systems provide a way to update the firmware, and the attackers could exploit this feature to upload its own malicious firmware.
-Basnight et al \cite{firmware-mod} reverse engineered an Allen-Bradley ControlLogix L61 PLC firmware showing how to bypass the
+Basnight et al. \cite{firmware-mod} reverse engineered an Allen-Bradley ControlLogix L61 PLC firmware showing how to bypass the
 firmware update validation method and successfully upload a counterfeit firmware.
 Peck et al. \cite{ethernet-vuln} demonstrate how using commonly available software an attacker can write and load his malicious firmware into Ethernet cards of devices
 used in control systems, potentially infecting the entire industrial control system.
@@ -51,7 +54,7 @@ Similar techniques might mitigate the precondition needed by an attack, making i
 Beresford \cite{siemens-s7} showed how the PLCs and the protocols used for communication in control systems were built without any security in mind,
 and demonstrated that they are affected by many vulnerabilities which may also enable the attacker to know the current configuration and rewrite the PLC logic.
 More recently, Klick et al. \cite{plc-network} used an internet-facing PLC as a network gateway by prepending a backdoor, made of a port scanner and a SOCKS proxy,
-to the existing logic code of the PLC.
+to the existing logic code of the PLC. They developed a proof-of-concept tool called \emph{PLCInject} to demonstrate their approach and measure the effects on the network.
 
 
 \subsection{Control flow modification}
@@ -69,4 +72,129 @@ are applicable as well. Furthermore, due to the limitations imposed by these sys
 
 \section{Defenses}
 
+Even though many incidents in SCADA systems occurred in the past decades \cite{scada-attacks,scada-attacks2}, the scientific community,
+together with PLC producers (Siemens, Hitachi etc.) and antivirus producers (Symantec, Kaspersky etc.), started to explore the security concerns of these systems
+only after the discovery of Stuxnet malware in 2010.
 
+Since the communication protocols are the most vulnerable area in embedded systems, many efforts have been directed to \emph{network-based} defenses \cite{plc-security}.
+In 2013, Clark et al. \cite{stuxnet-defense} designed a defense scheme against Stuxnet in which commands from the system operator to the PLC
+are authenticated using a randomized set of cryptographic keys.
+Hadžiosmanović et al. \cite{semantic-defense} proposed a semantic-aware intrusion detection system, which is able to build a prediction model by observing
+the values of the process variables from the network communication, and then detect unauthorized changes with respect to the model.
+
+In our work, however, we will focus on \emph{host-based} defenses, in which the protection mechanism resides in the embedded system itself.
+Similarly to what we did for attacks, we can divide host-based defenses into the corresponding categories:
+
+\begin{enumerate}
+	\item \itemname{Firmware integrity}: includes all the available techniques for preventing or detecting any malicious change in the PLC firmware.
+	\item \itemname{Intrusion detection}: host-based intrusion detection systems responsible for detecting rootkits or malicious software
+		that could tamper with the normal process controlled by the PLC.
+	\item \itemname{Control flow integrity}: all the available mechanisms to defend against control flow attacks, like control flow integrity techniques
+		or anti-ROP defenses, belong to this category.
+\end{enumerate}
+
+
+\subsection{Firmware integrity}
+
+In order to detect malicious modifications in the firmware of embedded systems, Wang et al. \cite{confirm} proposed ConFirm,
+a low-cost technique, embeddable into the bootloader, based on measuring the number of low-level hardware events that occur during the execution of the firmware.
+In order to count these events, ConFirm leverages a set of special-purpose registers, the Hardware Performance Counters (HPCs), which readily exist in many embedded processors.
+The approach is divided into two phases: offline profiling and online checking. The offline profiling is executed before the system is deployed,
+and consists of registering the HPC signatures of code paths from a clean copy of the targeted firmware. The signature database is then embedded into the bootloader
+together with the ConFirm payload executed in the second phase. During the online checking, the same monitored paths are measured and compared to the golden references.
+Although this technique raises the bar for firmware modification attacks, if an attacker is able to reverse engineer and modify the bootloader,
+which usually has some update procedure as well, then the entire mechanism could be circumvented.
+
+Other approaches that could defend against firmware modifications are based on Trusted Computing. While this kind of technology is commonly deployed
+in more capable systems, such as desktop or enterprise, the most of the embedded systems need a solution with lower resource requirements.
+The TrustZone Technology \cite{trustzone} enables trusted computing for ARM platforms by extending the hardware architecture,
+essentially the system bus, the processor core and the debug infrastructure, with security-aware components.
+Furthermore, Koeberl et al. \cite{trustlite} proposed a hardware-enforced security architecture named TrustLite, which is able to provide trusted computing capabilities
+on resource-constrained embedded devices without requiring CPU security extensions.
+
+A trusted computing architecture can also enable attestation, through which a system, called verifier, can verify the integrity state of another system, called prover,
+which should provide a cryptographic proof of its integrity. Similar technologies could also be used to design a secure firmware upgrade mechanism.
+The PLC vendors need the possibility to provide firmware updates for their own devices, most likely when some vulnerabilities are discovered after release.
+Fuchs et al. \cite{tpm2} discussed the benefits of Trusted Computing Group’s Trusted Platform Module (TPM) 2.0 as a security-anchor for embedded systems,
+and proposed a proof-of-concept implementation of advanced remote firmware upgrade for embedded systems relying on the unique features of TPM 2.0.
+
+A different approach is proposed by Lee, B. \& Lee, J. \cite{blockchain}, which leverages blockchain technology to securely check firmware versions,
+validate the correctness of firmware, and download the latest firmware for the embedded devices.
+Even though their work is focused on embedded systems intensively inter-connected within an IoT environment, the increasing number of internet-facing controllers
+let us suppose that may be worth investigating whether this technology could be applied to PLCs as well. 
+
+
+\subsection{Intrusion detection}
+
+The PLC logic is usually executed in a scan cycle, in which the PLC reads the inputs from the sensors, executes the logic and writes the outputs to the actuators.
+Zonouz et al. \cite{logic-analytics} devised an approach capable of detecting whether a PLC logic could violate physical plant's safety requirements.
+Their technique is based on logic binary code analysis and model checking, and could be integrated in the PLC runtime itself, so that the check is made every time a new logic is
+uploaded to the system.
+Garcia et al. \cite{hypervisor-control} leveraged the advanced computational power of embedded hypervisors, that could be coupled with modular embedded controllers,
+to provide both a memory verification solution and an intrusion detection system from within the PLC itself.
+The embedded hypervisor provides a library directly accessible from the PLC scan cycle either synchronously or asynchronously,
+and the hypervisor and the PLC can communicate through shared memory. Their approach may be extended to integrate any kind of security solutions inside the PLC.
+Cui et al. \cite{symbiotes} proposed a host-based defense mechanism called Symbiotic Embedded Machines (SEM), designed for injecting
+intrusion detection functionalities into embedded system firmware code. The injected Symbiotes are basically code structures that will co-exist
+with the legacy firmware, sharing computational resources with it while protecting it against code modification.
+The SEM injection process is randomized, so that the payload is divided into slices at random locations, called control-flow intercepts,
+and are activated when the firmware execution reaches these points. In this way SEM executes itself alongside the original OS while remaining stealthy.
+
+Moreover, Trusted Computing could also be used to enable malicious code detection capabilities at runtime. The main problem with this technology is to deploy it into
+embedded systems without impacting its limited resources and real-time constraints. Seshadri et al. \cite{swatt} proposed a software-based attestation technique,
+named SWATT, to verify the memory contents of embedded devices and establish the absence of malicious code through a challenge-response protocol.
+SWATT is designed in a way that the minimum change to the code will result in a detectable delay. However, further research \cite{swatt-difficulty} has shown that
+this time-based approach is hard to design for embedded systems, and that some attacks are still possible.
+
+Finally, another potential solution for intrusion detection in embedded controllers is based on power fingerprinting \cite{power-fingerprinting}.
+It consists of a physical sensor through which is possible to analyse and collect statistical data about power consumption and electromagnetic emissions,
+determining whether or not the process deviates from the expected operation model. Even though it is a powerful mechanism and does not interfer with critical operations,
+it provides limited support for forensic analysis once the attack has been detected, so this technique should be applied as a part of a security solution.
+
+
+\subsection{Control flow integrity}
+
+Control flow hijacking is one of the most used attacks to computer systems, because it usually leverages programming errors that are actually much more common than they should be.
+As more and more sophisticated control flow modification techniques were discovered, new defenses have been proposed, but only some of them are applicable to embedded systems.
+In 2012 Reeves et al. \cite{autoscopy} proposed Autoscopy Jr., an intrusion detection system designed for embedded systems, which is focused on detecting
+control flow alterations instead of malicious code insertions. Its approach consists of two phases: the learning phase and the detection phase.
+During the learning phase it collects control flow information about the function pointers used by the kernel,
+building a data structure which will be used in the second phase. The data structure basically maintains, for each monitored function pointer,
+a list of function addresses reachable from that pointer together with other control flow information. During the detection phase it continues monitoring direct and indirect calls,
+and it generates an alert if an unknown function is reached from a monitored function pointer.
+
+Habibi et al. \cite{disarm} proposed a defensive technique for ARM architecture, named DisARM, effective against both code-injection and code-reuse attacks.
+Relying on the assumption that buffer overflow attacks lead the execution to a different return address than expected,
+they designed a mechanism for verifying the actual return address at runtime, thus protecting any potentially vulnerable program.
+First, they look for all the critical instructions contained into the program, defined as the ones that take input from the stack
+and affect the program counter directly or indirectly (\eg through the link register).
+Second, they modify the binary code by putting a verification block before each critical instruction,
+so that the execution is stopped whenever a control flow manipulation is attempted through the stack.
+
+Many other control flow integrity (CFI) solutions for embedded systems rely on hardware modifications in order to require smaller overheads.
+Francillon et al. \cite{hardware-ibmac} presented a technique to protect low-cost embedded systems against malicious manipulation of their control flow
+by using a simple hardware modification to divide the stack in a data and a control flow stack (or return stack). The access to the control flow stack is
+restricted only to return and call instructions, thus implementing an Istruction Based Memory Access Control (IBMAC) in hardware.
+Abad et al. \cite{ocfmm} proposed a hardware-based security approach with predictable overhead for embedded real-time systems.
+They perform CFI checks on a real-time task by adding an On-chip Control Flow Monitoring Module (OCFMM) to the processor core with its own isolated memory unit.
+OCFMM monitors the run-time control flow and compares it to the stored Control Flow Graph determined in advance.
+Davi et al. \cite{fine-grained} designed novel security hardware mechanisms to enable fine-grained CFI checks, based on three security policies.
+First, each function call enforce the processor to switch to a new state in which the only accepted instruction is a CFI instruction,
+thus restricting function calls to only target valid function entry points. Second, return instructions can only target a valid return of a function whose CFI instruction is active.
+The CFI instructions are identified by labels, managed through a CFI Label State Table embedded in the program data memory.
+Third, behavioral heuristics are used to cover typical patterns of ROP attacks.
+Afterwards, they provided an implementation for Intel Siskiyou Peak and SPARC, named HAFIX \cite{hafix},
+demonstrating its security and efficiency in code-reuse protection while incurring only $2\%$ performance overhead.
+Another hardware-based approach has been presented by Das et al. \cite{bb-cfi}: a fine-grained CFI at a basic block level, named basic block CFI (BB-CFI).
+A basic block is defined as a sequence of instructions, having a single entry and a single exit point.
+The policies used by BB-CFI are defined as follows: first, each function call can only target the first basic block of the function;
+second, each return can only target the basic block following the function call; third, indirect jumps must target a starting address of a basic block.
+Their approach is divided into two steps: 1) offline profiling of the program to collect control flow information data, and 2) runtime control flow checking.
+The control flow checker has been implemented on FPGA as a proof-of-concept, showing $<1\%$ performance overhead, a small dynamic power consumption and a very small area footprint.
+
+Finally, the attestation mechanism could be used to address control flow integrity as well.
+Abera et al. \cite{cflat} presented the design and the implementation of Control-FLow ATtestation (C-FLAT), based on ARM TrustZone hardware security extensions.
+In their model, a verifier wants to attest runtime control flows of an application module on a remote embedded system, the prover.
+First, the verifier has to generate the Control Flow Graph from a clean binary of the application, storing the measurements of all the possible control-flow paths.
+Then, it sends a challenge to the prover, containing the name of the application and a nonce. The prover executes the application, computes a digital signature
+over the challenge and the executed path, and sends it back to the verifier for validation.
