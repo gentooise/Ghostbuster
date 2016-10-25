@@ -49,7 +49,7 @@ Stuxnet \cite{stuxnet} belongs to this category. Along with its several componen
 its core is essentially an infected version of a SCADA software library used to program the PLC itself.
 By hooking some of the library functions it is able to load infected code and data blocks into the PLC and hide itself from the operator.
 McLaughlin et al. \cite{dynamic-payload,sabot} evaluated some techniques and implemented a tool (SABOT) to infer the structure of a physical plant and craft a dynamic payload,
-allowing an attacker to cause an unsafe behavior without having a deep \emph{a priori} knowledge of the target physical process.
+allowing an attacker to cause an unsafe behaviour without having a deep \emph{a priori} knowledge of the target physical process.
 Similar techniques might mitigate the precondition needed by an attack, making it even more viable.
 Beresford \cite{siemens-s7} showed how the PLCs and the protocols used for communication in control systems were built without any security in mind,
 and demonstrated that they are affected by many vulnerabilities which may also enable the attacker to know the current configuration and rewrite the PLC logic.
@@ -78,9 +78,9 @@ only after the discovery of Stuxnet malware in 2010.
 
 Since the communication protocols are the most vulnerable area in embedded systems, many efforts have been directed to \emph{network-based} defenses \cite{plc-security}.
 In 2013, Clark et al. \cite{stuxnet-defense} designed a defense scheme against Stuxnet in which commands from the system operator to the PLC
-are authenticated using a randomized set of cryptographic keys.
+are authenticated using a randomised set of cryptographic keys.
 Hadžiosmanović et al. \cite{semantic-defense} proposed a semantic-aware intrusion detection system, which is able to build a prediction model by observing
-the values of the process variables from the network communication, and then detect unauthorized changes with respect to the model.
+the values of the process variables from the network communication, and then detect unauthorised changes with respect to the model.
 
 In our work, however, we will focus on \emph{host-based} defenses, in which the protection mechanism resides in the embedded system itself.
 Similarly to what we did for attacks, we can divide host-based defenses into the corresponding categories:
@@ -137,7 +137,7 @@ and the hypervisor and the PLC can communicate through shared memory. Their appr
 Cui et al. \cite{symbiotes} proposed a host-based defense mechanism called Symbiotic Embedded Machines (SEM), designed for injecting
 intrusion detection functionalities into embedded system firmware code. The injected Symbiotes are basically code structures that will co-exist
 with the legacy firmware, sharing computational resources with it while protecting it against code modification.
-The SEM injection process is randomized, so that the payload is divided into slices at random locations, called control-flow intercepts,
+The SEM injection process is randomised, so that the payload is divided into slices at random locations, called control-flow intercepts,
 and are activated when the firmware execution reaches these points. In this way SEM executes itself alongside the original OS while remaining stealthy.
 
 Moreover, Trusted Computing could also be used to enable malicious code detection capabilities at runtime. The main problem with this technology is to deploy it into
@@ -148,7 +148,7 @@ this time-based approach is hard to design for embedded systems, and that some a
 
 Finally, another potential solution for intrusion detection in embedded controllers is based on power fingerprinting \cite{power-fingerprinting}.
 It consists of a physical sensor through which is possible to analyse and collect statistical data about power consumption and electromagnetic emissions,
-determining whether or not the process deviates from the expected operation model. Even though it is a powerful mechanism and does not interfer with critical operations,
+determining whether or not the process deviates from the expected operation model. Even though it is a powerful mechanism and does not interfere with critical operations,
 it provides limited support for forensic analysis once the attack has been detected, so this technique should be applied as a part of a security solution.
 
 
@@ -174,7 +174,7 @@ so that the execution is stopped whenever a control flow manipulation is attempt
 Many other control flow integrity (CFI) solutions for embedded systems rely on hardware modifications in order to require smaller overheads.
 Francillon et al. \cite{hardware-ibmac} presented a technique to protect low-cost embedded systems against malicious manipulation of their control flow
 by using a simple hardware modification to divide the stack in a data and a control flow stack (or return stack). The access to the control flow stack is
-restricted only to return and call instructions, thus implementing an Istruction Based Memory Access Control (IBMAC) in hardware.
+restricted only to return and call instructions, thus implementing an Instruction Based Memory Access Control (IBMAC) in hardware.
 Abad et al. \cite{ocfmm} proposed a hardware-based security approach with predictable overhead for embedded real-time systems.
 They perform CFI checks on a real-time task by adding an On-chip Control Flow Monitoring Module (OCFMM) to the processor core with its own isolated memory unit.
 OCFMM monitors the run-time control flow and compares it to the stored Control Flow Graph determined in advance.
@@ -182,7 +182,7 @@ Davi et al. \cite{fine-grained} designed novel security hardware mechanisms to e
 First, each function call enforce the processor to switch to a new state in which the only accepted instruction is a CFI instruction,
 thus restricting function calls to only target valid function entry points. Second, return instructions can only target a valid return of a function whose CFI instruction is active.
 The CFI instructions are identified by labels, managed through a CFI Label State Table embedded in the program data memory.
-Third, behavioral heuristics are used to cover typical patterns of ROP attacks.
+Third, behavioural heuristics are used to cover typical patterns of ROP attacks.
 Afterwards, they provided an implementation for Intel Siskiyou Peak and SPARC, named HAFIX \cite{hafix},
 demonstrating its security and efficiency in code-reuse protection while incurring only $2\%$ performance overhead.
 Another hardware-based approach has been presented by Das et al. \cite{bb-cfi}: a fine-grained CFI at a basic block level, named basic block CFI (BB-CFI).

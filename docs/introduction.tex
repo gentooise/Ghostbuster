@@ -19,7 +19,7 @@ The PLCs control the outside world via their I/O interfaces: therefore, they mus
 Digging into their architecture, we know that the I/O interfaces of PLCs (e.g. GPIO, SCI, JTAG, etc.),
 are usually controlled by a so called System on a Chip (SoC), an integrated circuit that combines multiple I/O interfaces.
 In turn, the pins in a SoC are managed by a pin controller, a subsystem of SoC, through which one can configure the operating mode of the pins, such as the input or output mode.
-One of the most peculiar aspects of a pin controller is that its behavior is determined by a set of registers: by altering these registers one can change the behavior
+One of the most peculiar aspects of a pin controller is that its behaviour is determined by a set of registers: by altering these registers one can change the behaviour
 of the chip in a dramatic way. In \cite{ghostplc}, Abbasi et al. showed how this feature is exploitable by attackers, who can tamper with
 the integrity or the availability of legitimate I/O operations, factually changing how a PLC interacts with the outside world.
 
@@ -64,10 +64,10 @@ Purpose of this thesis is to provide first a description of Pin Control Attack, 
 Then, based on the obtained threat model, we want to describe and evaluate the design of a possible defense.
 Finally, we provide an implementation for Linux Kernel on an ARM-based Programmable Logic Controller.
 The implementation will be validated with respect to the following parameters: detection rate and performance overhead.
-An organization of the thesis follows in the next section.
+An organisation of the thesis follows in the next section.
 
 
-\section{Organization}
+\section{Organisation}
 
 In \chap \ref{chap:related} we list the known attacks to embedded systems existing in the literature, and then discuss the protection mechanisms currently available.
 As Pin Control Attack is a new kind of attack, to the best of our knowledge, at the time of writing, no one of the existing protections is able to prevent nor detect it.
