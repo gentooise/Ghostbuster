@@ -1,0 +1,1 @@
+cmd_/windows/Users/Andrea/Desktop/MasterThesis/myshit/ioctl_hook/drk.ko := arm-cortexa8-linux-gnueabihf-ld -EL -r  -T ./scripts/module-common.lds --build-id  -o /windows/Users/Andrea/Desktop/MasterThesis/myshit/ioctl_hook/drk.ko /windows/Users/Andrea/Desktop/MasterThesis/myshit/ioctl_hook/drk.o /windows/Users/Andrea/Desktop/MasterThesis/myshit/ioctl_hook/drk.mod.o

@@ -1,0 +1,3 @@
+     0.007939 set_robust_list(0xb678f4e0, 12) = 0
+     0.004185 poll([{fd=7, events=POLLIN}], 1, -1 <unfinished ...>
+     0.003354 +++ killed by SIGTERM +++

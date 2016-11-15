@@ -1,0 +1,39 @@
+04:09:47.400585 set_robust_list(0xb5766220, 12) = 0
+04:09:47.401108 gettid()                = 856
+04:09:47.401446 sched_getparam(856, { 0 }) = 0
+04:09:47.402246 sched_getscheduler(856) = 0 (SCHED_OTHER)
+04:09:47.403169 open("/sys/fs/cgroup/rts/def//tasks", O_WRONLY|O_CREAT|O_TRUNC|O_CLOEXEC, 0666) = 16
+04:09:47.404339 fstat64(16, {st_dev=makedev(0, 21), st_ino=47, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2012/05/02-04:08:01, st_mtime=2012/05/02-04:09:47, st_ctime=2012/05/02-04:09:47}) = 0
+04:09:47.404800 mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb5e06000
+04:09:47.406000 write(16, "856", 3)     = 3
+04:09:47.406462 close(16)               = 0
+04:09:47.406831 munmap(0xb5e06000, 4096) = 0
+04:09:47.407816 open("/sys/fs/cgroup/rts/def//tasks", O_WRONLY|O_CREAT|O_TRUNC|O_CLOEXEC, 0666) = 16
+04:09:47.408401 fstat64(16, {st_dev=makedev(0, 21), st_ino=47, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2012/05/02-04:08:01, st_mtime=2012/05/02-04:09:47, st_ctime=2012/05/02-04:09:47}) = 0
+04:09:47.408862 mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb5e06000
+04:09:47.409785 write(16, "856", 3)     = 3
+04:09:47.410185 close(16)               = 0
+04:09:47.410524 munmap(0xb5e06000, 4096) = 0
+04:09:47.411355 sched_get_priority_max(SCHED_FIFO) = 99
+04:09:47.411662 sched_get_priority_max(SCHED_FIFO) = 99
+04:09:47.411970 sched_setscheduler(856, SCHED_FIFO, { 56 }) = 0
+04:09:47.413632 open("/sys/fs/cgroup/rts/iec//tasks", O_WRONLY|O_CREAT|O_TRUNC|O_CLOEXEC, 0666) = 16
+04:09:47.414216 fstat64(16, {st_dev=makedev(0, 21), st_ino=36, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2012/05/02-04:08:01, st_mtime=2012/05/02-04:09:47, st_ctime=2012/05/02-04:09:47}) = 0
+04:09:47.414770 mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb5e06000
+04:09:47.415909 write(16, "856", 3)     = 3
+04:09:47.416371 close(16)               = 0
+04:09:47.416709 munmap(0xb5e06000, 4096) = 0
+04:09:47.417632 open("/sys/fs/cgroup/rts/iec//tasks", O_WRONLY|O_CREAT|O_TRUNC|O_CLOEXEC, 0666) = 16
+04:09:47.418186 fstat64(16, {st_dev=makedev(0, 21), st_ino=36, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2012/05/02-04:08:01, st_mtime=2012/05/02-04:09:47, st_ctime=2012/05/02-04:09:47}) = 0
+04:09:47.419109 mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb5e06000
+04:09:47.419571 write(16, "856", 3)     = 3
+04:09:47.420002 close(16)               = 0
+04:09:47.420771 munmap(0xb5e06000, 4096) = 0
+04:09:47.421202 rt_sigsuspend(~[RTMIN RT_1 RT_8], 8) = ? ERESTARTNOHAND (To be restarted if no handler)
+04:09:47.428895 --- SIGRT_8 {si_signo=SIGRT_8, si_code=SI_TKILL, si_pid=837, si_uid=0} ---
+04:09:47.429110 rt_sigreturn()          = -1 EINTR (Interrupted system call)
+04:09:48.131107 clock_gettime(CLOCK_MONOTONIC, {109, 176013442}) = 0
+04:09:48.131477 futex(0x55eaf0, FUTEX_WAIT_PRIVATE, 0, NULL) = 0
+04:10:33.326185 madvise(0xb5747000, 106496, MADV_DONTNEED) = -1 EINVAL (Invalid argument)
+04:10:33.326585 exit(0)                 = ?
+04:10:33.326985 +++ exited with 0 +++

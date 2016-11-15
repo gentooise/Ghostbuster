@@ -1,0 +1,21 @@
+     0.036649 set_robust_list(0xb679f4e0, 12) = 0
+     0.004708 futex(0xb679f684, FUTEX_WAIT_PRIVATE, 2, NULL) = 0
+     0.002123 futex(0xb679f684, FUTEX_WAKE_PRIVATE, 1) = 0
+     0.002616 mmap2(NULL, 2097152, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE, -1, 0) = 0xb6400000
+     0.004831 munmap(0xb6500000, 1048576) = 0
+     0.002431 mprotect(0xb6400000, 135168, PROT_READ|PROT_WRITE) = 0
+     0.004739 clock_gettime(CLOCK_MONOTONIC, {70542, 973260500}) = 0
+     0.006308 poll([{fd=5, events=POLLIN}, {fd=4, events=POLLIN}], 2, 0) = 1 ([{fd=5, revents=POLLIN}])
+     0.006647 clock_gettime(CLOCK_MONOTONIC, {70542, 983199794}) = 0
+     0.003292 poll([{fd=5, events=POLLIN}, {fd=4, events=POLLIN}], 2, 0) = 1 ([{fd=5, revents=POLLIN}])
+     0.003416 read(5, "\3\0\0\0\0\0\0\0", 16) = 8
+     0.004646 futex(0xb6f33600, FUTEX_LOCK_PI, 1) = 0
+     0.004278 futex(0xb6f33618, FUTEX_WAIT_PRIVATE, 2, NULL) = 0
+     0.002246 futex(0xb6f33618, FUTEX_WAKE_PRIVATE, 1) = 0
+     0.003385 futex(0xb6f3361c, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+     0.003446 futex(0xb6f33600, FUTEX_UNLOCK_PI, -1233521440) = 0
+     0.002401 clock_gettime(CLOCK_MONOTONIC, {70543, 28588211}) = 0
+     0.004523 poll([{fd=5, events=POLLIN}, {fd=4, events=POLLIN}], 2, 0) = 0 (Timeout)
+     0.004031 read(5, 0xb679ed58, 16)   = -1 EAGAIN (Resource temporarily unavailable)
+     0.002893 poll([{fd=5, events=POLLIN}, {fd=4, events=POLLIN}], 2, -1 <unfinished ...>
+     0.003108 +++ killed by SIGTERM +++

@@ -1,0 +1,477 @@
+     0.000000 execve("/usr/bin/testkbus", ["/usr/bin/testkbus", "--dbus"], ["TERM=rxvt-unicode-256color", "SHELL=/bin/bash", "SSH_CLIENT=192.168.1.130 51030 22", "SSH_TTY=/dev/pts/0", "USER=root", "ENV=/etc/profile", "PATH=/usr/bin:/bin:/usr/bin:/bin:/sbin:/usr/sbin", "PWD=/root", "LANG=de_DE.UTF-8", "TZ=/etc/localtime", "SHLVL=1", "HOME=/root", "LOGNAME=root", "SSH_CONNECTION=192.168.1.130 51030 192.168.1.111 22", "_=/usr/bin/strace"]) = 0
+     0.011109 brk(0)                    = 0x797000
+     0.004185 uname({sysname="Linux", nodename="PFC200-4106BA", release="3.18.13-pfcxxx-02.00.02_00+14-rt10", version="#1 PREEMPT RT Thu Aug 25 12:56:07 UTC 2016", machine="armv7l", domainname="(none)"}) = 0
+     0.009754 mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb6f98000
+     0.003970 access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+     0.003169 open("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/tls/v7l/neon/vfp/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.003908 stat64("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/tls/v7l/neon/vfp", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.004124 open("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/tls/v7l/neon/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004000 stat64("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/tls/v7l/neon", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.002800 open("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/tls/v7l/vfp/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004185 stat64("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/tls/v7l/vfp", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.004093 open("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/tls/v7l/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004708 stat64("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/tls/v7l", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.003231 open("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/tls/neon/vfp/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.005724 stat64("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/tls/neon/vfp", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.003415 open("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/tls/neon/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004247 stat64("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/tls/neon", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.004677 open("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/tls/vfp/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.002277 stat64("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/tls/vfp", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.005632 open("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/tls/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.003231 stat64("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/tls", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.002892 open("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/v7l/neon/vfp/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004647 stat64("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/v7l/neon/vfp", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.003169 open("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/v7l/neon/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.002924 stat64("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/v7l/neon", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.005200 open("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/v7l/vfp/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.003354 stat64("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/v7l/vfp", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.002554 open("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/v7l/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.006031 stat64("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/v7l", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.002954 open("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/neon/vfp/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.003909 stat64("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/neon/vfp", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.004215 open("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/neon/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004247 stat64("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/neon", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.002708 open("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/vfp/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004185 stat64("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/vfp", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.003692 open("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.003508 stat64("/var/lib/hudson/workspace/pfcXXX.wago_pfcXXX-branch.V02.05.xx.GLIBCPatch/pfc/ptxproj.2013.03.0/platform-wago-pfcXXX/sysroot-target/usr/lib", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.004524 open("/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004339 open("/lib/tls/v7l/neon/vfp/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004461 stat64("/lib/tls/v7l/neon/vfp", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.004093 open("/lib/tls/v7l/neon/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.002770 stat64("/lib/tls/v7l/neon", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.004769 open("/lib/tls/v7l/vfp/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.003908 stat64("/lib/tls/v7l/vfp", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.003601 open("/lib/tls/v7l/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004431 stat64("/lib/tls/v7l", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.003692 open("/lib/tls/neon/vfp/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.003447 stat64("/lib/tls/neon/vfp", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.004400 open("/lib/tls/neon/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.003323 stat64("/lib/tls/neon", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.004585 open("/lib/tls/vfp/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.003262 stat64("/lib/tls/vfp", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.002862 open("/lib/tls/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.007078 stat64("/lib/tls", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.004954 open("/lib/v7l/neon/vfp/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004616 stat64("/lib/v7l/neon/vfp", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.003846 open("/lib/v7l/neon/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.003908 stat64("/lib/v7l/neon", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.004154 open("/lib/v7l/vfp/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004001 stat64("/lib/v7l/vfp", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.004923 open("/lib/v7l/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.003816 stat64("/lib/v7l", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.004216 open("/lib/neon/vfp/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.003723 stat64("/lib/neon/vfp", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.003323 open("/lib/neon/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004739 stat64("/lib/neon", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.004616 open("/lib/vfp/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004093 stat64("/lib/vfp", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.004061 open("/lib/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004032 stat64("/lib", {st_dev=makedev(0, 13), st_ino=794, st_mode=S_IFDIR|0755, st_nlink=7, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=5568, st_atime=2012/04/15-01:41:23, st_mtime=2016/08/25-15:32:16, st_ctime=2012/04/15-01:41:50}) = 0
+     0.006800 open("/usr/lib/tls/v7l/neon/vfp/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004647 stat64("/usr/lib/tls/v7l/neon/vfp", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.003969 open("/usr/lib/tls/v7l/neon/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.005385 stat64("/usr/lib/tls/v7l/neon", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.002677 open("/usr/lib/tls/v7l/vfp/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004370 stat64("/usr/lib/tls/v7l/vfp", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.004031 open("/usr/lib/tls/v7l/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.003108 stat64("/usr/lib/tls/v7l", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.005201 open("/usr/lib/tls/neon/vfp/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.002861 stat64("/usr/lib/tls/neon/vfp", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.003416 open("/usr/lib/tls/neon/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004370 stat64("/usr/lib/tls/neon", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.003292 open("/usr/lib/tls/vfp/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.003231 stat64("/usr/lib/tls/vfp", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.005385 open("/usr/lib/tls/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004247 stat64("/usr/lib/tls", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.003231 open("/usr/lib/v7l/neon/vfp/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004123 stat64("/usr/lib/v7l/neon/vfp", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.003139 open("/usr/lib/v7l/neon/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004985 stat64("/usr/lib/v7l/neon", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.003293 open("/usr/lib/v7l/vfp/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004738 stat64("/usr/lib/v7l/vfp", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.003539 open("/usr/lib/v7l/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.003877 stat64("/usr/lib/v7l", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.004001 open("/usr/lib/neon/vfp/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004585 stat64("/usr/lib/neon/vfp", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.004523 open("/usr/lib/neon/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.001970 stat64("/usr/lib/neon", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.004800 open("/usr/lib/vfp/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004123 stat64("/usr/lib/vfp", 0xbe923438) = -1 ENOENT (No such file or directory)
+     0.003662 open("/usr/lib/libpackbus.so.1", O_RDONLY|O_CLOEXEC) = 3
+     0.004278 read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0(\0\1\0\0\0xt\0\0004\0\0\0T\344\1\0\2\0\0\0054\0 \0\5\0(\0\31\0\30\0\1\0\0p\0\316\1\0\0\316\1\0\0\316\1\0\20\0\0\0\20\0\0\0\4\0\0\0\4\0\0\0\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\24\316\1\0\24\316\1\0\5\0\0\0\0\200\0\0\1\0\0\0\0\320\1\0\0P\2\0\0P\2\0@\23\0\0T\357\0\0\6\0\0\0\0\200\0\0\2\0\0\0t\324\1\0tT\2\0tT\2\0x\1\0\0x\1\0\0\6\0\0\0\4\0\0\0Q\345td\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\6\0\0\0\4\0\0\0\7\1\0\0\271\1\0\0x\1\0\0\230\1\0\0\224\1\0\0z\1\0\0@\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\317\0\0\0\0\0\0\0\24\1\0\0\262\1\0\0\261\1\0\0000\1\0\0\251\0\0\0\242\1\0\0\37\1\0\0\222\1\0\0\376\0\0\0\0\0\0\0;\1\0\0\33\1\0\0_\1\0\0\0\0\0\0\232\0\0\0\0\0\0\0P\0\0\0A\1\0\0\0\0\0\0$\1\0\0\257\0\0\0\335\0\0\0\f\1\0\0\312\0\0\0\n\1\0\0\201\0\0\0\0\0\0\0\327\0\0\0\260\0\0\0\362\0\0\0:\0\0\0\255\1\0\0k\1\0\0(\0\0\0l\1\0\0\227\1\0\0008\0\0\0\0\0\0\0C\1\0\0\236\0\0\0\7\1\0\0\0\0\0\0\272\0\0\0\0\0\0\0(\1\0\0004\1\0\0\253\1\0\0\23\1\0\0\0\0\0\0!\0\0\0\25\1\0\0O\1\0\0B\1\0\0\343\0\0\0\206\1\0\0\233\1\0\0\363\0\0\0\252\1\0\0\263\1\0\0<\1\0\0R\1\0\0\217\1\0\0\215\1\0\0", 512) = 512
+     0.002677 fstat64(3, {st_dev=makedev(0, 13), st_ino=2459, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=248, st_size=124988, st_atime=2012/04/15-01:37:13, st_mtime=2016/08/25-14:52:58, st_ctime=2012/04/15-01:41:59}) = 0
+     0.004615 mmap2(NULL, 212820, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb6f3f000
+     0.004770 mprotect(0xb6f5c000, 32768, PROT_NONE) = 0
+     0.002554 mmap2(0xb6f64000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1d000) = 0xb6f64000
+     0.007078 mmap2(0xb6f66000, 53076, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0xb6f66000
+     0.003569 close(3)                  = 0
+     0.002308 open("/lib/libdiagnostic.so", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004924 open("/usr/lib/libdiagnostic.so", O_RDONLY|O_CLOEXEC) = 3
+     0.002984 read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0(\0\1\0\0\0\260\r\0\0004\0\0\0\370\33\0\0\2\0\0\0054\0 \0\4\0(\0\27\0\26\0\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\340\30\0\0\340\30\0\0\5\0\0\0\0\200\0\0\1\0\0\0\340\30\0\0\340\230\0\0\340\230\0\0 \2\0\0\240\22\0\0\6\0\0\0\0\200\0\0\2\0\0\0\354\30\0\0\354\230\0\0\354\230\0\0P\1\0\0P\1\0\0\6\0\0\0\4\0\0\0Q\345td\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\6\0\0\0\4\0\0\0%\0\0\0008\0\0\0(\0\0\0-\0\0\0005\0\0\0\0\0\0\0\0\0\0\0\27\0\0\0%\0\0\0\0\0\0\0/\0\0\0#\0\0\0\0\0\0\0\35\0\0\0\33\0\0\0\31\0\0\0+\0\0\0\22\0\0\0\0\0\0\0!\0\0\0\r\0\0\0006\0\0\0\6\0\0\0\32\0\0\0000\0\0\0,\0\0\0\0\0\0\0007\0\0\0*\0\0\0002\0\0\0\34\0\0\0\0\0\0\0\3\0\0\0003\0\0\0\0\0\0\0001\0\0\0\30\0\0\0004\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\10\0\0\0\7\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\t\0\0\0\n\0\0\0\0\0\0\0\17\0\0\0\20\0\0\0\0\0\0\0\0\0\0\0\23\0\0\0\0\0\0\0\0\0\0\0\4\0\0\0\0\0\0\0\0\0\0\0\24\0\0\0\16\0\0\0\36\0\0\0\5\0\0\0\21\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\"\0\0\0\f\0\0\0\0\0\0\0'\0\0\0\0\0\0\0\v\0\0\0", 512) = 512
+     0.002401 fstat64(3, {st_dev=makedev(0, 13), st_ino=2107, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=16, st_size=8080, st_atime=2012/04/15-01:41:28, st_mtime=2016/08/25-14:52:24, st_ctime=2012/04/15-01:41:57}) = 0
+     0.004769 mmap2(NULL, 43904, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb6f34000
+     0.003324 mprotect(0xb6f36000, 28672, PROT_NONE) = 0
+     0.002092 mmap2(0xb6f3d000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1000) = 0xb6f3d000
+     0.004954 mmap2(0xb6f3e000, 2944, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0xb6f3e000
+     0.002339 close(3)                  = 0
+     0.001846 open("/lib/libwago_dbus.so", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.005016 open("/usr/lib/libwago_dbus.so", O_RDONLY|O_CLOEXEC) = 3
+     0.003262 read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0(\0\1\0\0\0\230:\0\0004\0\0\0\230\205\0\0\2\0\0\0054\0 \0\4\0(\0\27\0\26\0\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\260y\0\0\260y\0\0\5\0\0\0\0\200\0\0\1\0\0\0\0\200\0\0\0\200\0\0\0\200\0\0\240\4\0\0\354\6\0\0\6\0\0\0\0\200\0\0\2\0\0\0\f\200\0\0\f\200\0\0\f\200\0\0H\1\0\0H\1\0\0\6\0\0\0\4\0\0\0Q\345td\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\6\0\0\0\4\0\0\0\305\0\0\0\360\0\0\0\250\0\0\0$\0\0\0h\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\355\0\0\0\0\0\0\0\211\0\0\0\351\0\0\0\326\0\0\0\0\0\0\0\343\0\0\0\0\0\0\0_\0\0\0\0\0\0\0\33\0\0\0003\0\0\0\223\0\0\0\0\0\0\0\0\0\0\0&\0\0\0\312\0\0\0\0\0\0\0\331\0\0\0\0\0\0\0\210\0\0\0\246\0\0\0)\0\0\0\320\0\0\0\342\0\0\0R\0\0\0l\0\0\0[\0\0\0\327\0\0\0\274\0\0\0\346\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\357\0\0\0]\0\0\0;\0\0\0\324\0\0\0\0\0\0\0p\0\0\0\330\0\0\0\334\0\0\0F\0\0\0\261\0\0\0\243\0\0\0\0\0\0\0\0\0\0\0\354\0\0\0\321\0\0\0\0\0\0\0\332\0\0\0\260\0\0\0\0\0\0\0\267\0\0\0004\0\0\0\0\0\0\0A\0\0\0\310\0\0\0\277\0\0\0\273\0\0\0\0\0\0\0\203\0\0\0z\0\0\0006\0\0\0\200\0\0\0Q\0\0\0\0\0\0\0\0\0\0\0\233\0\0\0\275\0\0\0i\0\0\0%\0\0\0\0\0\0\0\276\0\0\0\0\0\0\0", 512) = 512
+     0.003662 fstat64(3, {st_dev=makedev(0, 13), st_ino=2397, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=72, st_size=35120, st_atime=2012/04/15-01:41:28, st_mtime=2016/08/25-14:51:42, st_ctime=2012/04/15-01:41:58}) = 0
+     0.006000 mmap2(NULL, 34540, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb6f2b000
+     0.002862 mmap2(0xb6f33000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x8000) = 0xb6f33000
+     0.003170 close(3)                  = 0
+     0.004031 open("/lib/libdbus-glib-1.so.2", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.002738 open("/usr/lib/libdbus-glib-1.so.2", O_RDONLY|O_CLOEXEC) = 3
+     0.017633 read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0(\0\1\0\0\0\224w\0\0004\0\0\0\0\333\1\0\2\0\0\0054\0 \0\4\0(\0\30\0\27\0\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\210\306\1\0\210\306\1\0\5\0\0\0\0\200\0\0\1\0\0\0\0\320\1\0\0P\2\0\0P\2\0\370\t\0\0\250\n\0\0\6\0\0\0\0\200\0\0\2\0\0\0004\322\1\0004R\2\0004R\2\0\10\1\0\0\10\1\0\0\6\0\0\0\4\0\0\0Q\345td\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\6\0\0\0\4\0\0\0\7\1\0\0\310\1\0\0\0\0\0\0A\1\0\0\25\1\0\0A\0\0\0\0\0\0\0\275\1\0\0\256\1\0\0<\1\0\0\303\1\0\0 \1\0\0\202\1\0\0\273\0\0\0\0\0\0\0\216\1\0\0\233\1\0\0\0\0\0\0\3\0\0\0\221\1\0\0\351\0\0\0009\1\0\0\322\0\0\0\212\1\0\0>\1\0\0E\1\0\0~\1\0\0\242\0\0\0!\1\0\0D\1\0\0/\1\0\0\201\1\0\0]\1\0\0004\1\0\0\305\1\0\0G\1\0\0#\1\0\0\250\1\0\0\0\0\0\0\270\1\0\0\334\0\0\0008\1\0\0{\1\0\0u\1\0\0\0\0\0\0\0\0\0\0W\1\0\0\361\0\0\0x\1\0\0\16\1\0\0005\1\0\0\262\0\0\0\0\0\0\0\307\1\0\0\3\1\0\0\0\0\0\0\245\0\0\0*\1\0\0\333\0\0\0\0\0\0\0\34\1\0\0003\1\0\0B\1\0\0001\1\0\0$\1\0\0\214\1\0\0\0\0\0\0y\0\0\0\252\1\0\0.\1\0\0\262\1\0\0\224\1\0\0\350\0\0\0\0\0\0\0\0\0\0\0\371\0\0\0\353\0\0\0d\0\0\0\366\0\0\0\0\0\0\0\267\1\0\0\240\1\0\0\0\0\0\0", 512) = 512
+     0.007416 mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb6f97000
+     0.003754 fstat64(3, {st_dev=makedev(0, 13), st_ino=2043, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=240, st_size=122560, st_atime=2012/04/15-01:41:28, st_mtime=2016/08/25-14:51:30, st_ctime=2012/04/15-01:41:56}) = 0
+     0.004831 mmap2(NULL, 154280, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb6f05000
+     0.002985 mprotect(0xb6f22000, 32768, PROT_NONE) = 0
+     0.003015 mmap2(0xb6f2a000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1d000) = 0xb6f2a000
+     0.004524 close(3)                  = 0
+     0.001939 open("/lib/libgio-2.0.so.0", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004000 open("/usr/lib/libgio-2.0.so.0", O_RDONLY|O_CLOEXEC) = 3
+     0.004093 read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0(\0\1\0\0\0XT\2\0004\0\0\0@\35\22\0\2\0\0\0054\0 \0\5\0(\0\31\0\30\0\1\0\0pT\356\21\0T\356\21\0T\356\21\0\20\0\0\0\20\0\0\0\4\0\0\0\4\0\0\0\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0h\356\21\0h\356\21\0\5\0\0\0\0\200\0\0\1\0\0\0\0\360\21\0\0p\22\0\0p\22\0,,\0\0t=\0\0\6\0\0\0\0\200\0\0\2\0\0\0X\n\22\0X\212\22\0X\212\22\0@\1\0\0@\1\0\0\6\0\0\0\4\0\0\0Q\345td\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\6\0\0\0\4\0\0\0\5\10\0\0\330\t\0\0\2\3\0\0b\0\0\0\3\5\0\0006\5\0\0!\1\0\0\0\0\0\0008\t\0\0\224\3\0\0\242\10\0\0\0\0\0\0\255\t\0\0\254\7\0\0\364\10\0\0S\0\0\0\0\0\0\0o\t\0\0\235\1\0\0^\6\0\0\0\0\0\0v\t\0\0\27\4\0\0z\3\0\0\0\0\0\0\25\2\0\0\17\2\0\0\365\4\0\0N\0\0\0\325\10\0\0-\10\0\0+\6\0\0T\4\0\0\345\3\0\0006\4\0\0\223\1\0\0\320\5\0\0\314\t\0\0\252\10\0\0\0\0\0\0+\0\0\0\0\0\0\0002\6\0\0{\t\0\0\356\7\0\0\0\0\0\0\0\0\0\0F\3\0\0\7\0\0\0\37\1\0\0\251\10\0\0\240\7\0\0\\\2\0\0\245\10\0\0\257\0\0\0\377\4\0\0\253\3\0\0*\2\0\0j\6\0\0\353\10\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\23\1\0\0\16\2\0\0\277\7\0\0\335\10\0\0\0\0\0\0@\1\0\0\217\4\0\0\256\10\0\0\0\0\0\0*\0\0\0\240\6\0\0", 512) = 512
+     0.002461 fstat64(3, {st_dev=makedev(0, 13), st_ino=2345, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=2328, st_size=1188136, st_atime=2012/04/15-01:41:28, st_mtime=2016/08/25-14:50:26, st_ctime=2012/04/15-01:41:58}) = 0
+     0.003416 mmap2(NULL, 1224052, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb6dda000
+     0.004431 mprotect(0xb6ef9000, 32768, PROT_NONE) = 0
+     0.003570 mmap2(0xb6f01000, 12288, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x11f000) = 0xb6f01000
+     0.002554 mmap2(0xb6f04000, 3444, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0xb6f04000
+     0.004554 close(3)                  = 0
+     0.002277 open("/lib/libgmodule-2.0.so.0", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004616 open("/usr/lib/libgmodule-2.0.so.0", O_RDONLY|O_CLOEXEC) = 3
+     0.003723 read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0(\0\1\0\0\0\0\r\0\0004\0\0\0\330\"\0\0\2\0\0\0054\0 \0\4\0(\0\27\0\26\0\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\300\37\0\0\300\37\0\0\5\0\0\0\0\200\0\0\1\0\0\0\0 \0\0\0\240\0\0\0\240\0\0\340\1\0\0\0\2\0\0\6\0\0\0\0\200\0\0\2\0\0\0\f \0\0\f\240\0\0\f\240\0\0\10\1\0\0\10\1\0\0\6\0\0\0\4\0\0\0Q\345td\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\6\0\0\0\4\0\0\0%\0\0\0009\0\0\0004\0\0\0-\0\0\0\34\0\0\0\0\0\0\0+\0\0\0\0\0\0\0007\0\0\0\27\0\0\0.\0\0\0\0\0\0\0\t\0\0\0\25\0\0\0008\0\0\0\0\0\0\0000\0\0\0002\0\0\0006\0\0\0\6\0\0\0\f\0\0\0005\0\0\0&\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0/\0\0\0\33\0\0\0003\0\0\0001\0\0\0\22\0\0\0\"\0\0\0\7\0\0\0'\0\0\0\35\0\0\0,\0\0\0%\0\0\0*\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\4\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\n\0\0\0\5\0\0\0\0\0\0\0\10\0\0\0\0\0\0\0\r\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\16\0\0\0\0\0\0\0\v\0\0\0\3\0\0\0\0\0\0\0\20\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\23\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0!\0\0\0\31\0\0\0\0\0\0\0\24\0\0\0\26\0\0\0 \0\0\0\0\0\0\0\36\0\0\0\37\0\0\0", 512) = 512
+     0.003416 fstat64(3, {st_dev=makedev(0, 13), st_ino=2260, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=24, st_size=9840, st_atime=2012/04/15-01:41:28, st_mtime=2016/08/25-14:50:26, st_ctime=2012/04/15-01:41:58}) = 0
+     0.003816 mmap2(NULL, 41472, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb6dcf000
+     0.003200 mprotect(0xb6dd1000, 32768, PROT_NONE) = 0
+     0.002523 mmap2(0xb6dd9000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x2000) = 0xb6dd9000
+     0.004462 close(3)                  = 0
+     0.002893 open("/lib/libgobject-2.0.so.0", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.003138 open("/usr/lib/libgobject-2.0.so.0", O_RDONLY|O_CLOEXEC) = 3
+     0.003878 read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0(\0\1\0\0\0\220\177\0\0004\0\0\0\4/\4\0\2\0\0\0054\0 \0\4\0(\0\30\0\27\0\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0t#\4\0t#\4\0\5\0\0\0\0\200\0\0\1\0\0\0t#\4\0t\243\4\0t\243\4\0\210\n\0\0\20\20\0\0\6\0\0\0\0\200\0\0\2\0\0\0\f(\4\0\f\250\4\0\f\250\4\0\20\1\0\0\20\1\0\0\6\0\0\0\4\0\0\0Q\345td\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\6\0\0\0\4\0\0\0\t\2\0\0F\2\0\0\\\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\206\0\0\0\0\0\0\0b\1\0\0\246\0\0\0\322\1\0\0\25\1\0\0f\0\0\0\363\0\0\0\243\1\0\0\0\0\0\0\0\0\0\0\363\1\0\0\300\1\0\0\303\0\0\0\0\0\0\0\26\2\0\0\0\0\0\0\272\0\0\0\242\1\0\0\361\1\0\0\205\0\0\0\0\0\0\0\375\1\0\0\0\0\0\0q\0\0\0\0\0\0\0\0\0\0\0\\\0\0\0~\0\0\0\0\0\0\0-\0\0\0\0\0\0\0\0\0\0\0\23\2\0\0\0\0\0\0W\1\0\0\0\0\0\0\16\1\0\0\20\1\0\0j\1\0\0\0\0\0\0\320\0\0\0\23\0\0\0\374\1\0\0\270\0\0\0\0\0\0\0\214\0\0\0\276\1\0\0\307\1\0\0\4\0\0\0\0\0\0\0\364\0\0\0<\0\0\0\351\0\0\0\245\1\0\0\0\0\0\0\370\0\0\0\0\0\0\0\242\0\0\0\0\0\0\0\317\1\0\0\27\0\0\0L\1\0\0\0\0\0\0\275\1\0\0\256\1\0\0\r\0\0\0\345\0\0\0\375\0\0\0\0\0\0\0\0\0\0\0\357\1\0\0\0\0\0\0\0\0\0\0", 512) = 512
+     0.003200 fstat64(3, {st_dev=makedev(0, 13), st_ino=2154, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=544, st_size=275140, st_atime=2012/04/15-01:41:28, st_mtime=2016/08/25-14:50:26, st_ctime=2012/04/15-01:41:57}) = 0
+     0.002923 mmap2(NULL, 308100, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb6d83000
+     0.003877 mprotect(0xb6dc6000, 28672, PROT_NONE) = 0
+     0.003324 mmap2(0xb6dcd000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x42000) = 0xb6dcd000
+     0.003539 mmap2(0xb6dce000, 900, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0xb6dce000
+     0.008031 close(3)                  = 0
+     0.002062 open("/lib/libgthread-2.0.so.0", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.005200 open("/usr/lib/libgthread-2.0.so.0", O_RDONLY|O_CLOEXEC) = 3
+     0.002123 read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0(\0\1\0\0\0\360\4\0\0004\0\0\0 \n\0\0\2\0\0\0054\0 \0\4\0(\0\27\0\26\0\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\350\7\0\0\350\7\0\0\5\0\0\0\0\200\0\0\1\0\0\0\350\7\0\0\350\207\0\0\350\207\0\0@\1\0\0D\1\0\0\6\0\0\0\0\200\0\0\2\0\0\0\364\7\0\0\364\207\0\0\364\207\0\0\0\1\0\0\0\1\0\0\6\0\0\0\4\0\0\0Q\345td\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\6\0\0\0\4\0\0\0\21\0\0\0\25\0\0\0\0\0\0\0\10\0\0\0\7\0\0\0\23\0\0\0\0\0\0\0\n\0\0\0\17\0\0\0\0\0\0\0\t\0\0\0\24\0\0\0\6\0\0\0\21\0\0\0\5\0\0\0\16\0\0\0\20\0\0\0\r\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\3\0\0\0\0\0\0\0\0\0\0\0\4\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\v\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\f\0\0\0\22\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\240\4\0\0\0\0\0\0\3\0\10\0\0\0\0\0\360\207\0\0\0\0\0\0\3\0\20\0o\0\0\0t\6\0\0(\0\0\0\22\0\n\0L\0\0\0\0\0\0\0\0\0\0\0\"\0\0\0\26\0\0\0\0\0\0\0\0\0\0\0 \0\0\0\v\1\0\0(\211\0\0\0\0\0\0\20\0\361\377\32\1\0\0,\211\0\0\0\0\0\0\20\0\361\377\370\0\0\0(\211\0\0\0\0\0\0\20\0\361\377\20\0\0\0\20\7\0\0\0\0\0\0\22\0\v\0\31\1\0\0,\211\0\0\0\0\0\0", 512) = 512
+     0.004739 fstat64(3, {st_dev=makedev(0, 13), st_ino=2318, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=3512, st_atime=2012/04/15-01:41:28, st_mtime=2016/08/25-14:50:26, st_ctime=2012/04/15-01:41:58}) = 0
+     0.003601 mmap2(NULL, 35116, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb6d7a000
+     0.003631 mprotect(0xb6d7b000, 28672, PROT_NONE) = 0
+     0.003015 mmap2(0xb6d82000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0) = 0xb6d82000
+     0.002831 close(3)                  = 0
+     0.002893 open("/lib/libffi.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004062 open("/usr/lib/libffi.so.6", O_RDONLY|O_CLOEXEC) = 3
+     0.002923 read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0(\0\1\0\0\0(\23\0\0004\0\0\0\314f\0\0\2\0\0\0054\0 \0\5\0(\0\32\0\31\0\1\0\0p\220b\0\0\220b\0\0\220b\0\0\330\0\0\0\330\0\0\0\4\0\0\0\4\0\0\0\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0lc\0\0lc\0\0\5\0\0\0\0\200\0\0\1\0\0\0lc\0\0l\343\0\0l\343\0\0D\2\0\0\200\4\0\0\6\0\0\0\0\200\0\0\2\0\0\0\314c\0\0\314\343\0\0\314\343\0\0\360\0\0\0\360\0\0\0\6\0\0\0\4\0\0\0Q\345td\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\6\0\0\0\4\0\0\0C\0\0\0X\0\0\0$\0\0\0M\0\0\0\0\0\0\0W\0\0\0B\0\0\0C\0\0\0\0\0\0\0)\0\0\0 \0\0\0003\0\0\0N\0\0\0Q\0\0\0F\0\0\0\0\0\0\0\21\0\0\0:\0\0\0\0\0\0\0\7\0\0\0005\0\0\0\23\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0%\0\0\0\r\0\0\0U\0\0\0T\0\0\0\32\0\0\0P\0\0\0007\0\0\0E\0\0\0O\0\0\0<\0\0\0\0\0\0\0\16\0\0\0J\0\0\0\f\0\0\0\0\0\0\0?\0\0\0\31\0\0\0*\0\0\0K\0\0\0\0\0\0\0\35\0\0\0\0\0\0\0>\0\0\0\30\0\0\0\0\0\0\0V\0\0\0@\0\0\0I\0\0\0009\0\0\0&\0\0\0\0\0\0\0=\0\0\0\0\0\0\0'\0\0\0S\0\0\0L\0\0\0\0\0\0\0\0\0\0\0\33\0\0\0006\0\0\0\0\0\0\0A\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 512) = 512
+     0.003046 fstat64(3, {st_dev=makedev(0, 13), st_ino=2351, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=56, st_size=27356, st_atime=2012/04/15-01:41:28, st_mtime=2016/08/25-14:48:23, st_ctime=2012/04/15-01:41:58}) = 0
+     0.005016 mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb6f96000
+     0.003200 mmap2(NULL, 59372, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb6d6b000
+     0.003293 mprotect(0xb6d72000, 28672, PROT_NONE) = 0
+     0.003847 mmap2(0xb6d79000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x6000) = 0xb6d79000
+     0.002954 close(3)                  = 0
+     0.002369 open("/lib/libglib-2.0.so.0", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.004954 open("/usr/lib/libglib-2.0.so.0", O_RDONLY|O_CLOEXEC) = 3
+     0.003539 read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0(\0\1\0\0\0\320E\1\0004\0\0\0\324\32\20\0\2\0\0\0054\0 \0\5\0(\0\31\0\30\0\1\0\0p\370\1\20\0\370\1\20\0\370\1\20\0\20\0\0\0\20\0\0\0\4\0\0\0\4\0\0\0\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\f\2\20\0\f\2\20\0\5\0\0\0\0\200\0\0\1\0\0\0\0\20\20\0\0\220\20\0\0\220\20\0\300\t\0\0<\17\0\0\6\0\0\0\0\200\0\0\2\0\0\0\200\21\20\0\200\221\20\0\200\221\20\0\0\1\0\0\0\1\0\0\6\0\0\0\4\0\0\0Q\345td\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\6\0\0\0\4\0\0\0\7\4\0\0\360\6\0\0\377\5\0\0\306\6\0\0\321\6\0\0\271\1\0\0M\4\0\0\357\6\0\0\0\0\0\0\0\0\0\0h\2\0\0M\6\0\0r\4\0\0A\4\0\0.\4\0\0\255\5\0\0\330\6\0\0\221\6\0\0\354\6\0\0J\5\0\0\0\0\0\0\232\3\0\0\373\4\0\0\356\5\0\0(\4\0\0\304\6\0\0j\5\0\0\270\5\0\0\0\0\0\0\335\4\0\0*\6\0\0\274\4\0\0\362\5\0\0>\5\0\0\"\4\0\0\n\5\0\0\0\0\0\0|\1\0\0\302\3\0\0\226\6\0\0\366\3\0\0\325\1\0\0\f\1\0\0\214\4\0\0\265\6\0\0k\6\0\0\340\2\0\0000\2\0\0\274\5\0\0\0\0\0\0\0\0\0\0\252\6\0\0\16\0\0\0\0\0\0\0\0\0\0\0\32\4\0\0\211\1\0\0\356\0\0\0X\1\0\0\5\5\0\0003\6\0\0x\6\0\0\0\0\0\0\v\0\0\0w\6\0\0\316\5\0\0i\1\0\0p\5\0\0\307\4\0\0}\6\0\0008\6\0\0R\3\0\0\0\0\0\0`\0\0\0K\5\0\0", 512) = 512
+     0.003262 fstat64(3, {st_dev=makedev(0, 13), st_ino=2368, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=2064, st_size=1056444, st_atime=2012/04/15-01:41:42, st_mtime=2016/08/25-14:50:26, st_ctime=2012/04/15-01:41:58}) = 0
+     0.004739 mmap2(NULL, 1089340, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb6c61000
+     0.002892 mprotect(0xb6d62000, 32768, PROT_NONE) = 0
+     0.003508 mmap2(0xb6d6a000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x101000) = 0xb6d6a000
+     0.004585 close(3)                  = 0
+     0.003847 open("/lib/libdbus-1.so.3", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.003815 open("/usr/lib/libdbus-1.so.3", O_RDONLY|O_CLOEXEC) = 3
+     0.004062 read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0(\0\1\0\0\0\240U\0\0004\0\0\0\350x\3\0\2\0\0\0054\0 \0\4\0(\0\30\0\27\0\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\260g\3\0\260g\3\0\5\0\0\0\0\200\0\0\1\0\0\0\0p\3\0\0\360\3\0\0\360\3\0\340\7\0\0\34\t\0\0\6\0\0\0\0\200\0\0\2\0\0\0\230r\3\0\230\362\3\0\230\362\3\0\370\0\0\0\370\0\0\0\6\0\0\0\4\0\0\0Q\345td\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\6\0\0\0\4\0\0\0\7\1\0\0]\1\0\0\0\0\0\0C\1\0\0\202\0\0\0J\1\0\0\0\0\0\0\0\0\0\0\337\0\0\0`\0\0\0Y\1\0\0\327\0\0\0\0\0\0\0t\0\0\0.\0\0\0+\1\0\0\0\0\0\0@\0\0\0*\0\0\0\0\0\0\0H\1\0\0005\1\0\0009\1\0\0(\1\0\0\0\0\0\0&\0\0\0\0\0\0\0\211\0\0\0\270\0\0\0N\1\0\0\0\0\0\0#\1\0\0\274\0\0\0\343\0\0\0\24\1\0\0\0\0\0\0s\0\0\0\0\0\0\0\0\0\0\0007\1\0\0\26\0\0\0\346\0\0\0\373\0\0\0\32\1\0\0S\1\0\0\0\0\0\0\226\0\0\0\27\0\0\0\34\1\0\0\263\0\0\0\311\0\0\0\350\0\0\0\0\0\0\0\6\1\0\0\265\0\0\0\357\0\0\0O\0\0\0\314\0\0\0\251\0\0\0\246\0\0\0\351\0\0\0\0\0\0\0\0\0\0\0\16\0\0\0R\1\0\0\275\0\0\0\0\0\0\0*\1\0\0\0\0\0\0\341\0\0\0[\0\0\0\36\1\0\0\252\0\0\0\352\0\0\0\0\0\0\0\224\0\0\0\22\0\0\0_\0\0\0\273\0\0\0004\1\0\0\v\1\0\0008\1\0\0p\0\0\0", 512) = 512
+     0.003170 fstat64(3, {st_dev=makedev(0, 13), st_ino=2706, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=448, st_size=228520, st_atime=2012/04/15-01:41:28, st_mtime=2016/08/25-14:48:14, st_ctime=2012/04/15-01:42:13}) = 0
+     0.003600 mmap2(NULL, 260380, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb6c21000
+     0.003908 mprotect(0xb6c58000, 32768, PROT_NONE) = 0
+     0.003508 mmap2(0xb6c60000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x37000) = 0xb6c60000
+     0.002862 close(3)                  = 0
+     0.003231 open("/lib/librt.so.1", O_RDONLY|O_CLOEXEC) = 3
+     0.004308 read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0(\0\1\0\0\0`\27\0\0004\0\0\0\314b\0\0\2\0\0\0054\0 \0\t\0(\0\37\0\36\0\1\0\0p\10V\0\0\10V\0\0\10V\0\0\240\0\0\0\240\0\0\0\4\0\0\0\4\0\0\0\6\0\0\0004\0\0\0004\0\0\0004\0\0\0 \1\0\0 \1\0\0\5\0\0\0\4\0\0\0\3\0\0\0\240U\0\0\240U\0\0\240U\0\0\34\0\0\0\34\0\0\0\4\0\0\0\4\0\0\0\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\334[\0\0\334[\0\0\5\0\0\0\0\200\0\0\1\0\0\0\324^\0\0\324\336\0\0\324\336\0\0\230\2\0\0P\3\0\0\6\0\0\0\0\200\0\0\2\0\0\0\350^\0\0\350\336\0\0\350\336\0\0\30\1\0\0\30\1\0\0\6\0\0\0\4\0\0\0\4\0\0\0T\1\0\0T\1\0\0T\1\0\0 \0\0\0 \0\0\0\4\0\0\0\4\0\0\0Q\345td\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\6\0\0\0\4\0\0\0R\345td\324^\0\0\324\336\0\0\324\336\0\0,\1\0\0,\1\0\0\4\0\0\0\1\0\0\0\4\0\0\0\20\0\0\0\1\0\0\0GNU\0\0\0\0\0\2\0\0\0\6\0\0\0 \0\0\0Q\0\0\0G\0\0\0\10\0\0\0\10\0\0\0\21A\0041\250\f(\2\10Q\34\213\0\0242\340\250J\2\222\0`P i\2\7\366\0\21D\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0G\0\0\0\0\0\0\0H\0\0\0\0\0\0\0I\0\0\0\0\0\0\0\0\0\0\0J\0\0\0K\0\0\0L\0\0\0M\0\0\0N\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0O\0\0\0\0\0\0\0", 512) = 512
+     0.002585 fstat64(3, {st_dev=makedev(0, 13), st_ino=1026, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=56, st_size=26532, st_atime=2012/04/15-01:41:50, st_mtime=2016/08/25-15:26:07, st_ctime=2012/04/15-01:41:50}) = 0
+     0.003877 mmap2(NULL, 57892, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb6c12000
+     0.003200 mprotect(0xb6c18000, 28672, PROT_NONE) = 0
+     0.002739 mmap2(0xb6c1f000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x5000) = 0xb6c1f000
+     0.004308 close(3)                  = 0
+     0.003816 open("/lib/libxml2.so.2", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.003015 open("/usr/lib/libxml2.so.2", O_RDONLY|O_CLOEXEC) = 3
+     0.003939 read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0(\0\1\0\0\0\250\262\1\0004\0\0\0\350{\21\0\2\0\0\0054\0 \0\4\0(\0\31\0\30\0\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0344\21\0\0344\21\0\5\0\0\0\0\200\0\0\1\0\0\0\0344\21\0\34\264\21\0\34\264\21\0\270F\0\0@U\0\0\6\0\0\0\0\200\0\0\2\0\0\0\250k\21\0\250\353\21\0\250\353\21\0\20\1\0\0\20\1\0\0\6\0\0\0\4\0\0\0Q\345td\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\6\0\0\0\4\0\0\0\7\4\0\0A\7\0\0\0\0\0\0\304\6\0\0t\1\0\0t\6\0\0)\1\0\0\223\0\0\0<\6\0\0S\4\0\0\235\6\0\0\342\4\0\0\0\0\0\0U\0\0\0000\5\0\0\214\2\0\0\337\4\0\0\312\3\0\0\335\3\0\0\r\0\0\0m\4\0\0\t\4\0\0l\5\0\0\0\0\0\0008\4\0\0\0\0\0\0\212\6\0\0>\6\0\0008\5\0\0\0\0\0\0\0\0\0\0\227\6\0\0\222\4\0\0\225\5\0\0\3\3\0\0l\3\0\0\240\4\0\0\354\0\0\0\212\4\0\0\216\6\0\0\331\4\0\0\247\3\0\0\0\0\0\0\6\4\0\0\0\0\0\0000\6\0\0\214\6\0\0u\5\0\0\35\3\0\0R\2\0\0\216\3\0\0\204\5\0\0\361\3\0\0\22\6\0\0\270\1\0\0\266\6\0\0W\6\0\0Z\6\0\0\255\4\0\0\241\6\0\0\0\0\0\0\4\5\0\0\0\0\0\0\346\3\0\0B\6\0\0.\6\0\0d\2\0\0\361\6\0\0=\4\0\0\270\5\0\0\322\5\0\0\230\4\0\0f\6\0\0b\6\0\0\0\0\0\0_\5\0\0\351\4\0\0\226\4\0\0\0\0\0\0u\6\0\0R\6\0\0L\5\0\0\221\5\0\0", 512) = 512
+     0.004278 fstat64(3, {st_dev=makedev(0, 13), st_ino=2400, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=2240, st_size=1146832, st_atime=2012/04/15-01:41:28, st_mtime=2016/08/25-14:52:07, st_ctime=2012/04/15-01:41:58}) = 0
+     0.003292 mmap2(NULL, 1182044, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb6af1000
+     0.004370 mprotect(0xb6c05000, 28672, PROT_NONE) = 0
+     0.002184 mmap2(0xb6c0c000, 20480, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x113000) = 0xb6c0c000
+     0.003078 mmap2(0xb6c11000, 2396, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0xb6c11000
+     0.002831 close(3)                  = 0
+     0.005015 open("/lib/libdl.so.2", O_RDONLY|O_CLOEXEC) = 3
+     0.003170 read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0(\0\1\0\0\0l\t\0\0004\0\0\0\254!\0\0\2\0\0\0054\0 \0\10\0(\0\33\0\32\0\6\0\0\0004\0\0\0004\0\0\0004\0\0\0\0\1\0\0\0\1\0\0\5\0\0\0\4\0\0\0\3\0\0\0\10\30\0\0\10\30\0\0\10\30\0\0\34\0\0\0\34\0\0\0\4\0\0\0\4\0\0\0\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\234\31\0\0\234\31\0\0\5\0\0\0\0\200\0\0\1\0\0\0\344\36\0\0\344\236\0\0\344\236\0\0\244\1\0\0\324\1\0\0\6\0\0\0\0\200\0\0\2\0\0\0\370\36\0\0\370\236\0\0\370\236\0\0\10\1\0\0\10\1\0\0\6\0\0\0\4\0\0\0\4\0\0\0004\1\0\0004\1\0\0004\1\0\0 \0\0\0 \0\0\0\4\0\0\0\4\0\0\0Q\345td\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\6\0\0\0\4\0\0\0R\345td\344\36\0\0\344\236\0\0\344\236\0\0\34\1\0\0\34\1\0\0\4\0\0\0\1\0\0\0\4\0\0\0\20\0\0\0\1\0\0\0GNU\0\0\0\0\0\2\0\0\0\6\0\0\0 \0\0\0\22\0\0\0\35\0\0\0\4\0\0\0\7\0\0\0\230\0\21\0\0B\0\0\202\0\0\n\223(\0\330\35\0\0\0\0\0\0\0\36\0\0\0\0\0\0\0\0\0\0\0\37\0\0\0!\0\0\0#\0\0\0$\0\0\0%\0\0\0\0\0\0\0&\0\0\0\0\0\0\0'\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\257\304M\17\221!\374\370\300S\200\30\331=l\366\224\263_\31\5\350\7\371\177\236\320\30a\242\222\6\353\26\251\30a\257\0\371\6\2\4\371\3733\373\17\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 512) = 512
+     0.004031 fstat64(3, {st_dev=makedev(0, 13), st_ino=1019, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=24, st_size=9700, st_atime=2012/04/15-01:41:41, st_mtime=2016/08/25-15:26:07, st_ctime=2012/04/15-01:41:50}) = 0
+     0.003293 mmap2(NULL, 41144, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb6ae6000
+     0.003385 mprotect(0xb6ae8000, 28672, PROT_NONE) = 0
+     0.004215 mmap2(0xb6aef000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1000) = 0xb6aef000
+     0.003939 close(3)                  = 0
+     0.002031 open("/lib/libz.so.1", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+     0.006462 open("/usr/lib/libz.so.1", O_RDONLY|O_CLOEXEC) = 3
+     0.005539 read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0(\0\1\0\0\0\10\30\0\0004\0\0\0\2300\1\0\2\0\0\0054\0 \0\5\0(\0\32\0\31\0\1\0\0p\234,\1\0\234,\1\0\234,\1\0\20\0\0\0\20\0\0\0\4\0\0\0\4\0\0\0\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\260,\1\0\260,\1\0\5\0\0\0\0\200\0\0\1\0\0\0\260,\1\0\260\254\1\0\260\254\1\0\310\2\0\0\314\2\0\0\6\0\0\0\0\200\0\0\2\0\0\0`-\1\0`\255\1\0`\255\1\0\0\1\0\0\0\1\0\0\6\0\0\0\4\0\0\0Q\345td\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\6\0\0\0\4\0\0\0a\0\0\0r\0\0\0\0\0\0\0\0\0\0\0\31\0\0\0\0\0\0\0n\0\0\0\0\0\0\0\0\0\0\0009\0\0\0\0\0\0\0\0\0\0\0\32\0\0\0\0\0\0\0o\0\0\0%\0\0\0`\0\0\0P\0\0\0\25\0\0\0q\0\0\0\16\0\0\0B\0\0\0L\0\0\0\0\0\0\0S\0\0\0/\0\0\0F\0\0\0\0\0\0\0?\0\0\0\0\0\0\0\0\0\0\0J\0\0\0\0\0\0\0O\0\0\0\23\0\0\0M\0\0\0c\0\0\0;\0\0\0+\0\0\0K\0\0\0^\0\0\0!\0\0\0\0\0\0\0<\0\0\0N\0\0\0l\0\0\0\21\0\0\0]\0\0\0\0\0\0\0H\0\0\0'\0\0\0a\0\0\0\0\0\0\0\0\0\0\0=\0\0\0\0\0\0\0A\0\0\0\0\0\0\0@\0\0\0U\0\0\0[\0\0\0\0\0\0\0\0\0\0\0e\0\0\0\0\0\0\0\\\0\0\0>\0\0\0d\0\0\0\0\0\0\0\0\0\0\0\24\0\0\0p\0\0\0(\0\0\0\0\0\0\0D\0\0\0", 512) = 512
+     0.004308 fstat64(3, {st_dev=makedev(0, 13), st_ino=2468, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=160, st_size=79016, st_atime=2012/04/15-01:41:28, st_mtime=2016/08/25-14:48:25, st_ctime=2012/04/15-01:41:59}) = 0
+     0.003570 mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb6f95000
+     0.004154 mmap2(NULL, 110460, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb6acb000
+     0.002800 mprotect(0xb6ade000, 28672, PROT_NONE) = 0
+     0.003293 mmap2(0xb6ae5000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x12000) = 0xb6ae5000
+     0.003385 close(3)                  = 0
+     0.003446 open("/lib/libm.so.6", O_RDONLY|O_CLOEXEC) = 3
+     0.002800 read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0(\0\1\0\0\0\330;\0\0004\0\0\0\244a\6\0\2\0\0\0054\0 \0\10\0(\0\33\0\32\0\6\0\0\0004\0\0\0004\0\0\0004\0\0\0\0\1\0\0\0\1\0\0\5\0\0\0\4\0\0\0\3\0\0\0\230J\6\0\230J\6\0\230J\6\0\34\0\0\0\34\0\0\0\4\0\0\0\4\0\0\0\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0P\\\6\0P\\\6\0\5\0\0\0\0\200\0\0\1\0\0\0\354^\6\0\354\336\6\0\354\336\6\0\224\1\0\0\234\1\0\0\6\0\0\0\0\200\0\0\2\0\0\0\370^\6\0\370\336\6\0\370\336\6\0\10\1\0\0\10\1\0\0\6\0\0\0\4\0\0\0\4\0\0\0004\1\0\0004\1\0\0004\1\0\0 \0\0\0 \0\0\0\4\0\0\0\4\0\0\0Q\345td\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\6\0\0\0\4\0\0\0R\345td\354^\6\0\354\336\6\0\354\336\6\0\24\1\0\0\24\1\0\0\4\0\0\0\1\0\0\0\4\0\0\0\20\0\0\0\1\0\0\0GNU\0\0\0\0\0\2\0\0\0\6\0\0\0 \0\0\0\332\2\0\0\23\0\0\0@\0\0\0\v\0\0\0%\270 \327\t\204g\v\0\302\25 \4iER\202\20\300\240\0}\210\272\0\tI\200\0\0\0\0\33\4\201\0\10\2\232U\220A X\342\200\225\2\224Q`\3726\0\304c\24\300\10\6\307\220\232\210\207\300 \351\0 0\202\20\234\201\4E\7\0274a\2\0\0\251K8\310 \10\23\30\24M8\"\0\0224\25@T\203\nE\241\21\1\244\fx\30\0\210\2\0 \0@\0d\214\5\210\0@\0@#\0\202@ \t\264G!U\241(\272\357\21\2@\236\201\10\4\0\0\0E\200PD", 512) = 512
+     0.004801 fstat64(3, {st_dev=makedev(0, 13), st_ino=1022, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=824, st_size=419292, st_atime=2012/04/15-01:41:50, st_mtime=2016/08/25-15:26:08, st_ctime=2012/04/15-01:41:50}) = 0
+     0.004400 mmap2(NULL, 450696, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb6a5c000
+     0.004770 mprotect(0xb6ac2000, 28672, PROT_NONE) = 0
+     0.001261 mmap2(0xb6ac9000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x65000) = 0xb6ac9000
+     0.003662 close(3)                  = 0
+     0.003354 open("/lib/libpthread.so.0", O_RDONLY|O_CLOEXEC) = 3
+     0.002985 read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0(\0\1\0\0\0008W\0\0004\0\0\0\340B\1\0\2\0\0\0054\0 \0\t\0(\0\37\0\36\0\1\0\0p\270 \1\0\270 \1\0\270 \1\0\210\3\0\0\210\3\0\0\4\0\0\0\4\0\0\0\6\0\0\0004\0\0\0004\0\0\0004\0\0\0 \1\0\0 \1\0\0\5\0\0\0\4\0\0\0\3\0\0\0\214\36\1\0\214\36\1\0\214\36\1\0\34\0\0\0\34\0\0\0\4\0\0\0\4\0\0\0\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\3602\1\0\3602\1\0\5\0\0\0\0\200\0\0\1\0\0\0\f>\1\0\f\276\1\0\f\276\1\0|\3\0\0\4$\0\0\6\0\0\0\0\200\0\0\2\0\0\0\360>\1\0\360\276\1\0\360\276\1\0\20\1\0\0\20\1\0\0\6\0\0\0\4\0\0\0\4\0\0\0T\1\0\0T\1\0\0T\1\0\0 \0\0\0 \0\0\0\4\0\0\0\4\0\0\0Q\345td\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\6\0\0\0\4\0\0\0R\345td\f>\1\0\f\276\1\0\f\276\1\0\364\1\0\0\364\1\0\0\4\0\0\0\1\0\0\0\4\0\0\0\20\0\0\0\1\0\0\0GNU\0\0\0\0\0\2\0\0\0\6\0\0\0 \0\0\0\262\1\0\0U\0\0\0@\0\0\0\v\0\0\0\31!\2\221\1\n\20\"@H \331\3\0I4\200\0\0@\0 \200\200\221Q`\300@\22\213\0020D\0\0\20\1\0\n\0\1\r\0\200\n\220\1X\260\r\240\200\10 $\204\20B\242!m\10@\234V\20\0\224 \204$H\0X(\1\222\34\301B\240\220\22\10\f \2\30dA\245c\4@\n\32\3\0\0)\0(\314@\204\210L\2\10\240\0\4\0\10\0\300Q\0\2009\4C\300", 512) = 512
+     0.002462 fstat64(3, {st_dev=makedev(0, 13), st_ino=832, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=168, st_size=83896, st_atime=2012/04/15-01:41:50, st_mtime=2016/08/25-15:26:06, st_ctime=2012/04/15-01:41:50}) = 0
+     0.003477 mmap2(NULL, 123408, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb6a3d000
+     0.004031 mprotect(0xb6a51000, 28672, PROT_NONE) = 0
+     0.002462 mmap2(0xb6a58000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x13000) = 0xb6a58000
+     0.004493 mmap2(0xb6a5a000, 4624, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0xb6a5a000
+     0.002984 close(3)                  = 0
+     0.002124 open("/lib/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+     0.003754 read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0(\0\1\0\0\0x\177\1\0004\0\0\0\220\17\22\0\2\0\0\0054\0 \0\n\0(\0 \0\37\0\1\0\0p(\227\21\0(\227\21\0(\227\21\0H\24\0\0H\24\0\0\4\0\0\0\4\0\0\0\6\0\0\0004\0\0\0004\0\0\0004\0\0\0@\1\0\0@\1\0\0\5\0\0\0\4\0\0\0\3\0\0\0\\\212\21\0\\\212\21\0\\\212\21\0\34\0\0\0\34\0\0\0\4\0\0\0\4\0\0\0\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\210\335\21\0\210\335\21\0\5\0\0\0\0\200\0\0\1\0\0\0\320\346\21\0\320f\22\0\320f\22\0004'\0\0\230N\0\0\6\0\0\0\0\200\0\0\2\0\0\0(\377\21\0(\177\22\0(\177\22\0\330\0\0\0\330\0\0\0\6\0\0\0\4\0\0\0\4\0\0\0t\1\0\0t\1\0\0t\1\0\0 \0\0\0 \0\0\0\4\0\0\0\4\0\0\0\7\0\0\0\320\346\21\0\320f\22\0\320f\22\0\10\0\0\0@\0\0\0\4\0\0\0\4\0\0\0Q\345td\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\6\0\0\0\4\0\0\0R\345td\320\346\21\0\320f\22\0\320f\22\0000\31\0\0000\31\0\0\4\0\0\0\1\0\0\0\4\0\0\0\20\0\0\0\1\0\0\0GNU\0\0\0\0\0\2\0\0\0\6\0\0\0 \0\0\0\363\3\0\0\t\0\0\0\0\2\0\0\16\0\0\0\2440\20D\204!\n\1\214\3\346\220AE\210\0\204\0\10\0E\200\0`\300\200\0\f\212\f\0\0010\0\10@2\10\256\4\210H6l\240\0260\0&\204\200\216\4\10@\4\2\f\246\244\32\6c\310\0\300 \1\300\0R\0!\201\10\4\n  \250\24\0\24(`\0\0P\240\312DB", 512) = 512
+     0.004216 fstat64(3, {st_dev=makedev(0, 13), st_ino=820, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=2320, st_size=1184912, st_atime=2012/04/15-01:41:50, st_mtime=2016/08/25-15:26:06, st_ctime=2012/04/15-01:41:50}) = 0
+     0.003323 mmap2(NULL, 1226088, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb6911000
+     0.004523 mprotect(0xb6a2f000, 32768, PROT_NONE) = 0
+     0.002124 mmap2(0xb6a37000, 12288, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x11e000) = 0xb6a37000
+     0.003231 mmap2(0xb6a3a000, 9576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0xb6a3a000
+     0.003754 close(3)                  = 0
+     0.004154 open("/lib/libgcc_s.so.1", O_RDONLY|O_CLOEXEC) = 3
+     0.002770 read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0(\0\1\0\0\0@'\0\0004\0\0\0\210\230\0\0\2\0\0\0054\0 \0\5\0(\0\32\0\31\0\1\0\0p,\224\0\0,\224\0\0,\224\0\0P\1\0\0P\1\0\0\4\0\0\0\4\0\0\0\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\200\225\0\0\200\225\0\0\5\0\0\0\0\200\0\0\1\0\0\0\200\225\0\0\200\25\1\0\200\25\1\0\350\1\0\0 \2\0\0\6\0\0\0\0\200\0\0\2\0\0\0\214\225\0\0\214\25\1\0\214\25\1\0\370\0\0\0\370\0\0\0\6\0\0\0\4\0\0\0Q\345td\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\6\0\0\0\4\0\0\0\305\0\0\0\331\0\0\0\307\0\0\0\242\0\0\0\313\0\0\0\231\0\0\0%\0\0\0|\0\0\0\253\0\0\0\0\0\0\0\0\0\0\0\211\0\0\0\0\0\0\0\0\0\0\0c\0\0\0}\0\0\0\257\0\0\0\302\0\0\0\22\0\0\0\0\0\0\0\264\0\0\0\277\0\0\0\0\0\0\0\10\0\0\0\0\0\0\0\326\0\0\0\0\0\0\0\232\0\0\0\0\0\0\0\251\0\0\0]\0\0\0\327\0\0\0\0\0\0\0\276\0\0\0\0\0\0\0\237\0\0\0s\0\0\0\\\0\0\0\0\0\0\0\0\0\0\0p\0\0\0\0\0\0\0!\0\0\0:\0\0\0\260\0\0\0\222\0\0\0\0\0\0\0,\0\0\0\275\0\0\0\0\0\0\0\7\0\0\0\311\0\0\0d\0\0\0\312\0\0\0\224\0\0\0\0\0\0\0\207\0\0\0\0\0\0\0X\0\0\0\261\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\24\0\0\0\270\0\0\0\250\0\0\0\214\0\0\0M\0\0\0\215\0\0\0\0\0\0\0\206\0\0\0\0\0\0\0\23\0\0\0\320\0\0\0\252\0\0\0", 512) = 512
+     0.003138 fstat64(3, {st_dev=makedev(0, 13), st_ino=841, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=80, st_size=40088, st_atime=2012/04/15-01:41:50, st_mtime=2016/08/25-15:07:39, st_ctime=2012/04/15-01:41:50}) = 0
+     0.004401 mmap2(NULL, 71584, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb68ff000
+     0.003323 mprotect(0xb6909000, 28672, PROT_NONE) = 0
+     0.003323 mmap2(0xb6910000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x9000) = 0xb6910000
+     0.003201 close(3)                  = 0
+     0.003538 mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb6f94000
+     0.006185 mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb6f93000
+     0.002985 set_tls(0xb6f936d0, 0xb6f93da8, 0xb6f9a050, 0xb6f936d0, 0xb6f9a050) = 0
+     0.006986 mprotect(0xb6a37000, 8192, PROT_READ) = 0
+     0.003938 mprotect(0xb6a58000, 4096, PROT_READ) = 0
+     0.005078 mprotect(0xb6ac9000, 4096, PROT_READ) = 0
+     0.004185 mprotect(0xb6aef000, 4096, PROT_READ) = 0
+     0.009600 mprotect(0xb6c1f000, 4096, PROT_READ) = 0
+     0.011509 mprotect(0xb6f99000, 4096, PROT_READ) = 0
+     0.004585 set_tid_address(0xb6f93278) = 1199
+     0.003231 set_robust_list(0xb6f93280, 12) = 0
+     0.005170 rt_sigaction(SIGRTMIN, {0xb6a422d4, [], SA_RESTORER|SA_SIGINFO, 0xb693efb0}, NULL, 8) = 0
+     0.001877 rt_sigaction(SIGRT_1, {0xb6a4217c, [], SA_RESTORER|SA_RESTART|SA_SIGINFO, 0xb693efb0}, NULL, 8) = 0
+     0.001262 rt_sigprocmask(SIG_UNBLOCK, [RTMIN RT_1], NULL, 8) = 0
+     0.002646 ugetrlimit(RLIMIT_STACK, {rlim_cur=8192*1024, rlim_max=RLIM_INFINITY}) = 0
+     0.006924 rt_sigaction(SIGINT, {0x942c, [INT], SA_RESTORER|SA_RESTART, 0xb693ef90}, {SIG_DFL, [], 0}, 8) = 0
+     0.004431 clock_gettime(CLOCK_REALTIME, {1335732182, 783841861}) = 0
+     0.004523 brk(0)                    = 0x797000
+     0.003077 brk(0x7b8000)             = 0x7b8000
+     0.004401 gettimeofday({1335732182, 795842}, NULL) = 0
+     0.002646 open("/etc/localtime", O_RDONLY|O_CLOEXEC) = 3
+     0.003385 fcntl64(3, F_GETFD)       = 0x1 (flags FD_CLOEXEC)
+     0.002154 fstat64(3, {st_dev=makedev(0, 13), st_ino=761, st_mode=S_IFREG|0666, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=1342, st_atime=2012/04/15-01:41:38, st_mtime=2016/08/25-15:19:54, st_ctime=2012/04/15-01:41:50}) = 0
+     0.004493 fstat64(3, {st_dev=makedev(0, 13), st_ino=761, st_mode=S_IFREG|0666, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=1342, st_atime=2012/04/15-01:41:38, st_mtime=2016/08/25-15:19:54, st_ctime=2012/04/15-01:41:50}) = 0
+     0.003446 mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb6f92000
+     0.004062 read(3, "TZif2\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\2\0\0\0\2\0\0\0\0\0\0\0T\0\0\0\2\0\0\0\t\25#\353\2202r\264\0203=\273\0204R\226\0205\35\235\02062x\0206\375\177\0208\33\224\2208\335a\0209\373v\220:\275C\20;\333X\220<\246_\220=\273:\220>\206A\220?\233\34\220@f#\220A\2049\20BF\5\220Cd\33\20D%\347\220EC\375\20F\5\311\220G#\337\20G\356\346\20I\3\301\20I\316\310\20J\343\243\20K\256\252\20L\314\277\220M\216\214\20N\254\241\220Onn\20P\214\203\220QW\212\220Rle\220S7l\220TLG\220U\27N\220V,)\220V\3670\220X\25F\20X\327\22\220Y\365(\20Z\266\364\220[\325\n\20\\\240\21\20]\264\354\20^\177\363\20_\224\316\20`_\325\20a}\352\220b?\267\20c]\314\220d\37\231\20e=\256\220f\10\265\220g\35\220\220g\350\227\220h\375r\220i\310y\220j\335T\220k\250[\220l\306q\20m\210=\220n\246S\20oh\37\220p\2065\20qQ<\20rf\27\20s1\36\20tE\371\20u\21\0\20v/\25\220v\360\342\20x\16\367\220x\320\304\20y\356\331\220z\260\246\20{\316\273\220|\231\302\220}\256\235\220~y\244\220\177\216\177\220\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\0\34 \1\0\0\0\16\20\0\5CEST\0CET\0\1\1\0\0TZif2\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\2\0\0\0\2\0\0\0\0\0\0\0T\0\0\0\2\0\0\0\t\0\0\0\0\25#\353\220\0\0\0\0002r\264\20\0\0\0\0003=\273\20\0\0\0\0004R\226\20\0\0\0\0005\35\235\20\0\0\0\00062x\20\0\0\0\0006\375\177\20\0\0\0\0008\33\224\220\0\0\0\0008\335a\20\0\0\0\0009\373v\220\0\0\0\0:\275C\20\0\0\0\0;\333X\220\0\0\0\0<\246_\220\0\0\0\0=\273:\220\0\0\0\0>\206A\220\0\0\0\0?\233\34\220\0\0\0\0@f#\220\0\0\0\0A\2049\20\0\0\0\0BF\5\220\0\0\0\0Cd\33\20\0\0\0\0D%\347\220\0\0\0\0EC\375\20\0\0\0\0F\5\311\220\0\0\0\0G#\337\20\0\0\0\0G\356\346\20\0\0\0\0I\3\301\20\0\0\0\0I\316\310\20\0\0\0\0J\343\243\20\0\0\0\0K\256\252\20\0\0\0\0L\314\277\220\0\0\0\0M\216\214\20\0\0\0\0N\254\241\220\0\0\0\0Onn\20\0\0\0\0P\214\203\220\0\0\0\0QW\212\220\0\0\0\0Rle\220\0\0\0\0S7l\220\0\0\0\0TLG\220\0\0\0\0U\27N\220\0\0\0\0V,)\220\0\0\0\0V\3670\220\0\0\0\0X\25F\20\0\0\0\0X\327\22\220\0\0\0\0Y\365(\20\0\0\0\0Z\266\364\220\0\0\0\0[\325\n\20\0\0\0\0\\\240\21\20\0\0\0\0]\264\354\20\0\0\0\0^\177\363\20\0\0\0\0_\224\316\20\0\0\0\0`_\325\20\0\0\0\0a}\352\220\0\0\0\0b?\267\20\0\0\0\0c]\314\220\0\0\0\0d\37\231\20\0\0\0\0e=\256\220\0\0\0\0f\10\265\220\0\0\0\0g\35\220\220\0\0\0\0g\350\227\220\0\0\0\0h\375r\220\0\0\0\0i\310y\220\0\0\0"..., 4096) = 1342
+     0.008001 _llseek(3, -28, [1314], SEEK_CUR) = 0
+     0.004000 read(3, "\nCET-1CEST,M3.5.0,M10.5.0/3\n", 4096) = 28
+     0.004185 _llseek(3, 1341, [1341], SEEK_SET) = 0
+     0.002185 close(3)                  = 0
+     0.002923 munmap(0xb6f92000, 4096)  = 0
+     0.004370 socket(PF_LOCAL, SOCK_DGRAM|SOCK_CLOEXEC, 0) = 3
+     0.010001 connect(3, {sa_family=AF_LOCAL, sun_path="/dev/log"}, 110) = -1 EPROTOTYPE (Protocol wrong type for socket)
+     0.005538 close(3)                  = 0
+     0.004124 socket(PF_LOCAL, SOCK_STREAM|SOCK_CLOEXEC, 0) = 3
+     0.002985 connect(3, {sa_family=AF_LOCAL, sun_path="/dev/log"}, 110) = 0
+     0.004923 send(3, "<14>Apr 29 22:43:02 testkbus: [INFO] --- Start KBUS initialization. ---\n\0", 73, MSG_NOSIGNAL) = 73
+     0.007632 futex(0xb6c117d8, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+     0.003723 stat64("/etc/specific/kbusconf.xml", {st_dev=makedev(0, 13), st_ino=212, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=378, st_atime=2012/04/15-01:37:13, st_mtime=2012/04/16-05:14:48, st_ctime=2012/04/16-05:14:48}) = 0
+     0.005293 stat64("/etc/specific/kbusconf.xml", {st_dev=makedev(0, 13), st_ino=212, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=378, st_atime=2012/04/15-01:37:13, st_mtime=2012/04/16-05:14:48, st_ctime=2012/04/16-05:14:48}) = 0
+     0.003446 stat64("/etc/specific/kbusconf.xml", {st_dev=makedev(0, 13), st_ino=212, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=378, st_atime=2012/04/15-01:37:13, st_mtime=2012/04/16-05:14:48, st_ctime=2012/04/16-05:14:48}) = 0
+     0.005016 open("/etc/specific/kbusconf.xml", O_RDONLY|O_LARGEFILE) = 4
+     0.004831 _llseek(4, 0, [0], SEEK_CUR) = 0
+     0.004431 read(4, "<?xml version=\"1.0\"?>\n<conf version=\"1\">\n  <key name=\"Test\">\n    <key name=\"Bla\">\n      <key name=\"Blu\">\n        <long>123467</long>\n      </key>\n      <key name=\"Bli\">\n        <long>1233</long>\n      </key>\n    </key>\n    <key name=\"Blo\">\n      <key name=\"Blu\">\n        <long>1264</long>\n      </key>\n    </key>\n  </key>\n  <key name=\"Argh\">\n    <long>1</long>\n  </key>\n</conf>\n", 8192) = 378
+     0.003662 read(4, "", 7814)         = 0
+     0.004954 close(4)                  = 0
+     0.010186 getresuid32([0], [0], [0]) = 0
+     0.005385 getresgid32([0], [0], [0]) = 0
+     0.004185 socket(PF_LOCAL, SOCK_STREAM|SOCK_CLOEXEC, 0) = 4
+     0.005662 connect(4, {sa_family=AF_LOCAL, sun_path="/var/run/dbus/system_bus_socket"}, 33) = 0
+     0.004770 fcntl64(4, F_GETFL)       = 0x2 (flags O_RDWR)
+     0.000892 fcntl64(4, F_SETFL, O_RDWR|O_NONBLOCK) = 0
+     0.002062 geteuid32()               = 0
+     0.003939 getsockname(4, {sa_family=AF_LOCAL, NULL}, [2]) = 0
+     0.004215 poll([{fd=4, events=POLLOUT}], 1, 0) = 1 ([{fd=4, revents=POLLOUT}])
+     0.004739 send(4, "\0", 1, MSG_NOSIGNAL) = 1
+     0.003354 send(4, "AUTH EXTERNAL 30\r\n", 18, MSG_NOSIGNAL) = 18
+     0.007755 poll([{fd=4, events=POLLIN}], 1, -1) = 1 ([{fd=4, revents=POLLIN}])
+     0.003138 read(4, "OK 840a823d57c283386dd6fcb64f9c9462\r\n", 2048) = 37
+     0.003908 poll([{fd=4, events=POLLOUT}], 1, -1) = 1 ([{fd=4, revents=POLLOUT}])
+     0.003232 send(4, "NEGOTIATE_UNIX_FD\r\n", 19, MSG_NOSIGNAL) = 19
+     0.003784 poll([{fd=4, events=POLLIN}], 1, -1) = 1 ([{fd=4, revents=POLLIN}])
+     0.006001 read(4, "AGREE_UNIX_FD\r\n", 2048) = 15
+     0.006308 poll([{fd=4, events=POLLOUT}], 1, -1) = 1 ([{fd=4, revents=POLLOUT}])
+     0.002708 send(4, "BEGIN\r\n", 7, MSG_NOSIGNAL) = 7
+     0.005447 poll([{fd=4, events=POLLIN|POLLOUT}], 1, -1) = 1 ([{fd=4, revents=POLLOUT}])
+     0.004154 sendmsg(4, {msg_name(0)=NULL, msg_iov(2)=[{"l\1\0\1\0\0\0\0\1\0\0\0n\0\0\0\1\1o\0\25\0\0\0/org/freedesktop/DBus\0\0\0\6\1s\0\24\0\0\0org.freedesktop.DBus\0\0\0\0\2\1s\0\24\0\0\0org.freedesktop.DBus\0\0\0\0\3\1s\0\5\0\0\0Hello\0\0\0", 128}, {"", 0}], msg_controllen=0, msg_flags=0}, MSG_NOSIGNAL) = 128
+     0.012801 clock_gettime(CLOCK_MONOTONIC, {70526, 67259789}) = 0
+     0.005416 poll([{fd=4, events=POLLIN}], 1, 25000) = 1 ([{fd=4, revents=POLLIN}])
+     0.003046 recvmsg(4, {msg_name(0)=NULL, msg_iov(1)=[{"l\2\1\1\n\0\0\0\1\0\0\0=\0\0\0\6\1s\0\5\0\0\0:1.10\0\0\0\5\1u\0\1\0\0\0\10\1g\0\1s\0\0\7\1s\0\24\0\0\0org.freedesktop.DBus\0\0\0\0\5\0\0\0:1.10\0l\4\1\1\n\0\0\0\2\0\0\0\215\0\0\0\1\1o\0\25\0\0\0/org/freedesktop/DBus\0\0\0\2\1s\0\24\0\0\0org.freedesktop.DBus\0\0\0\0\3\1s\0\f\0\0\0NameAcquired\0\0\0\0\6\1s\0\5\0\0\0:1.10\0\0\0\10\1g\0\1s\0\0\7\1s\0\24\0\0\0org.freedesktop.DBus\0\0\0\0\5\0\0\0:1.10\0", 2048}], msg_controllen=0, msg_flags=MSG_CMSG_CLOEXEC}, MSG_CMSG_CLOEXEC) = 260
+     0.004431 recvmsg(4, 0xbe9238c8, MSG_CMSG_CLOEXEC) = -1 EAGAIN (Resource temporarily unavailable)
+     0.004770 clock_getres(CLOCK_MONOTONIC, {0, 1}) = 0
+     0.005477 gettimeofday({1335732183, 44140}, NULL) = 0
+     0.004893 eventfd2(0, O_NONBLOCK|O_CLOEXEC) = 5
+     0.003447 write(5, "\1\0\0\0\0\0\0\0", 8) = 8
+     0.005015 fstat64(4, {st_dev=makedev(0, 7), st_ino=118146, st_mode=S_IFSOCK|0777, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=0, st_mtime=0, st_ctime=0}) = 0
+     0.002985 fcntl64(4, F_GETFL)       = 0x802 (flags O_RDWR|O_NONBLOCK)
+     0.002985 write(5, "\1\0\0\0\0\0\0\0", 8) = 8
+     0.005231 gettimeofday({1335732183, 68542}, NULL) = 0
+     0.004493 sendmsg(4, {msg_name(0)=NULL, msg_iov(2)=[{"l\4\1\1\30\0\0\0\2\0\0\0Z\0\0\0\1\1o\0\21\0\0\0/wago/diagnose/ID\0\0\0\0\0\0\0\2\1s\0\r\0\0\0wago.diagnose\0\0\0\3\1s\0\n\0\0\0ID2FFF0001\0\0\0\0\0\0\10\1g\0\4iisb\0\0\0\0\0\0\0", 112}, {"\327\247\235O\276\v\1\0\4\0\0\0kbus\0\0\0\0\1\0\0\0", 24}], msg_controllen=0, msg_flags=0}, MSG_NOSIGNAL) = 136
+     0.019386 open("/dev/ttyKbus", O_RDWR) = 6
+     0.005293 open("/dev/kbus0", O_RDWR) = 7
+     0.002031 ioctl(6, TCFLSH, 0x2)     = 0
+     0.013016 ioctl(6, TCGETS, {c_iflags=0, c_oflags=0x4, c_cflags=0xcbe, c_lflags=0xa30, c_line=0, c_cc[VMIN]=1, c_cc[VTIME]=0, c_cc="\x03\x1c\x7f\x15\x04\x00\x01\x00\x11\x13\x1a\x00\x12\x0f\x17\x16\x00\x00\x00"}) = 0
+     0.008709 ioctl(6, SNDCTL_TMR_START or TCSETS, {c_iflags=0, c_oflags=0x4, c_cflags=0xcbe, c_lflags=0xa30, c_line=0, c_cc[VMIN]=1, c_cc[VTIME]=0, c_cc="\x03\x1c\x7f\x15\x04\x00\x01\x00\x11\x13\x1a\x00\x12\x0f\x17\x16\x00\x00\x00"}) = 0
+     0.006339 ioctl(6, TCGETS, {c_iflags=0, c_oflags=0x4, c_cflags=0xcbe, c_lflags=0xa30, c_line=0, c_cc[VMIN]=1, c_cc[VTIME]=0, c_cc="\x03\x1c\x7f\x15\x04\x00\x01\x00\x11\x13\x1a\x00\x12\x0f\x17\x16\x00\x00\x00"}) = 0
+     0.004154 ioctl(6, SNDCTL_TMR_START or TCSETS, {c_iflags=0, c_oflags=0x4, c_cflags=0xcbe, c_lflags=0xa30, c_line=0, c_cc[VMIN]=1, c_cc[VTIME]=0, c_cc="\x03\x1c\x7f\x15\x04\x00\x01\x00\x11\x13\x1a\x00\x12\x0f\x17\x16\x00\x00\x00"}) = 0
+     0.003970 ioctl(6, TCGETS, {c_iflags=0, c_oflags=0x4, c_cflags=0xcbe, c_lflags=0xa30, c_line=0, c_cc[VMIN]=1, c_cc[VTIME]=0, c_cc="\x03\x1c\x7f\x15\x04\x00\x01\x00\x11\x13\x1a\x00\x12\x0f\x17\x16\x00\x00\x00"}) = 0
+     0.004369 write(6, "\0", 1)         = 1
+     0.003016 select(7, [6], NULL, NULL, {0, 4000}) = 0 (Timeout)
+     0.005939 write(6, "\0", 1)         = 1
+     0.003231 select(7, [6], NULL, NULL, {0, 4000}) = 0 (Timeout)
+     0.005446 write(6, "\0", 1)         = 1
+     0.003570 select(7, [6], NULL, NULL, {0, 4000}) = 0 (Timeout)
+     0.005570 gettimeofday({1335732183, 167843}, NULL) = 0
+     0.003415 send(3, "<12>Apr 29 22:43:03 kbus: [FAIL] scpu_boot_download_bootstrap_header: Timeout on bootstrap header answer. Exiting...\n\0", 118, MSG_NOSIGNAL) = 118
+     0.005570 close(7)                  = 0
+     0.002400 close(6)                  = 0
+     0.004831 open("/dev/kbus0", O_RDWR) = 6
+     0.004216 ioctl(6, _IOC(_IOC_WRITE, 0x4b, 0x03, 0x08), 0xbe923af0) = 0
+     0.002185 write(6, "\1\0\0\0", 4)   = 0
+     0.006308 ioctl(6, _IOC(_IOC_WRITE, 0x4b, 0x02, 0x1c), 0xbe9238cc) = 12
+     0.011293 ioctl(6, _IOC(_IOC_WRITE, 0x4b, 0x02, 0x1c), 0xbe9238cc) = -1 ETIMEDOUT (Connection timed out)
+     5.003127 write(6, "\0\0\0\0", 4)   = 0
+     0.004954 close(6)                  = 0
+     0.003539 rt_sigaction(SIGINT, {SIG_IGN, [], SA_RESTORER, 0xb693ef90}, {0x942c, [INT], SA_RESTORER|SA_RESTART, 0xb693ef90}, 8) = 0
+     0.003816 rt_sigaction(SIGQUIT, {SIG_IGN, [], SA_RESTORER, 0xb693ef90}, {SIG_DFL, [], 0}, 8) = 0
+     0.002062 rt_sigprocmask(SIG_BLOCK, [CHLD], [], 8) = 0
+     0.002523 clone(child_stack=0, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0xb6f93278) = 1206
+     0.019878 wait4(1206, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 1206
+     0.005108 rt_sigaction(SIGINT, {0x942c, [INT], SA_RESTORER|SA_RESTART, 0xb693ef90}, NULL, 8) = 0
+     0.003416 rt_sigaction(SIGQUIT, {SIG_DFL, [], SA_RESTORER, 0xb693ef90}, NULL, 8) = 0
+     0.005169 rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+     0.002062 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=1206, si_uid=0, si_status=0, si_utime=3, si_stime=5} ---
+     0.001662 rt_sigaction(SIGINT, {SIG_IGN, [], SA_RESTORER, 0xb693ef90}, {0x942c, [INT], SA_RESTORER|SA_RESTART, 0xb693ef90}, 8) = 0
+     0.003077 rt_sigaction(SIGQUIT, {SIG_IGN, [], SA_RESTORER, 0xb693ef90}, {SIG_DFL, [], SA_RESTORER, 0xb693ef90}, 8) = 0
+     0.003877 rt_sigprocmask(SIG_BLOCK, [CHLD], [], 8) = 0
+     0.003139 clone(child_stack=0, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0xb6f93278) = 1207
+     0.006000 wait4(1207, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 1207
+     0.003908 rt_sigaction(SIGINT, {0x942c, [INT], SA_RESTORER|SA_RESTART, 0xb693ef90}, NULL, 8) = 0
+     0.003077 rt_sigaction(SIGQUIT, {SIG_DFL, [], SA_RESTORER, 0xb693ef90}, NULL, 8) = 0
+     0.003877 rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+     0.003354 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=1207, si_uid=0, si_status=0, si_utime=4, si_stime=5} ---
+     0.001693 gettimeofday({1335732190, 662471}, NULL) = 0
+     0.002246 send(3, "<14>Apr 29 22:43:10 kbus: [INFO] Second trial to initialize SCPU.\n\0", 67, MSG_NOSIGNAL) = 67
+     0.005816 open("/dev/ttyKbus", O_RDWR) = 6
+     0.004031 open("/dev/kbus0", O_RDWR) = 7
+     0.004462 ioctl(6, TCFLSH, 0x2)     = 0
+     0.002616 ioctl(6, TCGETS, {c_iflags=0, c_oflags=0x4, c_cflags=0xcbe, c_lflags=0xa30, c_line=0, c_cc[VMIN]=1, c_cc[VTIME]=0, c_cc="\x03\x1c\x7f\x15\x04\x00\x01\x00\x11\x13\x1a\x00\x12\x0f\x17\x16\x00\x00\x00"}) = 0
+     0.002800 ioctl(6, SNDCTL_TMR_START or TCSETS, {c_iflags=0, c_oflags=0x4, c_cflags=0xcbe, c_lflags=0xa30, c_line=0, c_cc[VMIN]=1, c_cc[VTIME]=0, c_cc="\x03\x1c\x7f\x15\x04\x00\x01\x00\x11\x13\x1a\x00\x12\x0f\x17\x16\x00\x00\x00"}) = 0
+     0.002738 ioctl(6, TCGETS, {c_iflags=0, c_oflags=0x4, c_cflags=0xcbe, c_lflags=0xa30, c_line=0, c_cc[VMIN]=1, c_cc[VTIME]=0, c_cc="\x03\x1c\x7f\x15\x04\x00\x01\x00\x11\x13\x1a\x00\x12\x0f\x17\x16\x00\x00\x00"}) = 0
+     0.004247 ioctl(6, SNDCTL_TMR_START or TCSETS, {c_iflags=0, c_oflags=0x4, c_cflags=0xcbe, c_lflags=0xa30, c_line=0, c_cc[VMIN]=1, c_cc[VTIME]=0, c_cc="\x03\x1c\x7f\x15\x04\x00\x01\x00\x11\x13\x1a\x00\x12\x0f\x17\x16\x00\x00\x00"}) = 0
+     0.002923 ioctl(6, TCGETS, {c_iflags=0, c_oflags=0x4, c_cflags=0xcbe, c_lflags=0xa30, c_line=0, c_cc[VMIN]=1, c_cc[VTIME]=0, c_cc="\x03\x1c\x7f\x15\x04\x00\x01\x00\x11\x13\x1a\x00\x12\x0f\x17\x16\x00\x00\x00"}) = 0
+     0.001600 write(6, "\0", 1)         = 1
+     0.004278 select(7, [6], NULL, NULL, {0, 4000}) = 1 (in [6], left {0, 3969})
+     0.004154 read(6, "\325", 1)        = 1
+     0.005877 open("/etc/specific/XE164L1.bin", O_RDONLY) = 8
+     0.004001 read(8, "\245Z\245\245\346\0\200\3\346\366 \0\250P\232\365\375\340\2701\331bF\366~\0=\370\372\340 \0", 32) = 32
+     0.005108 close(8)                  = 0
+     0.003077 write(6, "\245Z\245\245\346\0\200\3\346\366 \0\250P\232\365\375\340\2701\331bF\366~\0=\370\372\340 \0", 32) = 32
+     0.003323 stat64("/etc/specific/XE164L2.bin", {st_dev=makedev(0, 13), st_ino=206, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=94, st_atime=2012/04/15-01:37:14, st_mtime=2016/08/25-14:52:58, st_ctime=2012/04/15-01:41:49}) = 0
+     0.003601 open("/etc/specific/XE164L2.bin", O_RDONLY) = 8
+     0.004123 read(8, "\346\n\0\373\346\v\0\374\346\t\0\374\346\374\340\0\346\364\240\0\273\33\273\24\361\330\273\22\361\310\273\20\361\370\273\16\361\350H`\3520\0\0\346\365\0\2\273\7\334\f\271\205\10Q(q=\372\372\340\0\4\2701\250@\232\364\375\340\251\202\313\0\346\365\0\20\270Q\304@<\0\250@\232\364\375\300\313\0", 94) = 94
+     0.003816 close(8)                  = 0
+     0.003262 write(6, "\346\n\0\373\346\v\0\374\346\t\0\374\346\374\340\0\346\364\240\0\273\33\273\24\361\330\273\22\361\310\273\20\361\370\273\16\361\350H`\3520\0\0\346\365\0\2\273\7\334\f\271\205\10Q(q=\372\372\340\0\4\2701\250@\232\364\375\340\251\202\313\0\346\365\0\20\270Q\304@<\0\250@\232\364\375\300\313\0", 94) = 94
+     0.003938 select(7, [6], NULL, NULL, {10, 0}) = 1 (in [6], left {9, 953996})
+     0.048497 read(6, "\240", 1)        = 1
+     0.003508 stat64("/etc/specific/XE164L3.bin", {st_dev=makedev(0, 13), st_ino=220, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=40, st_size=16776, st_atime=2012/04/15-01:37:14, st_mtime=2016/08/25-14:52:58, st_ctime=2012/04/15-01:41:49}) = 0
+     0.004308 open("/etc/specific/XE164L3.bin", O_RDONLY) = 8
+     0.003200 read(8, "\372\340\0\4\372\340\4\2\372\340\374\6\372\340\f\2\372\340\4\7\372\340\24\2\372\340\f\7\372\340\34\2\372\340\24\7\372\340$\2\372\340\34\7\372\340,\2\372\3400\2\372\3404\2\372\3408\2\372\340<\2\372\340@\2\372\340D\2\372\340H\2\372\340L\2\372\340P\2\372\340T\2\372\340X\2\372\340\\\2\372\340`\2\372\340d\2\372\340h\2\372\340l\2\372\340p\2\372\340t\2\372\340x\2\372\340|\2\372\340\200\2\372\340\204\2\372\340\210\2\372\340\214\2\372\340\200\f\372\340\224\2\372\340\230\2\372\340\234\2\372\340\240\2\372\340\244\2\372\340\250\2\372\340\254\2\372\340\260\2\372\340\264\2\372\340\270\2\372\340\274\2\372\340\300\2\372\340\304\2\372\340\310\2\372\340\314\2\372\340\320\2\372\340\324\2\372\340\330\2\372\340\334\2\372\340\340\2\372\340\344\2\372\340\350\2\372\340\354\2\372\340\360\2\372\340\364\2\372\340\370\2\372\340\374\2\372\340\0\3\372\340\4\3\372\340\10\3\372\340\f\3\372\340\20\3\372\340\24\3\372\340\30\3\372\340\34\3\372\340 \3\372\340$\3\372\340(\3\372\340,\3\372\3400\3\372\3404\3\372\3408\3\372\340<\3\372\340@\3\372\340D\3\372\340H\3\372\340\370!\372\340.\"\372\340T\3\372\340X\3\372\340\\\3\372\340`\3\372\340\250\35\372\340\336\35\372\340\24\36\372\340p\3\372\340t\3\372\340x\3\372\340|\3\372\340\200\3\372\340\204\3\372\340\210\3\372\340\214\3\372\340\220\3\372\340\224\3\372\340\230\3\372\340\234\3\372\340\240\3\372\340\244\3\372\340\250\3\372\340\254\3\372\340\260\3\372\340\264\3\372\340\270\3\372\340\274\3\372\340\300\3\372\340\304\3\372\340\310\3\372\340\314\3\372\340\320\3\372\340\324\3\372\340\330\3\372\340\334\3\372\340\340\3\372\340\344\3\372\340\350\3\372\340\354\3\372\340\360\3\372\340\364\3\372\340\370\3\372\340\374\3\346\210\0\0\245Z\245\245\346\374\340\0\346\375\3528\332\340\6;\0\0\0\0\5\0\24\0\3\0\"\0\2\0002\0J\210\374\277\276\210\321\260\346`\252\252\346`TU\346`\377\226\346`\0\0\232\374\1\360\277\210\333\0J\210\374\277\276\210\321\260\346`\252\252\346`TU\346`\377\226\346`\0\30\321\200\346`\377\216\232\374\1\360\277\210\333\0\346\210\0\0\314\0\314\0\346\374\340\0\354\374\340\f\354\374\333\0\333\0\362\375\20\377|\315\\\314\3210f\210\377\17\314\0\314\0t\374\20\377\314\0\314\0\360\315\360L\333\0\360\334&\374d\0\215\4|L\10\301(\301=\376\333\0\210\200\332\340$\4\332\340,\v\332\340\322\t\360\204\332\340\242\vH\200-\37\276\210H\200-\34\340\f\346\375\364\1\332\340\254\6\346\374\20\0\346\375(\0\332\340\254\6\340\f\346\375\244\1\332\340\254\6\340l\346\375\244\1\332\340\254\6\340\f\346\375\364\1\332\340\254\6H\200=\344\346\16\3\0\3408\366\370\0\353\321\200\346\\\0\240\346\374\0?\346\375\377\3\334M\250\354>\376\334M\270\354\332\340D\4\230\200\333\0\340\f\346\375\340\0\360\315\360L\313\0\340\f\346\375\0\2\360\315\360L\313\0\360\354\10\344\360\334\10\322\340\2\230\376\250\36\250\355\0\356\20\"\0\376\20\22\360\354\6\376\f\0\230.\250> \3620\23=\v\324\354\n\0\304\354\16\0\324\354\10\0\250\335\\\35\0\355\304\354\f\0\313\0\360\334\10\324\360\354\10\342\340\4\250\35\324-\2\0\250>\0003\20D\0\23\20$\334\2\250\21\360\374\6\377\16\0\270\37\250\37|\201\270\37\230\375\250\35\10\362\30\20\250\336\340\16\0\335\20\356\0\375\20\36\334\1\250\337\304\334\f\0\313\0\324\374\16\0\\\217\6\377\372\0\360\334\6\375\10\0\360\354\10\342\340\4\250\35\324-\2\0\250>\0003\20D\0\23\20$\334\2\270\361\324\374"..., 16776) = 16776
+     0.004985 close(8)                  = 0
+     0.002739 write(6, "\0\0A\210", 4)  = 4
+     0.002677 write(6, "\372\340\0\4\372\340\4\2\372\340\374\6\372\340\f\2\372\340\4\7\372\340\24\2\372\340\f\7\372\340\34\2\372\340\24\7\372\340$\2\372\340\34\7\372\340,\2\372\3400\2\372\3404\2\372\3408\2\372\340<\2\372\340@\2\372\340D\2\372\340H\2\372\340L\2\372\340P\2\372\340T\2\372\340X\2\372\340\\\2\372\340`\2\372\340d\2\372\340h\2\372\340l\2\372\340p\2\372\340t\2\372\340x\2\372\340|\2\372\340\200\2\372\340\204\2\372\340\210\2\372\340\214\2\372\340\200\f\372\340\224\2\372\340\230\2\372\340\234\2\372\340\240\2\372\340\244\2\372\340\250\2\372\340\254\2\372\340\260\2\372\340\264\2\372\340\270\2\372\340\274\2\372\340\300\2\372\340\304\2\372\340\310\2\372\340\314\2\372\340\320\2\372\340\324\2\372\340\330\2\372\340\334\2\372\340\340\2\372\340\344\2\372\340\350\2\372\340\354\2\372\340\360\2\372\340\364\2\372\340\370\2\372\340\374\2\372\340\0\3\372\340\4\3\372\340\10\3\372\340\f\3\372\340\20\3\372\340\24\3\372\340\30\3\372\340\34\3\372\340 \3\372\340$\3\372\340(\3\372\340,\3\372\3400\3\372\3404\3\372\3408\3\372\340<\3\372\340@\3\372\340D\3\372\340H\3\372\340\370!\372\340.\"\372\340T\3\372\340X\3\372\340\\\3\372\340`\3\372\340\250\35\372\340\336\35\372\340\24\36\372\340p\3\372\340t\3\372\340x\3\372\340|\3\372\340\200\3\372\340\204\3\372\340\210\3\372\340\214\3\372\340\220\3\372\340\224\3\372\340\230\3\372\340\234\3\372\340\240\3\372\340\244\3\372\340\250\3\372\340\254\3\372\340\260\3\372\340\264\3\372\340\270\3\372\340\274\3\372\340\300\3\372\340\304\3\372\340\310\3\372\340\314\3\372\340\320\3\372\340\324\3\372\340\330\3\372\340\334\3\372\340\340\3\372\340\344\3\372\340\350\3\372\340\354\3\372\340\360\3\372\340\364\3\372\340\370\3\372\340\374\3\346\210\0\0\245Z\245\245\346\374\340\0\346\375\3528\332\340\6;\0\0\0\0\5\0\24\0\3\0\"\0\2\0002\0J\210\374\277\276\210\321\260\346`\252\252\346`TU\346`\377\226\346`\0\0\232\374\1\360\277\210\333\0J\210\374\277\276\210\321\260\346`\252\252\346`TU\346`\377\226\346`\0\30\321\200\346`\377\216\232\374\1\360\277\210\333\0\346\210\0\0\314\0\314\0\346\374\340\0\354\374\340\f\354\374\333\0\333\0\362\375\20\377|\315\\\314\3210f\210\377\17\314\0\314\0t\374\20\377\314\0\314\0\360\315\360L\333\0\360\334&\374d\0\215\4|L\10\301(\301=\376\333\0\210\200\332\340$\4\332\340,\v\332\340\322\t\360\204\332\340\242\vH\200-\37\276\210H\200-\34\340\f\346\375\364\1\332\340\254\6\346\374\20\0\346\375(\0\332\340\254\6\340\f\346\375\244\1\332\340\254\6\340l\346\375\244\1\332\340\254\6\340\f\346\375\364\1\332\340\254\6H\200=\344\346\16\3\0\3408\366\370\0\353\321\200\346\\\0\240\346\374\0?\346\375\377\3\334M\250\354>\376\334M\270\354\332\340D\4\230\200\333\0\340\f\346\375\340\0\360\315\360L\313\0\340\f\346\375\0\2\360\315\360L\313\0\360\354\10\344\360\334\10\322\340\2\230\376\250\36\250\355\0\356\20\"\0\376\20\22\360\354\6\376\f\0\230.\250> \3620\23=\v\324\354\n\0\304\354\16\0\324\354\10\0\250\335\\\35\0\355\304\354\f\0\313\0\360\334\10\324\360\354\10\342\340\4\250\35\324-\2\0\250>\0003\20D\0\23\20$\334\2\250\21\360\374\6\377\16\0\270\37\250\37|\201\270\37\230\375\250\35\10\362\30\20\250\336\340\16\0\335\20\356\0\375\20\36\334\1\250\337\304\334\f\0\313\0\324\374\16\0\\\217\6\377\372\0\360\334\6\375\10\0\360\354\10\342\340\4\250\35\324-\2\0\250>\0003\20D\0\23\20$\334\2\270\361\324\374"..., 16776) = 16776
+     8.039504 select(7, [6], NULL, NULL, {10, 0}) = 1 (in [6], left {9, 179192})
+     0.824531 read(6, "B", 1)           = 1
+     0.003938 close(7)                  = 0
+     0.002278 close(6)                  = 0
+     0.004246 open("/dev/kbus0", O_RDWR) = 6
+     0.003631 ioctl(6, _IOC(_IOC_WRITE, 0x4b, 0x03, 0x08), 0xbe923b00) = 0
+     0.002062 write(6, "\1\0\0\0", 4)   = 0
+     0.005231 ioctl(6, _IOC(_IOC_WRITE, 0x4b, 0x02, 0x1c), 0xbe9238dc) = -1 EBUSY (Device or resource busy)
+     0.004339 write(6, "\0\0\0\0", 4)   = 0
+     0.004308 close(6)                  = 0
+     0.003846 gettimeofday({1335732199, 712336}, NULL) = 0
+     0.003016 send(3, "<12>Apr 29 22:43:19 kbus: [FAIL] RAIL_info_init: SCPU_Command 4 -> error 1.\n\0", 77, MSG_NOSIGNAL) = 77
+     0.007939 brk(0x7d9000)             = 0x7d9000
+     0.004677 mmap2(NULL, 577536, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb6872000
+     0.005816 mmap2(NULL, 577536, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb67e5000
+     0.006647 mmap2(NULL, 217088, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb67b0000
+     0.003816 futex(0xb6f72a24, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+     0.003815 open("/dev/kbus0", O_RDWR) = 6
+     0.003878 ioctl(6, _IOC(_IOC_WRITE, 0x4b, 0x03, 0x08), 0xbe923b30) = 0
+     0.003292 write(6, "\1\0\0\0", 4)   = 0
+     0.005601 mmap2(NULL, 65536, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0) = 0xb67a0000
+     0.003169 mprotect(0xb67a0000, 4096, PROT_NONE) = 0
+     0.005293 clone(child_stack=0xb67aefa8, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID, parent_tidptr=0xb67af4d8, tls=0xb67af930, child_tidptr=0xb67af4d8) = 1215
+     0.004985 open("/proc/self/task/1215/comm", O_RDWR) = 7
+     0.005108 write(7, "KBUS dbus", 9)  = 9
+     0.002554 close(7)                  = 0
+     0.003324 futex(0x79c578, FUTEX_WAIT_PRIVATE, 0, NULL) = 0
+     0.003477 futex(0x79c57c, FUTEX_WAIT_PRIVATE, 2, NULL) = 0
+     0.003016 futex(0xb6f729f0, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+     0.005016 gettimeofday({1335732200, 88429}, NULL) = 0
+     0.004154 sendmsg(4, {msg_name(0)=NULL, msg_iov(2)=[{"l\4\1\1\30\0\0\0\4\0\0\0Z\0\0\0\1\1o\0\21\0\0\0/wago/diagnose/ID\0\0\0\0\0\0\0\2\1s\0\r\0\0\0wago.diagnose\0\0\0\3\1s\0\n\0\0\0ID2FFF0011\0\0\0\0\0\0\10\1g\0\4iisb\0\0\0\0\0\0\0", 112}, {"\350\247\235OmY\1\0\4\0\0\0kbus\0\0\0\0\1\0\0\0", 24}], msg_controllen=0, msg_flags=0}, MSG_NOSIGNAL) = 136
+     0.016678 gettimeofday({1335732200, 109231}, NULL) = 0
+     0.004185 sendmsg(4, {msg_name(0)=NULL, msg_iov(2)=[{"l\4\1\1\30\0\0\0\5\0\0\0Z\0\0\0\1\1o\0\21\0\0\0/wago/diagnose/ID\0\0\0\0\0\0\0\2\1s\0\r\0\0\0wago.diagnose\0\0\0\3\1s\0\n\0\0\0ID2FFF0002\0\0\0\0\0\0\10\1g\0\4iisb\0\0\0\0\0\0\0", 112}, {"\350\247\235O\257\252\1\0\4\0\0\0kbus\0\0\0\0\1\0\0\0", 24}], msg_controllen=0, msg_flags=0}, MSG_NOSIGNAL) = 136
+     0.016063 gettimeofday({1335732200, 129417}, NULL) = 0
+     0.003570 send(3, "<14>Apr 29 22:43:20 kbus: [INFO] --- End of KBUS initialization. ---\n\0", 70, MSG_NOSIGNAL) = 70
+     0.010278 fstat64(1, {st_dev=makedev(0, 11), st_ino=3, st_mode=S_IFCHR|0620, st_nlink=1, st_uid=0, st_gid=112, st_blksize=1024, st_blocks=0, st_rdev=makedev(136, 0), st_atime=2012/04/29-22:42:55, st_mtime=2012/04/29-22:43:18, st_ctime=2012/04/29-03:12:30}) = 0
+     0.005046 mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb6f92000
+     0.002431 write(1, "Lib openend\n", 12) = 12
+     0.003785 clock_getres(CLOCK_MONOTONIC, {0, 1}) = 0
+     0.004924 write(1, "com Gen inited\n", 15) = 15
+     0.003046 ioctl(0, TCGETS, {c_iflags=0x2504, c_oflags=0x5, c_cflags=0xbf, c_lflags=0x8a3b, c_line=0, c_cc="\x03\x1c\x08\x15\x04\x00\x01\x00\x11\x13\x1a\x00\x12\x0f\x17\x16\x00\x00\x00"}) = 0
+     0.004923 ioctl(0, SNDCTL_TMR_START or TCSETS, {c_iflags=0x2504, c_oflags=0x5, c_cflags=0xbf, c_lflags=0x8a39, c_line=0, c_cc[VMIN]=1, c_cc[VTIME]=0, c_cc="\x03\x1c\x08\x15\x04\x00\x01\x00\x11\x13\x1a\x00\x12\x0f\x17\x16\x00\x00\x00"}) = 0
+     0.004216 ioctl(0, FIONREAD, [0])   = 0
+     0.003170 clock_gettime(CLOCK_REALTIME, {1335732200, 174867815}) = 0
+     0.004523 ioctl(6, _IOC(_IOC_WRITE, 0x4b, 0x02, 0x1c), 0xbe9238b4) = -1 ETIMEDOUT (Connection timed out)
+     0.959465 clock_gettime(CLOCK_REALTIME, {1335732205, 178856194}) = 0
+     0.004124 nanosleep({0, 1000000}, NULL) = 0
+     0.004862 ioctl(0, FIONREAD, [0])   = 0
+     0.002738 clock_gettime(CLOCK_REALTIME, {1335732205, 190518709}) = 0
+     0.003447 ioctl(6, _IOC(_IOC_WRITE, 0x4b, 0x02, 0x1c), 0xbe92389c) = -1 ETIMEDOUT (Connection timed out)
+     0.918139 gettimeofday({1335732210, 188783}, NULL) = 0
+     0.003785 sendmsg(4, {msg_name(0)=NULL, msg_iov(2)=[{"l\4\1\1\30\0\0\0\6\0\0\0Z\0\0\0\1\1o\0\21\0\0\0/wago/diagnose/ID\0\0\0\0\0\0\0\2\1s\0\r\0\0\0wago.diagnose\0\0\0\3\1s\0\n\0\0\0ID2FFF0000\0\0\0\0\0\0\10\1g\0\4iisb\0\0\0\0\0\0\0", 112}, {"\362\247\235Oo\341\2\0\4\0\0\0kbus\0\0\0\0\0\0\0\0", 24}], msg_controllen=0, msg_flags=0}, MSG_NOSIGNAL) = 136
+     0.022001 gettimeofday({1335732210, 214570}, NULL) = 0
+     0.004985 sendmsg(4, {msg_name(0)=NULL, msg_iov(2)=[{"l\4\1\1\30\0\0\0\7\0\0\0Z\0\0\0\1\1o\0\21\0\0\0/wago/diagnose/ID\0\0\0\0\0\0\0\2\1s\0\r\0\0\0wago.diagnose\0\0\0\3\1s\0\n\0\0\0ID2FFF0003\0\0\0\0\0\0\10\1g\0\4iisb\0\0\0\0\0\0\0", 112}, {"\362\247\235O*F\3\0\4\0\0\0kbus\0\0\0\0\1\0\0\0", 24}], msg_controllen=0, msg_flags=0}, MSG_NOSIGNAL) = 136
+     0.033019 clock_gettime(CLOCK_REALTIME, {1335732210, 252573491}) = 0
+     0.009262 nanosleep({0, 1000000}, NULL) = 0
+     0.004585 ioctl(0, FIONREAD, [0])   = 0
+     0.006031 clock_gettime(CLOCK_REALTIME, {1335732210, 272421307}) = 0
+     0.007355 ioctl(6, _IOC(_IOC_WRITE, 0x4b, 0x02, 0x1c), 0xbe92389c) = -1 ETIMEDOUT (Connection timed out)
+     0.962727 clock_gettime(CLOCK_REALTIME, {1335732215, 279363780}) = 0
+     0.003015 nanosleep({0, 1000000}, NULL) = 0
+     0.005570 ioctl(0, FIONREAD, [0])   = 0
+     0.004370 clock_gettime(CLOCK_REALTIME, {1335732215, 292349483}) = 0
+     0.007323 ioctl(6, _IOC(_IOC_WRITE, 0x4b, 0x02, 0x1c), 0xbe92389c) = -1 ETIMEDOUT (Connection timed out)
+     0.950172 clock_gettime(CLOCK_REALTIME, {1335732220, 299876621}) = 0
+     0.004739 nanosleep({0, 1000000}, NULL) = 0
+     0.005877 ioctl(0, FIONREAD, [0])   = 0
+     0.002154 clock_gettime(CLOCK_REALTIME, {1335732220, 311539136}) = 0
+     0.002646 ioctl(6, _IOC(_IOC_WRITE, 0x4b, 0x02, 0x1c) <unfinished ...>
+     3.951747 +++ killed by SIGTERM +++

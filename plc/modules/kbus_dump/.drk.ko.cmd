@@ -1,0 +1,1 @@
+cmd_/windows/Users/Andrea/Desktop/MasterThesis/myshit/kbus_dump/drk.ko := arm-cortexa8-linux-gnueabihf-ld -EL -r  -T ./scripts/module-common.lds --build-id  -o /windows/Users/Andrea/Desktop/MasterThesis/myshit/kbus_dump/drk.ko /windows/Users/Andrea/Desktop/MasterThesis/myshit/kbus_dump/drk.o /windows/Users/Andrea/Desktop/MasterThesis/myshit/kbus_dump/drk.mod.o

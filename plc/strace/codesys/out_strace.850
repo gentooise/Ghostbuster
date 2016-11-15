@@ -1,0 +1,98 @@
+04:09:47.211215 set_robust_list(0xb5826220, 12) = 0
+04:09:47.212323 gettid()                = 850
+04:09:47.223185 sched_getparam(850, { 0 }) = 0
+04:09:47.223585 sched_getscheduler(850) = 0 (SCHED_OTHER)
+04:09:47.224508 open("/sys/fs/cgroup/rts/def//tasks", O_WRONLY|O_CREAT|O_TRUNC|O_CLOEXEC, 0666) = 13
+04:09:47.225185 fstat64(13, {st_dev=makedev(0, 21), st_ino=47, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2012/05/02-04:08:01, st_mtime=2012/05/02-04:09:47, st_ctime=2012/05/02-04:09:47}) = 0
+04:09:47.225955 mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb5e06000
+04:09:47.226508 write(13, "850", 3)     = 3
+04:09:47.226970 close(13)               = 0
+04:09:47.227339 munmap(0xb5e06000, 4096) = 0
+04:09:47.227801 open("/sys/fs/cgroup/rts/def//tasks", O_WRONLY|O_CREAT|O_TRUNC|O_CLOEXEC, 0666) = 13
+04:09:47.228386 fstat64(13, {st_dev=makedev(0, 21), st_ino=47, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2012/05/02-04:08:01, st_mtime=2012/05/02-04:09:47, st_ctime=2012/05/02-04:09:47}) = 0
+04:09:47.228847 mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb5e06000
+04:09:47.229278 write(13, "850", 3)     = 3
+04:09:47.229709 close(13)               = 0
+04:09:47.230047 munmap(0xb5e06000, 4096) = 0
+04:09:47.230570 prctl(PR_SET_NAME, "\x4d\x6f\x64\x62\x75\x73\x53\x6c\x61\x76\x65\x55\x44\x50\x00\x00") = 0
+04:09:47.231032 sched_setscheduler(850, SCHED_FIFO, { 42 }) = 0
+04:09:47.232201 open("/sys/fs/cgroup/rts/iec//tasks", O_WRONLY|O_CREAT|O_TRUNC|O_CLOEXEC, 0666) = 13
+04:09:47.232847 fstat64(13, {st_dev=makedev(0, 21), st_ino=36, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2012/05/02-04:08:01, st_mtime=2012/05/02-04:09:47, st_ctime=2012/05/02-04:09:47}) = 0
+04:09:47.234540 mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb5e06000
+04:09:47.245125 write(13, "850", 3)     = 3
+04:09:47.246818 close(13)               = 0
+04:09:47.263650 munmap(0xb5e06000, 4096) = 0
+04:09:47.264173 open("/sys/fs/cgroup/rts/iec//tasks", O_WRONLY|O_CREAT|O_TRUNC|O_CLOEXEC, 0666) = 15
+04:09:47.287775 fstat64(15, {st_dev=makedev(0, 21), st_ino=36, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2012/05/02-04:08:01, st_mtime=2012/05/02-04:09:47, st_ctime=2012/05/02-04:09:47}) = 0
+04:09:48.178804 mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb5e06000
+04:09:48.180465 write(15, "850", 3)     = 3
+04:09:48.196620 close(15)               = 0
+04:09:48.201236 munmap(0xb5e06000, 4096) = 0
+04:09:48.201729 gettimeofday({1335924588, 201975}, NULL) = 0
+04:09:48.219484 sendmsg(4, {msg_name(0)=NULL, msg_iov(2)=[{"\x6c\x04\x01\x01\x1c\x00\x00\x00\x0f\x00\x00\x00\x5a\x00\x00\x00\x01\x01\x6f\x00\x11\x00\x00\x00\x2f\x77\x61\x67\x6f\x2f\x64\x69\x61\x67\x6e\x6f\x73\x65\x2f\x49\x44\x00\x00\x00\x00\x00\x00\x00\x02\x01\x73\x00\x0d\x00\x00\x00\x77\x61\x67\x6f\x2e\x64\x69\x61\x67\x6e\x6f\x73\x65\x00\x00\x00\x03\x01\x73\x00\x0a\x00\x00\x00\x49\x44\x30\x30\x30\x39\x30\x30\x30\x35\x00\x00\x00\x00\x00\x00\x08\x01\x67\x00\x04\x69\x69\x73\x62\x00\x00\x00\x00\x00\x00\x00", 112}, {"\x6c\x97\xa0\x4f\xf7\x14\x03\x00\x08\x00\x00\x00\x43\x6f\x64\x65\x73\x79\x73\x33\x00\x00\x00\x00\x01\x00\x00\x00", 28}], msg_controllen=0, msg_flags=0}, MSG_NOSIGNAL) = 140
+04:09:48.246594 vfork()                 = 873
+04:09:49.707424 wait4(873, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 873
+04:09:49.709332 clock_gettime(CLOCK_REALTIME, {1335924589, 709455393}) = 0
+04:09:49.709824 socket(PF_INET, SOCK_DGRAM, IPPROTO_IP) = 15
+04:09:49.718594 setsockopt(15, SOL_IP, IP_TOS, [16], 4) = 0
+04:09:49.724225 setsockopt(15, SOL_IP, IP_MTU_DISCOVER, [0], 4) = 0
+04:09:49.724595 setsockopt(15, SOL_IP, IP_PKTINFO, [1], 4) = 0
+04:09:49.733334 bind(15, {sa_family=AF_INET, sin_port=htons(502), sin_addr=inet_addr("0.0.0.0")}, 16) = 0
+04:09:49.733857 setsockopt(15, SOL_IP, IP_TOS, [16], 4) = 0
+04:09:49.735734 setsockopt(15, SOL_IP, IP_MULTICAST_LOOP, "\x01", 1) = 0
+04:09:49.737334 setsockopt(15, SOL_IP, IP_MULTICAST_ALL, [0], 4) = 0
+04:09:49.737796 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:09:51.145360 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:09:52.147474 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:09:53.149405 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:09:54.171459 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:09:55.173451 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:09:56.175535 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:09:57.269288 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:09:58.271434 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:00.128481 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:01.139551 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:02.168683 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:03.233357 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:04.259474 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:05.261342 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:06.312599 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:07.376350 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:08.469611 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:09.481326 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:10.521506 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:11.550392 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:12.609373 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:13.711342 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:14.742506 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:15.763606 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:17.458425 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:18.461556 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:19.518567 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:20.539607 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:21.614373 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:23.554628 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:24.556528 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:25.574459 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:26.852812 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:27.940257 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:28.953388 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:30.003661 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:31.073289 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:32.115622 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:33.117552 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:34.131360 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:35.132152 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:36.138729 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:37.139520 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:38.140312 select(16, [15], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:39.141134 clock_gettime(CLOCK_REALTIME, {1335924639, 141257483}) = 0
+04:10:39.141688 sendto(7, "<135>codesys3: IoDrvModbusS DEBUG MbSlaveUdpMain: End UDP slave 1\n", 66, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(514), sin_addr=inet_addr("127.0.0.1")}, 16) = 66
+04:10:39.143565 close(15)               = 0
+04:10:39.144057 gettimeofday({1335924639, 144180}, NULL) = 0
+04:10:39.146519 sendmsg(4, {msg_name(0)=NULL, msg_iov(2)=[{"\x6c\x04\x01\x01\x1c\x00\x00\x00\x17\x00\x00\x00\x5a\x00\x00\x00\x01\x01\x6f\x00\x11\x00\x00\x00\x2f\x77\x61\x67\x6f\x2f\x64\x69\x61\x67\x6e\x6f\x73\x65\x2f\x49\x44\x00\x00\x00\x00\x00\x00\x00\x02\x01\x73\x00\x0d\x00\x00\x00\x77\x61\x67\x6f\x2e\x64\x69\x61\x67\x6e\x6f\x73\x65\x00\x00\x00\x03\x01\x73\x00\x0a\x00\x00\x00\x49\x44\x30\x30\x30\x39\x30\x30\x30\x37\x00\x00\x00\x00\x00\x00\x08\x01\x67\x00\x04\x69\x69\x73\x62\x00\x00\x00\x00\x00\x00\x00", 112}, {"\x9f\x97\xa0\x4f\x34\x33\x02\x00\x08\x00\x00\x00\x43\x6f\x64\x65\x73\x79\x73\x33\x00\x00\x00\x00\x01\x00\x00\x00", 28}], msg_controllen=0, msg_flags=0}, MSG_NOSIGNAL) = 140
+04:10:39.155043 vfork()                 = 952
+04:10:40.071489 wait4(952, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 952
+04:10:40.072166 madvise(0xb57e7000, 237568, MADV_DONTNEED) = 0
+04:10:40.072720 exit(0)                 = ?
+04:10:40.080166 +++ exited with 0 +++

@@ -1,0 +1,93 @@
+04:09:49.739211 set_robust_list(0xb5866220, 12) = 0
+04:09:49.747243 gettid()                = 849
+04:09:49.747612 sched_getparam(849, { 0 }) = 0
+04:09:49.752289 sched_getscheduler(849) = 0 (SCHED_OTHER)
+04:09:49.754474 open("/sys/fs/cgroup/rts/def//tasks", O_WRONLY|O_CREAT|O_TRUNC|O_CLOEXEC, 0666) = 17
+04:09:49.761798 fstat64(17, {st_dev=makedev(0, 21), st_ino=47, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2012/05/02-04:08:01, st_mtime=2012/05/02-04:09:49, st_ctime=2012/05/02-04:09:49}) = 0
+04:09:49.764383 mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb5e06000
+04:09:49.766383 write(17, "849", 3)     = 3
+04:09:49.770106 close(17)               = 0
+04:09:49.775584 munmap(0xb5e06000, 4096) = 0
+04:09:49.777368 open("/sys/fs/cgroup/rts/def//tasks", O_WRONLY|O_CREAT|O_TRUNC|O_CLOEXEC, 0666) = 17
+04:09:49.780292 fstat64(17, {st_dev=makedev(0, 21), st_ino=47, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2012/05/02-04:08:01, st_mtime=2012/05/02-04:09:49, st_ctime=2012/05/02-04:09:49}) = 0
+04:09:49.780907 mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb5e06000
+04:09:49.782538 write(17, "849", 3)     = 3
+04:09:49.790446 close(17)               = 0
+04:09:49.796324 munmap(0xb5e06000, 4096) = 0
+04:09:49.808509 prctl(PR_SET_NAME, "\x4d\x6f\x64\x62\x75\x73\x53\x6c\x61\x76\x65\x54\x43\x50\x00\x00") = 0
+04:09:49.811125 sched_setscheduler(849, SCHED_FIFO, { 42 }) = 0
+04:09:49.817710 open("/sys/fs/cgroup/rts/iec//tasks", O_WRONLY|O_CREAT|O_TRUNC|O_CLOEXEC, 0666) = 17
+04:09:49.819587 fstat64(17, {st_dev=makedev(0, 21), st_ino=36, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2012/05/02-04:08:01, st_mtime=2012/05/02-04:09:49, st_ctime=2012/05/02-04:09:49}) = 0
+04:09:49.825557 mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb5e06000
+04:09:49.836419 write(17, "849", 3)     = 3
+04:09:49.840112 close(17)               = 0
+04:09:49.840481 munmap(0xb5e06000, 4096) = 0
+04:09:49.846328 open("/sys/fs/cgroup/rts/iec//tasks", O_WRONLY|O_CREAT|O_TRUNC|O_CLOEXEC, 0666) = 17
+04:09:49.848205 fstat64(17, {st_dev=makedev(0, 21), st_ino=36, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2012/05/02-04:08:01, st_mtime=2012/05/02-04:09:49, st_ctime=2012/05/02-04:09:49}) = 0
+04:09:49.848667 mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb5e06000
+04:09:49.850328 write(17, "849", 3)     = 3
+04:09:49.850851 close(17)               = 0
+04:09:49.852328 munmap(0xb5e06000, 4096) = 0
+04:09:49.860237 gettimeofday({1335924589, 860329}, NULL) = 0
+04:09:49.862329 sendmsg(4, {msg_name(0)=NULL, msg_iov(2)=[{"\x6c\x04\x01\x01\x1c\x00\x00\x00\x10\x00\x00\x00\x5a\x00\x00\x00\x01\x01\x6f\x00\x11\x00\x00\x00\x2f\x77\x61\x67\x6f\x2f\x64\x69\x61\x67\x6e\x6f\x73\x65\x2f\x49\x44\x00\x00\x00\x00\x00\x00\x00\x02\x01\x73\x00\x0d\x00\x00\x00\x77\x61\x67\x6f\x2e\x64\x69\x61\x67\x6e\x6f\x73\x65\x00\x00\x00\x03\x01\x73\x00\x0a\x00\x00\x00\x49\x44\x30\x30\x30\x39\x30\x30\x30\x32\x00\x00\x00\x00\x00\x00\x08\x01\x67\x00\x04\x69\x69\x73\x62\x00\x00\x00\x00\x00\x00\x00", 112}, {"\x6d\x97\xa0\x4f\xa9\x20\x0d\x00\x08\x00\x00\x00\x43\x6f\x64\x65\x73\x79\x73\x33\x00\x00\x00\x00\x01\x00\x00\x00", 28}], msg_controllen=0, msg_flags=0}, MSG_NOSIGNAL) = 140
+04:09:49.876854 vfork()                 = 878
+04:09:51.147545 wait4(878, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 878
+04:09:51.160099 clock_gettime(CLOCK_REALTIME, {1335924591, 160192295}) = 0
+04:09:51.160500 socket(PF_INET, SOCK_STREAM, IPPROTO_TCP) = 17
+04:09:51.171454 setsockopt(17, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
+04:09:51.174101 bind(17, {sa_family=AF_INET, sin_port=htons(502), sin_addr=inet_addr("0.0.0.0")}, 16) = 0
+04:09:51.174531 listen(17, 1001)        = 0
+04:09:51.176409 setsockopt(17, SOL_IP, IP_TOS, [16], 4) = 0
+04:09:51.180101 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:09:52.189355 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:09:53.191562 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:09:54.193307 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:09:55.196653 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:09:56.199660 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:09:57.277135 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:09:58.281527 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:00.142636 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:01.144382 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:02.182100 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:03.364106 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:04.422103 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:05.479484 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:06.522432 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:07.585568 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:08.647380 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:09.690452 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:10.729493 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:11.800536 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:13.321802 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:14.490854 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:15.566544 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:17.486428 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:18.494328 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:19.548631 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:20.587457 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:21.639206 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:23.721350 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:24.744574 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:25.846636 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:26.919464 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:27.970137 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:28.982806 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:30.050219 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:31.076274 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:32.117376 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:33.137462 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:34.138192 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:35.138922 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:36.139682 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:37.140351 select(18, [17], NULL, NULL, {1, 0}) = 0 (Timeout)
+04:10:38.141019 clock_gettime(CLOCK_REALTIME, {1335924638, 141142941}) = 0
+04:10:38.141696 sendto(7, "<135>codesys3: IoDrvModbusS DEBUG MbSlaveTcpMain: End TCP slave 1\n", 66, MSG_NOSIGNAL, {sa_family=AF_INET, sin_port=htons(514), sin_addr=inet_addr("127.0.0.1")}, 16) = 66
+04:10:38.143543 shutdown(17, SHUT_RDWR) = 0
+04:10:38.143943 close(17)               = 0
+04:10:38.144404 gettimeofday({1335924638, 144497}, NULL) = 0
+04:10:38.145266 sendmsg(4, {msg_name(0)=NULL, msg_iov(2)=[{"\x6c\x04\x01\x01\x1c\x00\x00\x00\x16\x00\x00\x00\x5a\x00\x00\x00\x01\x01\x6f\x00\x11\x00\x00\x00\x2f\x77\x61\x67\x6f\x2f\x64\x69\x61\x67\x6e\x6f\x73\x65\x2f\x49\x44\x00\x00\x00\x00\x00\x00\x00\x02\x01\x73\x00\x0d\x00\x00\x00\x77\x61\x67\x6f\x2e\x64\x69\x61\x67\x6e\x6f\x73\x65\x00\x00\x00\x03\x01\x73\x00\x0a\x00\x00\x00\x49\x44\x30\x30\x30\x39\x30\x30\x30\x34\x00\x00\x00\x00\x00\x00\x08\x01\x67\x00\x04\x69\x69\x73\x62\x00\x00\x00\x00\x00\x00\x00", 112}, {"\x9e\x97\xa0\x4f\x71\x34\x02\x00\x08\x00\x00\x00\x43\x6f\x64\x65\x73\x79\x73\x33\x00\x00\x00\x00\x01\x00\x00\x00", 28}], msg_controllen=0, msg_flags=0}, MSG_NOSIGNAL) = 140
+04:10:38.154067 vfork()                 = 945
+04:10:39.050449 wait4(945, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 945
+04:10:39.051188 madvise(0xb5827000, 237568, MADV_DONTNEED) = 0
+04:10:39.051742 exit(0)                 = ?
+04:10:39.052634 +++ exited with 0 +++

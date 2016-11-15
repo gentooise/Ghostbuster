@@ -1,0 +1,16 @@
+04:09:46.265905 set_robust_list(0xb5e46220, 12) = 0
+04:09:46.266674 gettid()                = 844
+04:09:46.267751 open("/sys/fs/cgroup/rts/def//tasks", O_WRONLY|O_CREAT|O_TRUNC|O_CLOEXEC, 0666) = 13
+04:09:46.268490 fstat64(13, {st_dev=makedev(0, 21), st_ino=47, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2012/05/02-04:08:01, st_mtime=2012/05/02-04:09:46, st_ctime=2012/05/02-04:09:46}) = 0
+04:09:46.268982 mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb5e2b000
+04:09:46.269474 write(13, "844", 3)     = 3
+04:09:46.269905 close(13)               = 0
+04:09:46.270244 munmap(0xb5e2b000, 4096) = 0
+04:09:46.270736 open("/sys/fs/cgroup/rts/def//tasks", O_WRONLY|O_CREAT|O_TRUNC|O_CLOEXEC, 0666) = 13
+04:09:46.271290 fstat64(13, {st_dev=makedev(0, 21), st_ino=47, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2012/05/02-04:08:01, st_mtime=2012/05/02-04:09:46, st_ctime=2012/05/02-04:09:46}) = 0
+04:09:46.271752 mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb5e2b000
+04:09:46.276644 write(13, "844", 3)     = 3
+04:09:46.277198 close(13)               = 0
+04:09:46.277567 munmap(0xb5e2b000, 4096) = 0
+04:09:46.278152 poll([{fd=12, events=POLLIN}], 1, -1 <unfinished ...>
+04:10:40.176021 +++ exited with 0 +++

@@ -1,0 +1,1 @@
+cmd_/windows/Users/Andrea/Desktop/MasterThesis/myshit/spi_kprobe/drk.ko := arm-cortexa8-linux-gnueabihf-ld -EL -r  -T ./scripts/module-common.lds --build-id  -o /windows/Users/Andrea/Desktop/MasterThesis/myshit/spi_kprobe/drk.ko /windows/Users/Andrea/Desktop/MasterThesis/myshit/spi_kprobe/drk.o /windows/Users/Andrea/Desktop/MasterThesis/myshit/spi_kprobe/drk.mod.o
