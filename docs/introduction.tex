@@ -3,29 +3,77 @@
 
 Embedded systems are widely used today in various applications, from cars, cell phones, home automation, to critical infrastructures
 like power plants and power grids, water, gas or electricity distribution systems and production systems for food and other products.
-Within the context of an Industrial Control System (ICS), they are better known as PLCs (Programmable Logic Controllers).
 
-Since they were almost isolated from the network, embedded systems have not been built with security in mind.
+Since they were almost isolated from the network, embedded systems have not been designed and built with security concepts in mind.
 However, many recent cyber-attacks demonstrated that such an assumption is no more valid, and the security of embedded systems became an open question to deal with.
 
-Unfortunately, this could be a more difficult long-term problem with respect to security for desktop and enterprise computing,
-both for the limited capabilities of these systems and for the physical side effects a security breach may lead to, including property damage, personal injury, death and
-even environmental or nuclear disaster.
+Unfortunately, this could be a more challenging problem with respect to security for desktop and enterprise computing, for the following reasons:
+\begin{itemize}[itemsep=2pt,topsep=0pt]
+	\item the limited capabilities and the strict timing requirements these systems have;
+	\item the physical side effects a security breach may lead to, \eg property damage, personal injury, death and even environmental or nuclear disaster.
+\end{itemize}
+
+In the next sections we first describe a particular type of embedded systems, then present the problem on which the rest of the paper is focused
+and clarify the goal of this thesis.
+
+
+\section{Programmable Logic Controllers}
+
+Within the context of an Industrial Control System (ICS), embedded systems are better known as Programmable Logic Controllers (PLCs).
+PLCs are special-purpose embedded systems, usually deployed into harsh environments to control critical processes,
+\eg automotive systems, assembly lines, robotic devices or any industrial machine that requires high control precision and reliability.
+
+A simplified version of the environment in which a PLC may operate is outlined in Fig. \ref{fig:plc_env}.
+\begin{figure}[h]
+\centerline{\includegraphics[width=0.6\textwidth]{res/plc_env}}
+\caption{PLC environment\label{fig:plc_env}}
+\end{figure}
+
+The PLC interacts with the physical world through external components called \emph{sensors} and \emph{actuators}.
+The sensors are responsible for reporting measurements about a set of properties of the physical process,
+while the actuators, as the name suggests, acts on the process modifying its current state.
+
+The main task of the PLC is contained into the control program (the \emph{logic}) which is programmed and loaded by the industrial operator or supervisor.
+The logic is executed repeatedly as long as the controlled system is running. Each single execution is known as \emph{scan cycle}.
+For each scan cycle, the PLC reads the current state of the physical process measured by sensors.
+Internally, the logic takes these values as input and performs some calculations based on the loaded control algorithm.
+The output of the logic is then sent to the actuators, thus modifying the state of the controlled process.
+
+The PLC main scan cycle is shown in Fig. \ref{fig:scan_cycle}.
+\begin{figure}[h]
+\centerline{\includegraphics[width=0.4\textwidth]{res/scan_cycle}}
+\caption{PLC logic main scan cycle\label{fig:scan_cycle}}
+\end{figure}
+
+Based on the nature of the controlled process, the logic must satisfy different safety and timing properties.
+Furthermore, the majority of the PLCs are provided with a real-time operating system, in order to guarantee that the strict timing requirements are always respected.
+A violation of these requirements may lead to an unsafe behaviour of the physical process, and the consequences are heavily related to the nature of the process under control.
 
 
 \section{Problem statement}
 
-The PLCs control the outside world via their I/O interfaces: therefore, they must be both reliable and secure.
-Digging into their architecture, we know that the I/O interfaces of PLCs (e.g. GPIO, SCI, JTAG, etc.),
-are usually controlled by a so called System on a Chip (SoC), an integrated circuit that combines multiple I/O interfaces.
-In turn, the pins in a SoC are managed by a pin controller, a subsystem of SoC, through which one can configure the operating mode of the pins, such as the input or output mode.
-One of the most peculiar aspects of a pin controller is that its behaviour is determined by a set of registers: by altering these registers one can change the behaviour
-of the chip in a dramatic way. In \cite{ghostplc}, Abbasi et al. showed how this feature is exploitable by attackers, who can tamper with
-the integrity or the availability of legitimate I/O operations, factually changing how a PLC interacts with the outside world.
+From a computer engineering perspective, PLCs control the outside world via their Input/Output (I/O) interfaces. Therefore, it is crucial that they are both reliable and secure.
+Digging into their architecture, we know that PLCs are usually based on a so called System on Chip (SoC).
+A SoC is basically an integrated circuit made of microprocessor, memory and peripherals enclosed together in the same chip substrate,
+thus obtaining a fully capable computer with very small size and low power-consumption.
+An example of such a system is the Raspberry Pi shown in Fig. \ref{fig:raspberry}, based on a Broadcom System on Chip.
+\begin{figure}[h]
+\centerline{\includegraphics[width=0.58\textwidth]{res/raspberry}}
+\caption{Raspberry Pi with Broadcom System on Chip \cite{raspberry} \label{fig:raspberry}}
+\end{figure}
 
-Based on these observations, they introduced a novel attack technique against PLCs, called Pin Control Attack.
+A SoC comes with a set of I/O interfaces, called \emph{pins}, which are soldered to an external board and are used to communicate with the outside world.
+These pins are accessible through a specific memory region inside the chip, called I/O memory.
+In order to accommodate different potential implementations, each pin (or group of pins) of a SoC may have multiple configurations,
+depending on the board they are attached to.
+The configuration of the pins is managed by a pin controller, through which one can configure the operating mode of the pins, such as their input or output mode.
+One of the most peculiar aspects of a pin controller is that its behaviour is determined by a set of registers within the I/O memory:
+by altering these registers one can change the behaviour of the chip in a dramatic way.
+In \cite{ghostplc}, Abbasi et al. showed how this feature is exploitable by attackers, who can tamper with
+the integrity or the availability of legitimate I/O operations, factually changing how a PLC interacts with sensors and actuators.
+Based on these observations, they introduced a novel attack technique against PLCs, which they call Pin Control Attack (or I/O attack).
 The salient features of this new class of attacks are:
-\begin{enumerate}
+\begin{enumerate}[itemsep=2pt,topsep=0pt]
 	\item It is intrinsically stealth. The alteration of the pin configuration does not generate any interrupt, preventing the Operating System (OS) to react to it.
 	\item It is entirely different in execution from traditional techniques such as manipulation of kernel structures or system call hooking, which are typically
 		monitored by anti-rootkit protection systems.
@@ -33,44 +81,54 @@ The salient features of this new class of attacks are:
 \end{enumerate}
 
 To better understand a possible attack scenario, Fig. \ref{fig:control} shows a simplified control system.
-\begin{figure}[h]
+\begin{figure}[h!]
 \centerline{\includegraphics[width=0.6\textwidth]{res/control}}
 \caption{Simplified control system: a possible target of Pin Control Attack.\label{fig:control}}
 \end{figure}
+
 The system consists of a boiler equipped with a relief valve driven by the PLC according to the value provided by a temperature sensor.
-The PLC is connected to a SCADA server (Supervisory Control And Data Acquisition), which usually comes with a control software used to program the PLC itself
-and to monitor its current status from a terminal.
-Suppose that the PLC normally reads the values from the temperature sensor, and is programmed to open the relief valve if the temperature goes over $80^\circ C$.
-An attacker could simply tamper the temperature value read by the PLC, reconfiguring the pin related to the sensor as output and writing its own desired value
+The PLC is connected to a SCADA server (Supervisory Control And Data Acquisition) to keep trace of its operation.
+The server is accessible from a terminal, through which an operator can load the logic into the PLC and monitor its current state.
+
+Suppose that the PLC logic is programmed to read the values from the temperature sensor, and to open the relief valve if the temperature goes over $80^\circ C$.
+An attacker could tamper the temperature value read by the PLC, reconfiguring the pin related to the sensor as output and writing its own desired value
 (e.g. always $50^\circ C$) regardless of the actual temperature.
-Actually there is no detection mechanism able to react to this configuration change, neither in the PLC firmware nor in the control system.
-Moreover, the operator of the control system will not be able to see the real temperature from the terminal, but only the one forged by the attacker,
+Even simpler, one could reconfigure the pin connected to the valve (\eg setting it as input) factually disabling any eventual command to the actuator.
+
+Actually there is no detection mechanism able to react to these configuration changes, neither in the PLC firmware nor in the control system.
+Moreover, the operator of the control system will not be able to see the real temperature nor the actual valve state from the terminal,
 so it may likely not notice the intrusion at all.
 Such a condition may lead to an uncontrolled overheating, and if it is not detected in time it could even make the boiler to explode.
 
 
 \section{Aim of the thesis}
 
-To overcome this sophisticated attack, we propose a defensive mechanism to extend the existing Linux Kernel Pin Control Subsystem, frequently used in embedded systems,
-to be able to detect our novel attack. It is a challenging task for two reasons:
+The goal of this thesis is to design and develop a defensive mechanism against Pin Control Attack, extending the pin controller in order to be able to detect it.
+It is a challenging task for two reasons:
 \begin{enumerate}
-	\item The Pin Control lacks hardware interrupts, so it is not possible to directly react to any configuration change. More complex detection mechanisms are needed
+	\item The pin control mechanism lacks hardware interrupts, so it is not possible to directly react to any configuration change. More complex detection mechanisms are needed
 		in order to achieve the highest possible detection rate.
 	\item The resources available within an embedded system like a PLC are extremely limited. Therefore, our solution must be extremely agile and light
 		since the smallest delay in the PLC I/O operation may have unintended consequences for the controlled process.
 \end{enumerate}
 
-Purpose of this thesis is to provide first a description of Pin Control Attack, discussing preconditions and effects.
-Then, based on the obtained threat model, we want to describe and evaluate the design of a possible defense.
-Finally, we provide an implementation for Linux Kernel on an ARM-based Programmable Logic Controller.
+The work has been divided into three main steps.
+First, we analyse the threat model of Pin Control Attack and test it on an Embedded Linux ARM-based architecture.
+Second, based on the assumptions contained in the threat model, we describe and evaluate the design of our defense.
+Finally, we implement and validate the proposed architecture.
+
+The target of our implementation is a real-time version of the Linux kernel running on an ARM-based SoC,
+as this is one of the solutions actually used for embedded systems, in particular PLCs.
+In the context of the Linux kernel, the pin controller is known as Pin Control Subsystem \cite{pinctrl}.
 The implementation will be validated with respect to the following parameters: detection rate and performance overhead.
-An organisation of the thesis follows in the next section.
+
+A brief organisation of the rest of the thesis follows in the next section.
 
 
 \section{Organisation}
 
-In \chap \ref{chap:related} we list the known attacks to embedded systems existing in the literature, and then discuss the protection mechanisms currently available.
-As Pin Control Attack is a new kind of attack, to the best of our knowledge, at the time of writing, no one of the existing protections is able to prevent nor detect it.
+In \chap \ref{chap:related} we list the known attacks to embedded systems existing in the literature, and then discuss the off-the-shelf protection mechanisms.
+To the best of our knowledge at the time of writing, as Pin Control Attack is a new kind of attack, none of the existing protections is able to prevent nor detect it.
 In \chap \ref{chap:design} we present the architecture of our proposed Pin Control Protection, then we describe the implementation and provide developer and user manual for it.
 The \chap \ref{chap:results} provides the results obtained during the experiments, showing the detection rate and the performance overhead on a PLC environment.
 Finally, in \chap \ref{chap:conclusions} we analyse the shortcomings of our defense and the possible future works and improvements.

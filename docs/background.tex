@@ -7,7 +7,7 @@ Next, we analyse the defense mechanisms currently available in the literature, r
 
 \section{Attacks}
 
-In the past few years a lot of attacks targeted embedded systems: most notably the infamous Stuxnet \cite{stuxnet} targeting an Iranian nuclear facility in 2010.
+In the past few years we have seen several attacks targeting embedded systems: most notably the infamous Stuxnet \cite{stuxnet} targeting an Iranian nuclear facility in 2010.
 More recently Grandgenett et al. \cite{io-command} analysed the authentication protocol between the RSLogix 5000 software and the PLC, based on a simple challenge-response mechanism.
 Since the protocol lacks freshness in its messages, is vulnerable to replay attacks, through which an attacker could repeat privileged commands to the PLC.
 Furthermore, they found that both the decoding of the challenge and the encoding of the response use an RSA-2048 key which is hard-coded in the RSLogix software,
@@ -98,7 +98,7 @@ Similarly to what we did for attacks, we can divide host-based defenses into the
 
 In order to detect malicious modifications in the firmware of embedded systems, Wang et al. \cite{confirm} proposed ConFirm,
 a low-cost technique, embeddable into the bootloader, based on measuring the number of low-level hardware events that occur during the execution of the firmware.
-In order to count these events, ConFirm leverages a set of special-purpose registers, the Hardware Performance Counters (HPCs), which readily exist in many embedded processors.
+To count these events, ConFirm leverages a set of special-purpose registers, the Hardware Performance Counters (HPCs), which readily exist in many embedded processors.
 The approach is divided into two phases: offline profiling and online checking. The offline profiling is executed before the system is deployed,
 and consists of registering the HPC signatures of code paths from a clean copy of the targeted firmware. The signature database is then embedded into the bootloader
 together with the ConFirm payload executed in the second phase. During the online checking, the same monitored paths are measured and compared to the golden references.
