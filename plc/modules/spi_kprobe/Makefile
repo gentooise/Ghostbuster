@@ -6,8 +6,10 @@ default:
 	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
 
 clean:
-	rm drk.mod.c
-	rm *.ko
-	rm *.o
-	rm modules.order
-	rm Module.symvers
+	rm -f drk.mod.c
+	rm -f *.ko
+	rm -f *.o
+	rm -f .*cmd
+	rm -Rf .tmp_versions
+	rm -f modules.order
+	rm -f Module.symvers
