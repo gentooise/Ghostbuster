@@ -1,10 +1,9 @@
 obj-m:= drk.o
-KDIR := /lib/modules/$(shell uname -r)/build
+KDIR := ../../../linux_pi
 PWD := $(shell pwd)
 
 default:
-	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
+	$(MAKE) -C $(KDIR) M=$(PWD) modules
 
 clean:
-	rm *.ko
-	rm *.o
+	$(MAKE) -C $(KDIR) M=$(PWD) clean

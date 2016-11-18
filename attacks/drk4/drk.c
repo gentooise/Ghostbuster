@@ -37,7 +37,7 @@ MODULE_PARM_DESC(hijack, "Hijack the control"); // 1=Yes, 0=No
 
 static void dr_excp_handler(struct perf_event *bp, struct perf_sample_data *data, struct pt_regs *regs) {
 
-	int g = 2; // Pin 2 attached to Adafruit PWM controller
+	int g = 2; // Pin 2 (controlled by I2C) attached to Adafruit PWM controller 
 	if (hijack == 1) {
 		INP_GPIO(g); // Set PWM pin as input, so the logic could not write anymore
 	}

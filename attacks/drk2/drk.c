@@ -54,7 +54,10 @@ int blink_func(void* data) {
 		if (kthread_should_stop()) do_exit(0);
 		GPIO_SET = 1 << g; // Switch on the LED
 	}
-	do_exit(0);
+	
+	while (!kthread_should_stop()) msleep(50);
+
+	return 0;
 }
 
 static void dr_excp_handler(struct perf_event *bp,
