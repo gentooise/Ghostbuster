@@ -1,7 +1,7 @@
 Exercise 4: Pin Control Attack implementation with LKM.
 -------------------------------------------------------
 
-Method: Debug registers.
+Method: Debug registers and Pin Configuration.
 Effect: PWM disabling.
 
 Target system: RaspberryPi with Adafruit PWM controller connected via I2C interface.

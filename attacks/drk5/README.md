@@ -4,7 +4,7 @@ Exercise 5: Pin Control Attack implementation with LKM.
 **NOT WORKING**: Needs investigations to figure out why, maybe some problem at hardware level to be fixed.
 See: https://learn.sparkfun.com/tutorials/i2c/i2c-at-the-hardware-level.
 
-Method: Debug registers, I2C bitbang.
+Method: Debug registers, Pin Multiplexing with I2C bitbang.
 Effect: PWM tampering.
 
 Target system: RaspberryPi with Adafruit PWM controller connected via I2C interface.

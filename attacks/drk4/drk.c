@@ -17,7 +17,7 @@ static char* gpioB = "0x00";
 int tCount = 0;
 static struct perf_event* pThread[20];
 volatile unsigned* gpio = 0x00;
-struct perf_event* __percpu drpcpu;
+struct perf_event* drpcpu;
 
 module_param(ppid, int, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 MODULE_PARM_DESC(ppid, "Process PID");
@@ -40,65 +40,64 @@ static void dr_excp_handler(struct perf_event *bp, struct perf_sample_data *data
 	int g = 2; // Pin 2 (controlled by I2C) attached to Adafruit PWM controller 
 	if (hijack == 1) {
 		INP_GPIO(g); // Set PWM pin as input, so the logic could not write anymore
+		printk(KERN_INFO "[RK] Hijacked!\n");
 	}
 
 }
 
 static int __init hw_break_module_init(void) {
 	int ret;
-	long l;					// Casted char pointer received from module_param
-	char *endptr;				// End of casted char pointer
-	struct task_struct *tsk;		// Process tsk struct
-	struct task_struct *tTsk;		// Each thread tsk struct
+	long l;
+	char *endptr;
+	struct task_struct *tsk, *tTsk;
 	struct perf_event_attr attr;
 
-	printk(KERN_INFO "[DR] init\n");
+	printk(KERN_INFO "[RK] init\n");
 
 	l = simple_strtol(gpioB, &endptr, 0);
 	if (endptr == NULL) {
-		printk(KERN_INFO "[DR] Failed to cast input address!!");
-		return 0;
+		printk(KERN_INFO "[RK] Failed to cast input address\n");
+		return -EINVAL;
 	}
 
 	gpio = (unsigned *)l; // GPIO base
 	set_p = (l+(long)0x1C); // Offset of SET register
 
-	printk(KERN_INFO "[DR] Target process: %d\n", ppid);
-	printk(KERN_INFO "[DR] GPIO Base address: %x %s %lu\n", (unsigned)gpio, gpioB, l);
-	printk(KERN_INFO "[DR] GPIO SET Register: 0x%lx\n", set_p);
-	printk(KERN_INFO "[DR] Hijack: %d\n", hijack);
+	printk(KERN_INFO "[RK] Target process: %d\n", ppid);
+	printk(KERN_INFO "[RK] GPIO Base address: %x %s %lu\n", (unsigned)gpio, gpioB, l);
+	printk(KERN_INFO "[RK] GPIO SET Register: 0x%lx\n", set_p);
+	printk(KERN_INFO "[RK] Hijack: %d\n", hijack);
 
 	tsk = pid_task(find_vpid(ppid), PIDTYPE_PID);
 
 	tTsk = tsk;
 	if (tsk) {
-		printk(KERN_INFO "[DR] Userland process struct_tsk PID: %d\n", ppid);
+		printk(KERN_INFO "[RK] Userland process struct_tsk PID: %d\n", ppid);
 		do {
 			hw_breakpoint_init(&attr);
 			attr.bp_addr = set_p;
 			attr.bp_len = HW_BREAKPOINT_LEN_4;
-			attr.bp_type = HW_BREAKPOINT_RW;
+			attr.bp_type = HW_BREAKPOINT_W;
 
 			drpcpu = register_user_hw_breakpoint(&attr, dr_excp_handler, NULL, tTsk);
 			pThread[tCount] = drpcpu;
-			if (IS_ERR((void __force *)drpcpu)) {
-				ret = PTR_ERR((void __force *)drpcpu);
-				goto fail;
+			if (IS_ERR((void*)drpcpu)) {
+				ret = PTR_ERR((void*)drpcpu);
+				printk(KERN_INFO "[RK] Setting debug registers... failed %d\n", ret);
+				return ret;
 			}
 
-			printk(KERN_INFO "[DR_Thread] Setting DR registers... done\n");
+			printk(KERN_INFO "[RK] Setting debug registers... done\n");
 			tCount += 1;
 		} while_each_thread(tsk, tTsk);
-		printk(KERN_INFO "Thread count: %d\n", tCount);
+		printk(KERN_INFO "[RK] Thread count: %d\n", tCount);
 	} else {
-		printk(KERN_INFO "[DR_ERR]* Error pid_task failed!\n");
-		return 0;
+		ret = PTR_ERR((void*)tsk);
+		printk(KERN_INFO "[RK] Error pid_task failed %d\n", ret);
+		return ret;
 	}
-	return 0;
 
-fail:
-	printk(KERN_INFO "[DR_Thread] Setting DR registers... failed %d\n", ret);
-	return ret;
+	return 0;
 }
 
 static void __exit hw_break_module_exit(void) {
@@ -107,7 +106,7 @@ static void __exit hw_break_module_exit(void) {
 	for (i = 0; i < tCount; i++) {
 		unregister_hw_breakpoint(pThread[i]);
 	}
-	printk(KERN_INFO "[DR] exit\n");
+	printk(KERN_INFO "[RK] exit\n");
 
 }
 

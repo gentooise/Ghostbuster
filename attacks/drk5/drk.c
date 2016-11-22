@@ -19,8 +19,10 @@ static char* gpioB = "0x00";
 int tCount = 0;
 static struct perf_event* pThread[20];
 volatile unsigned* gpio = 0x00;
-struct perf_event* __percpu drpcpu;
+struct perf_event* drpcpu;
 struct task_struct* task = NULL;
+
+static void unregister_dr(void);
 
 module_param(ppid, int, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 MODULE_PARM_DESC(ppid, "Process PID");
@@ -100,7 +102,7 @@ int move_func(void* data) {
 
 	if (hijack == 1) {
 
-		printk(KERN_INFO "[DR] Set GPIO as output");
+		printk(KERN_INFO "[RK] Set GPIO as output");
 		// Set GPIO as output so we could write to it.
 		INP_GPIO(I2C_DATA);
 		INP_GPIO(I2C_CLK);
@@ -119,11 +121,11 @@ int move_func(void* data) {
 			Target: make the servo motor go crazy from -45° to +45°.
 			*/
 
-			printk(KERN_INFO "[DR] Start I2C transfer");
+			printk(KERN_INFO "[RK] Start I2C transfer");
 			i2c_start();
 			i2c_write(0xE0); // 11100000 <-- All Call slave address (request write to PWM controller)
 
-			printk(KERN_INFO "[DR] Set pulse start time to 0");
+			printk(KERN_INFO "[RK] Set pulse start time to 0");
 			// LED0_ON is the time when the pulse must start. Set time 0.  
 			// High part
 			i2c_write(0x07); // 00000111 <-- Set register address to LED0_ON_H
@@ -135,7 +137,7 @@ int move_func(void* data) {
 			// LED0_OFF is the time when the pulse must stop.
 			// Let's toggle it between 10% and 20% duty-cycle.
 			if (toggle) {
-				printk(KERN_INFO "[DR] Set pulse stop time to 10%%");
+				printk(KERN_INFO "[RK] Set pulse stop time to 10%%");
 				// Set time 199h for 10%.
 				// High part
 				i2c_write(0x09);
@@ -144,7 +146,7 @@ int move_func(void* data) {
 				i2c_write(0x08);
 				i2c_write(0x99);
 			} else {
-				printk(KERN_INFO "[DR] Set pulse stop time to 20%%");
+				printk(KERN_INFO "[RK] Set pulse stop time to 20%%");
 				// Or set time 332h for 20%.
 				// High part
 				i2c_write(0x09); // 00001001 <-- Set register address to LED0_OFF_H
@@ -161,7 +163,7 @@ int move_func(void* data) {
 			msleep(500);
 		}
 
-		printk(KERN_INFO "[DR] Reset GPIO to I2C alternate function");
+		printk(KERN_INFO "[RK] Reset GPIO to I2C alternate function");
 		// Reset GPIO to alternate function 0 (I2C).
 		INP_GPIO(I2C_DATA);
 		INP_GPIO(I2C_CLK);
@@ -179,7 +181,8 @@ static void dr_excp_handler(struct perf_event *bp, struct perf_sample_data *data
 		if (task == NULL) {
 			task = kthread_run(&move_func, NULL, "move");
 			if (IS_ERR((void*)task)) {
-				printk(KERN_INFO "[DR_Handler] Creating thread... failed %ld\n", PTR_ERR((void*)task));
+				printk(KERN_INFO "[RK] Creating thread... failed %ld\n", PTR_ERR((void*)task));
+				task = NULL;
 			}
 		}
 
@@ -187,33 +190,32 @@ static void dr_excp_handler(struct perf_event *bp, struct perf_sample_data *data
 
 static int __init hw_break_module_init(void) {
 	int ret;
-	long l;					// Casted char pointer received from module_param
-	char *endptr;				// End of casted char pointer
-	struct task_struct *tsk;		// Process tsk struct
-	struct task_struct *tTsk;		// Each thread tsk struct
+	long l;
+	char *endptr;
+	struct task_struct *tsk, *tTsk;
 	struct perf_event_attr attr;
 
-	printk(KERN_INFO "[DR] init\n");
+	printk(KERN_INFO "[RK] init\n");
 
 	l = simple_strtol(gpioB, &endptr, 0);
 	if (endptr == NULL) {
-		printk(KERN_INFO "[DR] Failed to cast input address!!");
+		printk(KERN_INFO "[RK] Failed to cast input address!!");
 		return 0;
 	}
 
 	gpio = (unsigned *)l; // GPIO base
 	set_p = (l+(long)0x1C); // Offset of SET register
 
-	printk(KERN_INFO "[DR] Target process: %d\n", ppid);
-	printk(KERN_INFO "[DR] GPIO Base address: %x %s %lu\n", (unsigned)gpio, gpioB, l);
-	printk(KERN_INFO "[DR] GPIO SET Register: 0x%lx\n", set_p);
-	printk(KERN_INFO "[DR] Hijack: %d\n", hijack);
+	printk(KERN_INFO "[RK] Target process: %d\n", ppid);
+	printk(KERN_INFO "[RK] GPIO Base address: %x %s %lu\n", (unsigned)gpio, gpioB, l);
+	printk(KERN_INFO "[RK] GPIO SET Register: 0x%lx\n", set_p);
+	printk(KERN_INFO "[RK] Hijack: %d\n", hijack);
 
 	tsk = pid_task(find_vpid(ppid), PIDTYPE_PID);
 
 	tTsk = tsk;
 	if (tsk) {
-		printk(KERN_INFO "[DR] Userland process struct_tsk PID: %d\n", ppid);
+		printk(KERN_INFO "[RK] Userland process struct_tsk PID: %d\n", ppid);
 		do {
 			hw_breakpoint_init(&attr);
 			attr.bp_addr = set_p;
@@ -222,35 +224,37 @@ static int __init hw_break_module_init(void) {
 
 			drpcpu = register_user_hw_breakpoint(&attr, dr_excp_handler, NULL, tTsk);
 			pThread[tCount] = drpcpu;
-			if (IS_ERR((void __force *)drpcpu)) {
-				ret = PTR_ERR((void __force *)drpcpu);
-				goto fail;
+			if (IS_ERR((void*)drpcpu)) {
+				ret = PTR_ERR((void*)drpcpu);
+				printk(KERN_INFO "[RK] Setting debug registers... failed %d\n", ret);
+				unregister_dr();
+				return ret;
 			}
 
-			printk(KERN_INFO "[DR_Thread] Setting DR registers... done\n");
+			printk(KERN_INFO "[RK] Setting debug registers... done\n");
 			tCount += 1;
 		} while_each_thread(tsk, tTsk);
-		printk(KERN_INFO "Thread count: %d\n", tCount);
+		printk(KERN_INFO "[RK] Thread count: %d\n", tCount);
 	} else {
-		printk(KERN_INFO "[DR_ERR]* Error pid_task failed!\n");
-		return 0;
+		ret = PTR_ERR((void*)tsk);
+		printk(KERN_INFO "[RK] Error pid_task failed %d\n", ret);
+		return ret;
 	}
-	return 0;
 
-fail:
-	printk(KERN_INFO "[DR_Thread] Setting DR registers... failed %d\n", ret);
-	return ret;
+	return 0;
 }
 
 static void __exit hw_break_module_exit(void) {
+	unregister_dr();
+	if (task != NULL) kthread_stop(task);
+	printk(KERN_INFO "[RK] exit\n");
+}
 
+static void unregister_dr(void) {
 	int i;
 	for (i = 0; i < tCount; i++) {
 		unregister_hw_breakpoint(pThread[i]);
 	}
-	kthread_stop(task);
-	printk(KERN_INFO "[DR] exit\n");
-
 }
 
 module_init(hw_break_module_init);
