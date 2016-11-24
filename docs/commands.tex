@@ -48,6 +48,13 @@
 %
 %\usepackage{placeins}
 %
+% For subfigure environment
+%
+\usepackage{subcaption}
+\usepackage{cleveref}
+\captionsetup[subfigure]{subrefformat=simple,labelformat=simple}
+\renewcommand\thesubfigure{(\alph{subfigure})}
+%
 % For Appendix section
 %
 %\usepackage[titletoc,toc,title]{appendix}
