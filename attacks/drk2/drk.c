@@ -20,8 +20,8 @@ static char* gpioB = "0x00";
 int tCount = 0;
 static struct perf_event* pThread[20];
 volatile unsigned* gpio = 0x00;
-struct perf_event* __percpu drpcpu;
-struct task_struct* task;
+struct perf_event* drpcpu;
+struct task_struct* task = NULL;
 
 module_param(ppid, int, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 MODULE_PARM_DESC(ppid, "Process PID");
@@ -50,10 +50,10 @@ int blink_func(void* data) {
 	repeat = 4000 / interval; // Codesys logic switches the led every 4 seconds
 	for (i = 0; i < repeat; i++) {
 		msleep(interval);
-		if (kthread_should_stop()) do_exit(0);
+		if (kthread_should_stop()) return 0;
 		GPIO_CLR = 1 << g; // Switch off the LED
 		msleep(interval);
-		if (kthread_should_stop()) do_exit(0);
+		if (kthread_should_stop()) return 0;
 		GPIO_SET = 1 << g; // Switch on the LED
 	}
 	
@@ -67,11 +67,12 @@ static void dr_excp_handler(struct perf_event *bp,
                                struct perf_sample_data *data,
                                struct pt_regs *regs) {
 
-	if (hijack == 1) {
+	if (hijack == 1 && task == NULL) {
 		// Async call to the blink function
 		task = kthread_run(&blink_func, NULL, "blink");
 		if (IS_ERR((void*)task)) {
-			printk(KERN_INFO "[DR_Handler] Creating thread... failed %ld\n", PTR_ERR((void*)task));
+			printk(KERN_INFO "[RK] Creating thread... failed %ld\n", PTR_ERR((void*)task));
+			task = NULL;
 		}
 	}
 
@@ -139,7 +140,7 @@ static void __exit hw_break_module_exit(void) {
 	for (i = 0; i < tCount; i++) {
                 unregister_hw_breakpoint(pThread[i]);
         }
-	kthread_stop(task);
+	if (task != NULL) kthread_stop(task);
         printk(KERN_INFO "[RK] exit\n");
 
 }
