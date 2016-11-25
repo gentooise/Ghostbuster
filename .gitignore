@@ -6,3 +6,9 @@
 *.xmpi
 *.out
 *.swp
+*.cmd
+*.tmp_versions
+*.mod.c
+*.symvers
+*.order
+plc/ptxproj/linux
