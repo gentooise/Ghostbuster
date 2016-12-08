@@ -3,7 +3,7 @@
 
 // Need further analysis to find a proper value.
 // It strongly depends on the target system.
-#define MONITOR_INTERVAL 100 // ms
+#define CONFIG_MONITOR_INTERVAL 100 // ms
 
 int start_config_monitor(void);
 

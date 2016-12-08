@@ -1,12 +1,13 @@
 obj-m += ghostbuster.o
-ghostbuster-objs := main.o config_monitor.o
+ghostbuster-objs := main.o config_monitor.o dr_monitor.o
+
+#DEBUG=y
 
 ccflags-y := -I$(src)/inc/
-ccflags-y += -I$(src)/arch/$(ARCH)/
-ccflags-y += -DSOC_MODEL=$(SOC_MODEL)
-#ccflags-y += -DDEBUG
+ccflags-y += -I$(src)/arch/$(ARCH)/$(SOC_MODEL)
+ccflags-$(DEBUG) += -DDEBUG
 
-KDIR := ../../linux_pi
+KDIR := ../../linux
 PWD := $(shell pwd)
 
 default: check-model

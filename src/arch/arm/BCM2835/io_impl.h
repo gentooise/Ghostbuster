@@ -5,7 +5,7 @@
 
 /*
  *
- * Broadcom 2835 System-on-Chip used in first generation of Raspberry Pi board.
+ * Broadcom 2835 System-on-Chip used in the first generation of Raspberry Pi board.
  * https://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2835/README.md
  *
  * BCM2835 Datasheet: https://www.raspberrypi.org/wp-content/uploads/2012/02/BCM2835-ARM-Peripherals.pdf
@@ -71,7 +71,7 @@ static const io_conf_t phys_io_conf = {
 
 
 /*
- * Our target registers are all 32-bit wide, we can use u32 for every read/write.
+ * Our target platform has all 32-bit wide registers, we can use u32 for every read/write.
  */
 
 static inline void* read_values(volatile void** addrs, void* values) {
@@ -82,7 +82,7 @@ static inline void* read_values(volatile void** addrs, void* values) {
 	for (b = 0; b < io_conf->blocks; b++) { // For each block
 		// Read block and update offset
 		size = io_conf->sizes[b] / sizeof(u32); // Current block size
-		ioread32_rep(u32_addrs[b], u32_values + offset, size);
+		ioread32_rep((void*)u32_addrs[b], u32_values + offset, size);
 		offset += size;
 	}
 	
@@ -116,16 +116,14 @@ static inline void dump_values(volatile void** addrs) {
 
 #endif
 
-static inline int check_addrs_in_block(volatile void* block, const void* values, unsigned index) {
+static io_detect_t info; // Static detection information: detections are handled sequentially.
+static inline void check_addrs_in_block(volatile void* block, const void* values, unsigned index) {
 	u32* current_val = (u32*)block;
 	u32* trusted_val = (u32*)values;
 	u32* limit;
-	unsigned detect;
 	u32 value;
-	detect_info_t info;
-	info.type = CFG_DETECT;
 
-	for (	limit = current_val + (io_conf->sizes[index] / sizeof(u32)), detect = 0;
+	for (	limit = current_val + (io_conf->sizes[index] / sizeof(u32));
 		current_val < limit;
 		current_val++, trusted_val++	) {
 		
@@ -134,15 +132,12 @@ static inline int check_addrs_in_block(volatile void* block, const void* values,
 			info.target = (void*)current_val;
 			info.new_val = value;
 			info.old_val = *trusted_val;
-			handle_detection(&info);
-			detect++;
+			handle_io_detection(&info);
 		}
 	}
-
-	return detect;
 }
 
-static inline void restore_value(detect_info_t* info) {
+static inline void restore_value(io_detect_t* info) {
 	iowrite32(info->old_val, info->target);
 }
 
