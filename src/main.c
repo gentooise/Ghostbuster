@@ -7,11 +7,11 @@
 int __init init_module(void) {
 	int res;
 
-	res = start_io_monitor();
-	if (res) goto io_failed;
+	if ( (res = start_io_monitor()) )
+		goto io_failed;
 
-	res = start_dr_monitor();
-	if (res) goto dr_failed;
+	if ( (res = start_dr_monitor()) )
+		goto dr_failed;
 
 	printk(KERN_INFO "Ghostbuster started\n");
 	return 0;

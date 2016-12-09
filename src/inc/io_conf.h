@@ -25,15 +25,12 @@ typedef struct {
 extern void handle_io_detection(io_detect_t*);
 
 
+/************************ I/O monitor interface ************************/
+
 /*
  * The following interface should be implemented by the architecture specific header.
- *
  * To optimize the code, all the functions must be defined as static inline.
- */
-
-/********************************* I/O *********************************/
-
-/*
+ *
  * The system has access to I/O pins by using I/O memory.
  * Some address space in I/O memory is designated for configuration registers, used during I/O initialization process.
  * The number and the nature of these registers varies according to the specific architecture.
@@ -52,7 +49,7 @@ extern void handle_io_detection(io_detect_t*);
  * 	<physical_values>
  * };
  *
- * The structure will be then accessed through the following pointer, managed by the module.
+ * The structure will be then accessed through the following pointer, allocated and freed by the monitor.
  * The pointer can also be dereferenced and used from the implementation header, if preferred,
  * but the value of the pointer must not be modified.
  */
@@ -65,45 +62,39 @@ extern const io_conf_t* io_conf;
 #define IO_STATE_TOTAL_SIZE	__IO_STATE_TOTAL_SIZE
 
 /*
- * Getting values from I/O memory is architecture-dependent.
- * Thus, must be done by using read_values function below, which needs the virtual base address of each block.
- * The data should be saved into the contiguous memory region pointed by @values, having io_conf->size bytes,
- * and the same pointer must be returned by the function. The buffer is _already_ allocated and managed by the caller,
- * which consider it as an opaque pointer. Thus, every access to it is performed only by using the functions below.
+ * Get the current state from I/O memory pointed by the given set of virtual addresses and store it into the given pointer.
+ * @state is allocated and freed by the monitor, the implementation should just use it to store the data.
+ * The state should be saved contiguously in the memory region pointed by @state, having io_conf->size bytes.
  *
- * @addrs: set of virtual base addresses of I/O blocks
- *
- * Return: pointer to values read from the blocks
+ * @addrs: set of virtual base addresses of I/O blocks (their size is known for the implementation)
+ * @state: pointer to the I/O state data structure, _already_ allocated
  */
 static inline void get_io_state(volatile void** addrs, void* state);
 
 /*
- * The implementation should provide a way to iterate over the addresses of each I/O block
- * to compare the actual values in I/O memory with the trusted ones (in @values).
- * The interface allows the implementation to decide size and alignment of each I/O memory access
+ * Iterate over the addresses of each I/O block to compare the current state in I/O memory with the trusted one.
+ * This interface allows the implementation to decide size and alignment of each I/O memory access
  * as required by the specific architecture reference manual, thus optimizing the code.
  * Different I/O blocks may contain I/O registers with different sizes, requiring different access types.
- * Therefore, the implementation may need to know which is the specified block (@index).
- * @index also allows to get the size of the block, which doesn't need to be passed (io_conf->io_sizes[index]).
+ * The access type may vary according to which block is accessed; therefore, the implementation may need
+ * to know which is the specified block (@index). The @index also allows it to get the size of the block,
+ * which doesn't need to be passed as argument (io_conf->io_sizes[index]).
  * For each detected change the implementation should fill detect_info_t and notify handle_io_detection().
- * The information contained into detect_info_t must be enough to eventually restore the trusted value later.
+ * The information contained into detect_info_t must be enough to eventually restore the trusted state later.
  *
  * @block: the block base address (virtual)
- * @values: the trusted values base address related to this block
- * @index: the index of the block (position inside io_conf->addrs)
+ * @trusted_state: the trusted state base address, relative to this block
+ * @index: the index of the block, that is, the position inside io_conf->addrs
  */
 static inline void check_io_state(volatile void* block, const void* state, unsigned index);
 
 /*
- * Writing to I/O memory is also architecture-dependent.
- * The monitor may decide, based on its current policy, to restore values in I/O memory after a detected change.
- * Given a detect_info_t structure related to a particular I/O detection,
- * the implementation should provide a way to restore the I/O value to the trusted one.
+ * Restore the I/O memory to its trusted state.
  * detect_info_t contains an extra opaque pointer (@target_info) which can be managed (allocated and freed)
  * by the specific implementation, in order to apply the correct access type needed by the target address.
- * The target_info opaque pointer will not be used after a call to restore_value(), so it must be freed here.
+ * The target_info opaque pointer will not be used by the monitor after a call to restore_io_state(), so it must be freed here.
  *
- * @info: detection info pointer as filled by check_addrs_in_block
+ * @info: detection info pointer, as filled in by check_io_state()
  */
 static inline void restore_io_state(io_detect_t* info);
 
