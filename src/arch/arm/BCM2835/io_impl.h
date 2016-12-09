@@ -109,7 +109,7 @@ static inline void check_io_state(volatile void* block, const void* state, unsig
 	}
 }
 
-static inline void restore_io_state(io_detect_t* info) {
+static inline void __restore_io_state(io_detect_t* info) {
 	iowrite32(info->old_val, info->target);
 }
 

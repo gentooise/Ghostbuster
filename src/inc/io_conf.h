@@ -96,7 +96,13 @@ static inline void check_io_state(volatile void* block, const void* state, unsig
  *
  * @info: detection info pointer, as filled in by check_io_state()
  */
-static inline void restore_io_state(io_detect_t* info);
+static inline void __restore_io_state(io_detect_t* info);
+
+#ifdef IO_MONITOR_ACTIVE
+#define restore_io_state(x) 	__restore_io_state(x)
+#else
+#define restore_io_state(x) 	(void)0
+#endif
 
 
 /*

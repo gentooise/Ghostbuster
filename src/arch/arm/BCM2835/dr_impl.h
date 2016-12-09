@@ -179,7 +179,7 @@ static inline void check_dr_state(const void* trusted_state) {
 	}
 }
 
-static inline void restore_dr_state(dr_detect_t* info) {
+static inline void __restore_dr_state(dr_detect_t* info) {
 	u32* u32_state = (u32*)info->old_state;
 
 	if (info->index < bp_slots) { // Breakpoint
