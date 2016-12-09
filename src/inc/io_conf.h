@@ -44,7 +44,7 @@ extern void handle_io_detection(io_detect_t*);
  */
 
 /*
- * The implementation must define an io_conf_t object named phys_io_conf, setting all the necessary fields.
+ * The implementation must define an io_conf_t object named phys_io_conf, filling all the necessary fields.
  * The structure must be statically initialized and const, so it will be put in the read-only section by the compiler.
  *
  * Declaration example:
@@ -59,24 +59,23 @@ extern void handle_io_detection(io_detect_t*);
 extern const io_conf_t* io_conf;
 
 /*
+ * The implementation should define the size (in bytes) needed to store the entire I/O configuration memory.
+ * This size will be used by the monitor to allocate the necessary space.
+ */
+#define IO_STATE_TOTAL_SIZE	__IO_STATE_TOTAL_SIZE
+
+/*
  * Getting values from I/O memory is architecture-dependent.
  * Thus, must be done by using read_values function below, which needs the virtual base address of each block.
  * The data should be saved into the contiguous memory region pointed by @values, having io_conf->size bytes,
  * and the same pointer must be returned by the function. The buffer is _already_ allocated and managed by the caller,
  * which consider it as an opaque pointer. Thus, every access to it is performed only by using the functions below.
  *
- * To show the content of I/O memory (for debug purposes) the implementation could also provide dump_values,
- * having the same parameter but no return value. Only enabled by using DEBUG compiler flag.
- *
  * @addrs: set of virtual base addresses of I/O blocks
  *
  * Return: pointer to values read from the blocks
  */
-static inline void* read_values(volatile void** addrs, void* values);
-
-#ifdef DEBUG
-static inline void dump_values(volatile void** addrs);
-#endif
+static inline void get_io_state(volatile void** addrs, void* state);
 
 /*
  * The implementation should provide a way to iterate over the addresses of each I/O block
@@ -93,7 +92,7 @@ static inline void dump_values(volatile void** addrs);
  * @values: the trusted values base address related to this block
  * @index: the index of the block (position inside io_conf->addrs)
  */
-static inline void check_addrs_in_block(volatile void* block, const void* values, unsigned index);
+static inline void check_io_state(volatile void* block, const void* state, unsigned index);
 
 /*
  * Writing to I/O memory is also architecture-dependent.
@@ -106,7 +105,7 @@ static inline void check_addrs_in_block(volatile void* block, const void* values
  *
  * @info: detection info pointer as filled by check_addrs_in_block
  */
-static inline void restore_value(io_detect_t* info);
+static inline void restore_io_state(io_detect_t* info);
 
 
 /*

@@ -48,7 +48,8 @@
 #define PIN_2_3_SIZE  	4
 #define PIN_22_24_SIZE	4
 
-#define TOTAL_SIZE	8
+// Total size of I/O memory to monitor
+#define __IO_STATE_TOTAL_SIZE	8
 
 
 static const void* bcm2835_io_addrs[IO_BLOCKS] = {
@@ -66,7 +67,7 @@ static const io_conf_t phys_io_conf = {
 	.addrs = bcm2835_io_addrs,
 	.sizes = bcm2835_io_sizes,
 	.blocks = IO_BLOCKS,
-	.size = TOTAL_SIZE
+	.size = __IO_STATE_TOTAL_SIZE
 };
 
 
@@ -74,52 +75,23 @@ static const io_conf_t phys_io_conf = {
  * Our target platform has all 32-bit wide registers, we can use u32 for every read/write.
  */
 
-static inline void* read_values(volatile void** addrs, void* values) {
-	u32* u32_values = (u32*)values;
+static inline void get_io_state(volatile void** addrs, void* state) {
+	u32* u32_state = (u32*)state;
 	volatile u32** u32_addrs = (volatile u32**)addrs;
 	unsigned b, size, offset = 0;
 
 	for (b = 0; b < io_conf->blocks; b++) { // For each block
 		// Read block and update offset
 		size = io_conf->sizes[b] / sizeof(u32); // Current block size
-		ioread32_rep((void*)u32_addrs[b], u32_values + offset, size);
+		ioread32_rep((void*)u32_addrs[b], u32_state + offset, size);
 		offset += size;
 	}
-	
-	return values;
 }
-
-#ifdef DEBUG
-
-#define WORDS_PER_LINE 4
-
-static inline void dump_values(volatile void** addrs) {
-	volatile u32* current_val;
-	volatile u32* limit;
-	unsigned b, size;
-
-	printk(KERN_INFO "--- Dump of I/O configuration memory ---\n");
-	for (b = 0; b < io_conf->blocks; b++) { // For each block
-		size = io_conf->sizes[b] / sizeof(u32); // Current block size
-		current_val = addrs[b];
-		printk(KERN_INFO "Address 0x%08lx (%u bytes):", (long)current_val, io_conf->sizes[b]);
-		for (limit = current_val + size; current_val < limit; current_val++) {
-			if ((size - (limit - current_val)) % WORDS_PER_LINE == 0) {
-				printk(KERN_CONT "\n");
-				printk(KERN_INFO "\t");
-			}
-			printk(KERN_CONT "0x%08x ", ioread32(current_val));
-		}
-		printk(KERN_CONT "\n");
-	}
-}
-
-#endif
 
 static io_detect_t info; // Static detection information: detections are handled sequentially.
-static inline void check_addrs_in_block(volatile void* block, const void* values, unsigned index) {
+static inline void check_io_state(volatile void* block, const void* state, unsigned index) {
 	u32* current_val = (u32*)block;
-	u32* trusted_val = (u32*)values;
+	u32* trusted_val = (u32*)state;
 	u32* limit;
 	u32 value;
 
@@ -137,7 +109,7 @@ static inline void check_addrs_in_block(volatile void* block, const void* values
 	}
 }
 
-static inline void restore_value(io_detect_t* info) {
+static inline void restore_io_state(io_detect_t* info) {
 	iowrite32(info->old_val, info->target);
 }
 

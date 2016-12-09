@@ -1,14 +1,14 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 
-#include "config_monitor.h"
+#include "io_monitor.h"
 #include "dr_monitor.h"
 
 int __init init_module(void) {
 	int res;
 
-	res = start_config_monitor();
-	if (res) goto config_failed;
+	res = start_io_monitor();
+	if (res) goto io_failed;
 
 	res = start_dr_monitor();
 	if (res) goto dr_failed;
@@ -17,14 +17,14 @@ int __init init_module(void) {
 	return 0;
 
 dr_failed:
-	stop_config_monitor();
-config_failed:
+	stop_io_monitor();
+io_failed:
 	return res;
 }
 
 void __exit cleanup_module() {
 	stop_dr_monitor();
-	stop_config_monitor();
+	stop_io_monitor();
 	printk(KERN_INFO "Ghostbuster stopped\n");
 }
 

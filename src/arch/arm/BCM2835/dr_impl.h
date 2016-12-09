@@ -14,7 +14,6 @@
  *
  * BCM2835 is based on an ARMv6 architecture, containing an ARM1176JZF-S processor.
  * ARM1176JZF-S Technical Reference Manual: http://infocenter.arm.com/help/topic/com.arm.doc.ddi0301h/DDI0301H_arm1176jzfs_r0p7_trm.pdf
- *
  */
 
 /*
@@ -117,15 +116,15 @@ int (*get_dr_slots)(int);
 static inline unsigned count_drs(void) {
 	if (!get_dr_slots) {
 		get_dr_slots = (void*) kallsyms_lookup_name("hw_breakpoint_slots");
+		// TYPE_INST refers to breakpoints, TYPE_DATA refers to watchpoints
+		bp_slots = get_dr_slots(TYPE_INST);
+		wp_slots = get_dr_slots(TYPE_DATA);
+		dr_slots = bp_slots + wp_slots;
 	}
-	// TYPE_INST refers to breakpoints, TYPE_DATA refers to watchpoints
-	bp_slots = get_dr_slots(TYPE_INST);
-	wp_slots = get_dr_slots(TYPE_DATA);
-	dr_slots = bp_slots + wp_slots;
 	return dr_slots;
 }
 
-static inline void get_dr_state(volatile void* state) {
+static inline void get_dr_state(void* state) {
 	unsigned i;
 	u32* u32_state = (u32*)state;
 
@@ -142,34 +141,40 @@ static inline void get_dr_state(volatile void* state) {
 }
 
 // Static detection information: detections are handled sequentially.
-static dr_detect_t info;
-static inline void check_dr_state(volatile void* current_state, const void* trusted_state) {
+u32 new_state_buf[__DR_U32_STATE_SIZE];
+u32 old_state_buf[__DR_U32_STATE_SIZE];
+static dr_detect_t info = {
+	.new_state = (void*)new_state_buf,
+	.old_state = (void*)old_state_buf,
+	.index = 0 // Given at detection time
+};
+static inline void check_dr_state(const void* trusted_state) {
 	unsigned i;
-	u32* u32_c_state = (u32*)current_state;
+	u32 value = 0, cntrl = 0;
 	const u32* u32_t_state = (u32*)trusted_state;
 
 	for (i = 0; i < bp_slots;  i++) {
-		READ_WB_REG(ARM_OP2_BVR, i, *u32_c_state); // Read breakpoint value register
-		READ_WB_REG(ARM_OP2_BCR, i, *(u32_c_state+1)); // Read breakpoint control register
-		if (*u32_c_state != *u32_t_state || *(u32_c_state+1) != *(u32_t_state+1)) {
-			info.new_state = (void*)u32_c_state;
+		READ_WB_REG(ARM_OP2_BVR, i, value); // Read breakpoint value register
+		READ_WB_REG(ARM_OP2_BCR, i, cntrl); // Read breakpoint control register
+		if (value != *u32_t_state || cntrl != *(u32_t_state+1)) {
+			*(u32*)(info.new_state) = value;
+			*(u32*)(info.new_state + sizeof(u32)) = cntrl;
 			info.old_state = (void*)u32_t_state;
 			info.index = i;
 			handle_dr_detection(&info);
 		}
-		u32_c_state += __DR_U32_STATE_SIZE;
 		u32_t_state += __DR_U32_STATE_SIZE;
 	}
 	for (i = 0; i < wp_slots; i++) {
-		READ_WB_REG(ARM_OP2_WVR, i, *u32_c_state); // Read watchpoint value register
-		READ_WB_REG(ARM_OP2_WCR, i, *(u32_c_state+1)); // Read watchpoint control register
-		if (*u32_c_state != *u32_t_state || *(u32_c_state+1) != *(u32_t_state+1)) {
-			info.new_state = (void*)u32_c_state;
+		READ_WB_REG(ARM_OP2_WVR, i, value); // Read watchpoint value register
+		READ_WB_REG(ARM_OP2_WCR, i, cntrl); // Read watchpoint control register
+		if (value != *u32_t_state || cntrl != *(u32_t_state+1)) {
+			*(u32*)(info.new_state) = value;
+			*(u32*)(info.new_state + sizeof(u32)) = cntrl;
 			info.old_state = (void*)u32_t_state;
 			info.index = i + bp_slots;
 			handle_dr_detection(&info);
 		}
-		u32_c_state += __DR_U32_STATE_SIZE;
 		u32_t_state += __DR_U32_STATE_SIZE;
 	}
 }
