@@ -9,5 +9,5 @@ Implementation of Pin Control Protection as Loadable Kernel Module.
 The module is divided into the following parts:
 
 - [x] Configuration monitor
-- [ ] Debug registers monitor
+- [x] Debug registers monitor (partial)
 - [ ] Memory mapping monitor
