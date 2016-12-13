@@ -1,6 +1,7 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 
+#include "log.h"
 #include "io_monitor.h"
 #include "dr_monitor.h"
 
@@ -13,7 +14,7 @@ int __init init_module(void) {
 	if ( (res = start_dr_monitor()) )
 		goto dr_failed;
 
-	printk(KERN_INFO "Ghostbuster started\n");
+	log_info("Ghostbuster started\n");
 	return 0;
 
 dr_failed:
@@ -25,7 +26,7 @@ io_failed:
 void __exit cleanup_module() {
 	stop_dr_monitor();
 	stop_io_monitor();
-	printk(KERN_INFO "Ghostbuster stopped\n");
+	log_info("Ghostbuster stopped\n");
 }
 
 MODULE_LICENSE("GPL");

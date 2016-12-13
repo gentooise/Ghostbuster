@@ -32,7 +32,7 @@ int start_io_monitor() {
 	// Allocate space for trusted state
 	trusted_state = kmalloc(io_conf->size, GFP_KERNEL);
 	if (!trusted_state) {
-		printk(KERN_ERR "Unable to allocate kernel space for I/O configuration monitor\n");
+		log_err("Unable to allocate kernel space for I/O configuration monitor\n");
 		res = -ENOMEM;
 		goto trusted_failed;
 	}
@@ -43,12 +43,12 @@ int start_io_monitor() {
 	// Start monitor task
 	task = kthread_run(&monitor_loop, NULL, "io_monitor");
 	if (IS_ERR((void*)task)) {
-		printk(KERN_ERR "Unable to create thread: %ld\n", PTR_ERR((void*)task));
+		log_err("Unable to create thread: %ld\n", PTR_ERR((void*)task));
 		res = PTR_ERR((void*)task);
 		goto task_failed;
 	}
 
-	printk(KERN_INFO "I/O configuration monitor started\n");
+	log_info("I/O configuration monitor started\n");
 	return 0;
 
 task_failed:
@@ -77,7 +77,7 @@ static int monitor_loop(void* data) {
 }
 
 void handle_io_detection(io_detect_t* info) {
-	printk(KERN_INFO "Change detected on address 0x%08lx [old value = %ld, new value = %ld]\n",
+	log_info("Change detected on I/O address 0x%08lx [old value = %ld, new value = %ld]\n",
 		(long)info->target, info->old_val, info->new_val);
 	dump_io_state();
 	restore_io_state(info);
@@ -87,7 +87,7 @@ void stop_io_monitor(void) {
 	kthread_stop(task);
 	unmap_addrs(io_conf->blocks);
 	kfree(trusted_state);
-	printk(KERN_INFO "I/O configuration monitor stopped\n");
+	log_info("I/O configuration monitor stopped\n");
 }
 
 static int map_addrs() {
@@ -96,14 +96,14 @@ static int map_addrs() {
 
 	addrs = kmalloc(sizeof(void*) * io_conf->blocks, GFP_KERNEL);
 	if (!addrs) {
-		printk(KERN_ERR "Unable to allocate kernel space for I/O configuration monitor\n");
+		log_err("Unable to allocate kernel space for I/O configuration monitor\n");
 		return -ENOMEM;
 	}
 
 	for (i = 0; i < io_conf->blocks; i++) {
 		addrs[i] = ioremap((phys_addr_t)io_conf->addrs[i], io_conf->sizes[i]);
 		if (IS_ERR((void*)addrs[i])) {
-			printk(KERN_ERR "Unable to map I/O address %08lx\n", (long)io_conf->addrs[i]);
+			log_err("Unable to map I/O address %08lx\n", (long)io_conf->addrs[i]);
 			res = PTR_ERR((void*)addrs[i]);
 			goto iomap_failed;
 		}

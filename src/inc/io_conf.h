@@ -97,9 +97,16 @@ static inline void check_io_state(volatile void* block, const void* state, unsig
 static inline void __restore_io_state(io_detect_t* info);
 
 #ifdef IO_MONITOR_ACTIVE
-#define restore_io_state(x) 	__restore_io_state(x)
+
+#define restore_io_state(x)  	do {              \
+	__restore_io_state(x);                    \
+	log_info("I/O state restored\n"); \
+} while(0)
+
 #else
+
 #define restore_io_state(x) 	(void)0
+
 #endif
 
 

@@ -23,14 +23,14 @@ int start_dr_monitor(void) {
 	// Get number of available debug registers
 	dr_count = count_drs();
 	if (dr_count == 0) {
-		printk(KERN_INFO "Debug registers monitor not needed\n");
+		log_info("Debug registers monitor not needed\n");
 		return 0;
 	}
 	
 	// Allocate space for trusted state
 	trusted_state = kmalloc(DR_STATE_SIZE * dr_count, GFP_KERNEL);
 	if (!trusted_state) {
-		printk(KERN_ERR "Unable to allocate kernel space for debug registers monitor\n");
+		log_err("Unable to allocate kernel space for debug registers monitor\n");
 		res = -ENOMEM;
 		goto trusted_failed;
 	}
@@ -44,12 +44,12 @@ int start_dr_monitor(void) {
 	// Start monitor task
 	task = kthread_run(&monitor_loop, NULL, "dr_monitor");
 	if (IS_ERR((void*)task)) {
-		printk(KERN_ERR "Unable to create thread: %ld\n", PTR_ERR((void*)task));
+		log_err("Unable to create thread: %ld\n", PTR_ERR((void*)task));
 		res = PTR_ERR((void*)task);
 		goto task_failed;
 	}
 
-	printk(KERN_INFO "Debug registers monitor started\n");
+	log_info("Debug registers monitor started\n");
 	return 0;
 
 task_failed:
@@ -71,7 +71,7 @@ static int monitor_loop(void* data) {
 }
 
 void handle_dr_detection(dr_detect_t* info) {
-	printk(KERN_INFO "Change detected on DR#%u state\n", info->index);
+	log_info("Change detected on DR#%u state\n", info->index);
 	dump_dr_state();
 	restore_dr_state(info);
 }
@@ -103,6 +103,6 @@ void stop_dr_monitor(void) {
 		kthread_stop(task);
 		kfree((void*)trusted_state);
 		enable_user_dr_interface();
-		printk(KERN_INFO "Debug registers monitor stopped\n");
+		log_info("Debug registers monitor stopped\n");
 	}
 }

@@ -7,6 +7,8 @@
 
 #include <asm/patch.h>
 
+#include "log.h"
+
 /*
  * Broadcom 2835 System-on-Chip used in the first generation of Raspberry Pi board.
  * https://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2835/README.md
@@ -101,14 +103,14 @@
 	switch (I) {                                                              \
 		GEN_READ_WB_REG_CASES(OP2, VAL);                                  \
 	default:                                                                  \
-		printk(KERN_ERR "Debug register index out of range: %u\n", I);    \
+		log_err("Debug register index out of range: %u\n", I);    \
 	}
 
 #define WRITE_WB_REG(OP2, I, VAL)                                                 \
 	switch (I) {                                                              \
 		GEN_WRITE_WB_REG_CASES(OP2, VAL);                                 \
 	default:                                                                  \
-		printk(KERN_ERR "Debug register index out of range: %u\n", I);    \
+		log_err("Debug register index out of range: %u\n", I);    \
 	}
 
 // Debug register slots
