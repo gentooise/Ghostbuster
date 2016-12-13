@@ -80,9 +80,9 @@ static inline void get_io_state(volatile void** addrs, void* state) {
 	volatile u32** u32_addrs = (volatile u32**)addrs;
 	unsigned b, size, offset = 0;
 
-	for (b = 0; b < io_conf->blocks; b++) { // For each block
+	for (b = 0; b < phys_io_conf.blocks; b++) { // For each block
 		// Read block and update offset
-		size = io_conf->sizes[b] / sizeof(u32); // Current block size
+		size = phys_io_conf.sizes[b] / sizeof(u32); // Current block size, in u32 words
 		ioread32_rep((void*)u32_addrs[b], u32_state + offset, size);
 		offset += size;
 	}
@@ -95,7 +95,7 @@ static inline void check_io_state(volatile void* block, const void* state, unsig
 	u32* limit;
 	u32 value;
 
-	for (	limit = current_val + (io_conf->sizes[index] / sizeof(u32));
+	for (	limit = current_val + (phys_io_conf.sizes[index] / sizeof(u32));
 		current_val < limit;
 		current_val++, trusted_val++	) {
 		

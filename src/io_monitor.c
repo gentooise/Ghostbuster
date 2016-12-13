@@ -10,19 +10,20 @@
 #include "io_conf.h"
 #include "io_debug.h"
 
-// Take physical I/O configuration from architecture specific struct.
-const io_conf_t* io_conf = &phys_io_conf;
-
+static const io_conf_t* io_conf; // Physical I/O configuration
 static volatile void** addrs; // I/O virtual addresses
 static const void* trusted_state; // Trusted state in I/O memory
 static struct task_struct* task; // I/O monitor main task
 
+static int monitor_loop(void* data);
 static int map_addrs(void);
 static void unmap_addrs(int mapped);
-static int monitor_loop(void* data);
 
 int start_io_monitor() {
 	int res;
+
+	// Get model-specific physical I/O configuration
+	io_conf = PHYS_IO_CONF;
 
 	// Map I/O physical address to kernel virtual addresses
 	res = map_addrs();

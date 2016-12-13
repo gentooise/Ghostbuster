@@ -14,6 +14,8 @@ static const void* trusted_state; // Trusted debug registers state
 static struct task_struct* task; // DR monitor main task
 
 static int monitor_loop(void* data);
+static void disable_user_dr_interface(void);
+static void enable_user_dr_interface(void);
 
 int start_dr_monitor(void) {
 	int res;
@@ -32,6 +34,9 @@ int start_dr_monitor(void) {
 		res = -ENOMEM;
 		goto trusted_failed;
 	}
+
+	// Disable user DR interface
+	disable_user_dr_interface();
 
 	// Get DR trusted state
 	get_dr_state((void*)trusted_state);
@@ -71,10 +76,33 @@ void handle_dr_detection(dr_detect_t* info) {
 	restore_dr_state(info);
 }
 
+static char register_user_dr_old[REGISTER_USER_DR_SIZE];
+static char modify_user_dr_old[MODIFY_USER_DR_SIZE];
+static char unregister_dr_old[UNREGISTER_DR_SIZE];
+static void *register_user_hw_breakpoint, *modify_user_hw_breakpoint, *unregister_hw_breakpoint;
+
+#define toggle_user_dr_interface(x, y) do {                                                                                      \
+	patch_ktext(register_user_hw_breakpoint, register_user_dr_ ## x, (void*)register_user_dr_ ## y, REGISTER_USER_DR_SIZE);  \
+	patch_ktext(modify_user_hw_breakpoint, modify_user_dr_ ## x, (void*)modify_user_dr_ ## y, MODIFY_USER_DR_SIZE);          \
+	patch_ktext(unregister_hw_breakpoint, unregister_dr_ ## x, (void*)unregister_dr_ ## y, UNREGISTER_DR_SIZE);              \
+} while(0)
+
+static void disable_user_dr_interface(void) {
+	register_user_hw_breakpoint = (void*) kallsyms_lookup_name("register_user_hw_breakpoint");
+	modify_user_hw_breakpoint = (void*) kallsyms_lookup_name("modify_user_hw_breakpoint");
+	unregister_hw_breakpoint = (void*) kallsyms_lookup_name("unregister_hw_breakpoint");
+	toggle_user_dr_interface(new, old); // Patch kernel text with opcodes
+}
+
+static void enable_user_dr_interface(void) {
+	toggle_user_dr_interface(old, new); // Revert patches
+}
+
 void stop_dr_monitor(void) {
 	if (dr_count > 0) {
 		kthread_stop(task);
 		kfree((void*)trusted_state);
+		enable_user_dr_interface();
 		printk(KERN_INFO "Debug registers monitor stopped\n");
 	}
 }

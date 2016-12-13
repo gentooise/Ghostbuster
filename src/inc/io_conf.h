@@ -49,11 +49,9 @@ extern void handle_io_detection(io_detect_t*);
  * 	<physical_values>
  * };
  *
- * The structure will be then accessed through the following pointer, allocated and freed by the monitor.
- * The pointer can also be dereferenced and used from the implementation header, if preferred,
- * but the value of the pointer must not be modified.
+ * The structure will be then accessed by the monitor through the following macro.
  */
-extern const io_conf_t* io_conf;
+#define PHYS_IO_CONF	((const io_conf_t*)&phys_io_conf)
 
 /*
  * The implementation should define the size (in bytes) needed to store the entire I/O configuration memory.
