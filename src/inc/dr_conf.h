@@ -122,17 +122,22 @@ static inline void __restore_dr_state(dr_detect_t* info);
  * Implementation example:
  *
  * #define __REGISTER_USER_DR_SIZE	(x) // Here 'x' is the minimum number of bytes needed to disable the function.
+ * #define __MODIFY_USER_DR_SIZE  	(y) // Same
+ * #define __UNREGISTER_DR_SIZE   	(z) // Again
+ *
  * <type> __register_user_dr_new[__REGISTER_USER_DR_SIZE / sizeof(<type>)] = {
  * 	// opcodes here for register_user_hw_breakpoint
  * };
- * #define __MODIFY_USER_DR_SIZE  	(y)
+ * 
  * <type> __modify_user_dr_new[__MODIFY_USER_DR_SIZE / sizeof(<type>)] = {
  * 	// opcodes here for modify_user_hw_breakpoint
  * };
- * #define __UNREGISTER_DR_SIZE   	(z)
+ * 
  * <type> __unregister_dr_new[__UNREGISTER_DR_SIZE / sizeof(<type>)] = {
  * 	// opcodes here for unregister_hw_breakpoint
  * };
+ *
+ * Where <type> has the same size of an opcode, or any size preferred by the implementation.
  */
 
 /*

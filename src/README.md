@@ -9,7 +9,7 @@ Ghostbuster is an implementation of Pin Control Protection as a Loadable Kernel 
 The module is divided into the following parts:
 
 - [x] Configuration monitor
-- [x] Debug registers monitor (partial)
+- [x] Debug registers monitor
 - [ ] Memory mapping monitor
 
 Ghostbuster is designed to be highly configurable (see the [Makefile](Makefile)) and architecture-independent (see [arch/README.md](arch/README.md)).
