@@ -1,21 +1,23 @@
-\chapter{Pin Control Attack analysis}
-\label{chap:analysis}
+\chapter{Pin Control Attack}
+\label{chap:attack}
 
 Before describing Pin Control Attack, a deeper analysis of the architecture of the target system is needed.
 Note that, although this paper is focused on PLCs, the architecture described in the next section is still valid for almost any embedded system.
 After having a proper knowledge of the underlying architecture, we can go deep into the description of the attack.
-We consider the idea behind I/O attack, showing how it is able to evade the currently available detection mechanisms.
+We consider the idea behind the attack, showing how it is able to evade the currently available detection mechanisms.
 Next, we go further extending the applicability to a real Programmable Logic Controller, describing its architecture in more detail.
 Based on our architecture analysis and our tests, we can finally demonstrate that the attack is actually viable on real PLCs, even on a higher abstraction level.
 
 
 \section{Embedded architecture}
+\label{sec:embed_arch}
 
 As briefly reported into \chap \ref{chap:intro}, PLCs use I/O interfaces to communicate with sensors and actuators, and in general with any external device.
 Digging into their architecture, we know that PLCs are usually based on a so called System on Chip (SoC).
 A SoC is basically an integrated circuit made of a microprocessor, a memory block and a set of peripheral controllers all enclosed together in the same chip substrate.
 Thus, the SoC technology provides fully capable computers having both very small size and low power-consumption.
-A SoC usually comes with a set of I/O interfaces, called \emph{pins}. I/O pins are soldered to an external board to facilitate interconnection with external modules.
+A SoC usually comes with a set of connections, also known as \emph{pins}, usually soldered to a printed circuit board to facilitate interconnection with external modules.
+Many types of pins may be included in a SoC, having different purposes (power, clock, I/O, etc.).
 An example of such a system is the Raspberry Pi board shown in \myfig{\ref{fig:raspberry}}, based on a Broadcom System on Chip.
 \begin{figure}[h]
 \centerline{\includegraphics[width=0.56\textwidth]{res/raspberry}}
@@ -28,17 +30,17 @@ depending on the board they are attached to. The configuration of the pins is ma
 Through the pin controller, the system can configure the operating mode of the pins, such as their input or output mode.
 The features of a pin controller can be grouped into two main categories:
 \begin{itemize}
-	\item Pin configuration: allows the system to change some electrical properties of the pins (see \sec \ref{sec:iopins});
-	\item Pin multiplexing: each pin of the SoC may have many usage usages, also known as \emph{alternate functions}, depending on what is needed by the external board.
+	\item pin configuration: allows the system to change some electrical properties of the pins, such as direction, event detect, interrupt, etc.;
+	\item pin multiplexing: each pin of the SoC may have many usage usages, also known as \emph{alternate functions}, depending on what is needed by the external board.
 		The pin multiplexing feature enables the system to specify which type of function is needed on each pin.
 \end{itemize}
 As the I/O attack is a very low-level attack, it is necessary to dig further into the electrical world to know how these I/O interfaces work.
 
 
-\subsection{I/O pins}
+\subsection{SoC pins}
 \label{sec:iopins}
 
-I/O interfaces of a System on Chip provides a connection between internal modules and external electronic devices.
+I/O interfaces of a System on Chip provide a connection between internal modules and external electronic devices.
 As shown in \myfig{\ref{fig:chips}}, they are physically visible from the outside of the chip package,
 usually in the form of pins \subref{fig:pins} or soldering balls \subref{fig:balls}.
 
@@ -80,7 +82,7 @@ the circuit is divided into two different parts: one for output and one for inpu
 \begin{itemize}
 	\item \itemname{Output driver}:
 		The output module is basically a buffer controlled by an output enable signal.
-		This signal controls the input or output mode of the pin. If it is high, then the pin is in output mode
+		This signal controls the direction of the pin (input or output). If it is high, then the pin is in output mode
 		and the value coming from a write operation goes through the buffer to the actual pin.
 		If it is low, the pin is in input mode and the write signal is blocked, so it is not possible to change the external value of the pin from inside anymore.
 	\item \itemname{Input driver}:
@@ -99,7 +101,7 @@ For Pin Control Attack, what is more interesting about the circuit in \myfig{\re
 \end{itemize}
 
 Furthermore, it is also possible to drive the pull-up/down network, factually disturbing the real value of the I/O pin in an unpredictable way.
-In this case the effects strongly depends on the actual implementation of the circuit as well as on the capacitive load connected to the external I/O pin.
+In this case the effects strongly depends on the actual implementation of the printed circuit board as well as on the external components connected to the I/O pin.
 
 
 \subsubsection{Pin multiplexing}
@@ -132,6 +134,53 @@ For our purpose, at least two interesting properties can be inferred from pin mu
 \end{itemize}
 
 
-\section{Pin Control Attack}
+\section{Pin Control Attack analysis}
 
-TODO Continue with attack analysis and the rest of the chapter.
+Due to our previous discussion, we can argue that Pin Control Attack is actually applicable on any System on Chip having the
+architecture described in \sec \ref{sec:embed_arch}. However, PLCs represent a particularly interesting target among all the embedded systems
+based on SoC. PLCs leverage the interfaces of a SoC to interact with sensors and actuators, having direct effects on our physical world.
+Therefore, if the I/O of a PLC is compromised, this constitutes a much more significant security and safety risk with respect to other
+non-critical embedded system.
+
+As described in \cite{ghostplc}, Pin Control Attack is designed to evade off-the-shelf host-based detecion systems.
+Furthermore, differently from other attacks, its target is neither the firmware nor the logic of the PLC.
+The idea of Pin Control Attack is that the attacker can operate at the lowest level possible, targeting the interaction
+between the firmware and the PLC I/O, as shown in \myfig{\ref{fig:target}}. For this reason it is also known as I/O attack.
+Despite its crucial function in embedded systems, the I/O hardware architecture and the I/O drivers are basically designed
+without any concept of security, assuming that I/O is reliable. Unfortunately, given the properties inferred in \sec \ref{sec:embed_arch}
+from generic hardware architecture, this is often not the case.
+
+\begin{figure}[h]
+\centerline{\includegraphics[page=6,viewport=50 620 300 750,clip]{res/ghostplc}}
+\caption{Pin Control Attack target, from \cite{ghostplc} \label{fig:target}}
+\end{figure}
+
+In the following section we focus on the design of I/O attack. First, we summarise the host-based detection mechanisms taken into account
+during the attack design and the techniques used to evade them. Second, we analyse the attack itself in more detail.
+After the design part, we describe different implementations of the attack coming from our experiments,
+showing how the attack works in practice. The goal of this chapter is to help us having a better understanding of the attack,
+and to provide a detailed threat model on which our defense design will be based on.
+
+
+\subsection{Design}
+
+Based on what is available in literature, Pin Control Attack has been designed to be different from previous attack techniques and to
+circumvent the off-the-shelf host-based detection systems. The authors of I/O attack have identified two main defensive mechanisms whose properties
+makes them more easily applicable to PLCs. We briefly analyse these defenses and show how they can be circumvented by Pin Control Attack,
+and then we describe the Pin Control Attack technique. Our purpose here is to have basic definitions of the concepts used by the attack,
+see \cite{ghostplc} for a more detailed description.
+
+
+\subsubsection{Defense analysis}
+
+TODO Defense analysis
+
+
+\subsubsection{Attack technique}
+
+TODO Attack technique
+
+
+\subsection{Implementation}
+
+TODO Implementation.
