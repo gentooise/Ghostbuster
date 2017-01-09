@@ -8,7 +8,7 @@
  * DR debug subsystem.
  *
  * In order to simplify debug, this file provides macros to dump
- * the state of the resources monitored by DR monitor.
+ * the state of the resources monitored by the DR monitor.
  *
  * Since the number of DR registers is not known at compile time,
  * and to avoid the use of dynamic memory with kmalloc (which may fail),

@@ -98,9 +98,9 @@ static inline void __restore_io_state(io_detect_t* info);
 
 #ifdef IO_MONITOR_ACTIVE
 
-#define restore_io_state(x)  	do {              \
-	__restore_io_state(x);                    \
-	log_info("I/O state restored\n"); \
+#define restore_io_state(x)  	do {     	\
+	__restore_io_state(x);           	\
+	log_info("I/O state restored\n");	\
 } while(0)
 
 #else

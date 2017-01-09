@@ -23,14 +23,14 @@ int start_dr_monitor(void) {
 	// Get number of available debug registers
 	dr_count = count_drs();
 	if (dr_count == 0) {
-		log_info("Debug registers monitor not needed\n");
+		log_info("DR monitor not needed\n");
 		return 0;
 	}
 	
 	// Allocate space for trusted state
 	trusted_state = kmalloc(DR_STATE_SIZE * dr_count, GFP_KERNEL);
 	if (!trusted_state) {
-		log_err("Unable to allocate kernel space for debug registers monitor\n");
+		log_err("Unable to allocate kernel space for DR monitor\n");
 		res = -ENOMEM;
 		goto trusted_failed;
 	}
@@ -49,7 +49,7 @@ int start_dr_monitor(void) {
 		goto task_failed;
 	}
 
-	log_info("Debug registers monitor started\n");
+	log_info("DR monitor started\n");
 	return 0;
 
 task_failed:
@@ -103,6 +103,6 @@ void stop_dr_monitor(void) {
 		kthread_stop(task);
 		kfree((void*)trusted_state);
 		enable_user_dr_interface();
-		log_info("Debug registers monitor stopped\n");
+		log_info("DR monitor stopped\n");
 	}
 }

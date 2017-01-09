@@ -8,7 +8,7 @@
  * I/O debug subsystem.
  *
  * In order to simplify debug, this file provides macros to dump
- * the state of the resources monitored by I/O monitor.
+ * the state of the resources monitored by the I/O monitor.
  */
 
 #ifdef IO_DEBUG // I/O debug subsystem enabled

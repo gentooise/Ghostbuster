@@ -85,9 +85,9 @@ static inline void __restore_dr_state(dr_detect_t* info);
 
 #ifdef DR_MONITOR_ACTIVE
 
-#define restore_dr_state(x) 	do {              \
-	__restore_dr_state(x);                    \
-	log_info("DR state restored\n");  \
+#define restore_dr_state(x) 	do {    	\
+	__restore_dr_state(x);          	\
+	log_info("DR state restored\n");	\
 } while(0)
 
 #else

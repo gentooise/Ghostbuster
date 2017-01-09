@@ -32,7 +32,7 @@ int start_io_monitor() {
 	// Allocate space for trusted state
 	trusted_state = kmalloc(io_conf->size, GFP_KERNEL);
 	if (!trusted_state) {
-		log_err("Unable to allocate kernel space for I/O configuration monitor\n");
+		log_err("Unable to allocate kernel space for I/O monitor\n");
 		res = -ENOMEM;
 		goto trusted_failed;
 	}
@@ -48,7 +48,7 @@ int start_io_monitor() {
 		goto task_failed;
 	}
 
-	log_info("I/O configuration monitor started\n");
+	log_info("I/O monitor started\n");
 	return 0;
 
 task_failed:
@@ -87,7 +87,7 @@ void stop_io_monitor(void) {
 	kthread_stop(task);
 	unmap_addrs(io_conf->blocks);
 	kfree(trusted_state);
-	log_info("I/O configuration monitor stopped\n");
+	log_info("I/O monitor stopped\n");
 }
 
 static int map_addrs() {
@@ -96,7 +96,7 @@ static int map_addrs() {
 
 	addrs = kmalloc(sizeof(void*) * io_conf->blocks, GFP_KERNEL);
 	if (!addrs) {
-		log_err("Unable to allocate kernel space for I/O configuration monitor\n");
+		log_err("Unable to allocate kernel space for I/O monitor\n");
 		return -ENOMEM;
 	}
 
