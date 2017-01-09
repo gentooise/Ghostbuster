@@ -54,10 +54,12 @@ A violation of these requirements may lead to an unsafe behaviour of the physica
 
 From a computer engineering perspective, PLCs control the outside world via their Input/Output (I/O) interfaces, also known as \emph{pins}.
 Therefore, it is crucial that they are both reliable and secure. I/O pins are accessible through a specific memory region, called I/O memory.
-The I/O memory includes a set of registers through which the I/O can be configured.
+The I/O memory includes a set of registers through which the I/O can be configured. The I/O configuration (also called I/O initialisation) is typically performed at start-up time,
+according to the specific implementation. However, on almost every system it is possible to overwrite this configuration at run-time.
 
-The problem relies on the fact that there is neither any memory protection mechanism nor any hardware interrupt designed for restricting the access to these memory addresses.
-They can be easily written by a malicious application even while the system is running, actually changing the behaviour of the I/O in a dramatic way.
+The problem here relies on the fact that there is neither any memory protection mechanism nor any hardware interrupt designed for restricting the access to I/O memory addresses.
+They can be easily written by a malicious application even while the system is running, thus over-writing the hardware configuration.
+As a consequence, the behaviour of the I/O interface, hence the interaction with the physical process, may be altered in a dramatic way.
 In \cite{ghostplc}, Abbasi et al. showed how this feature is exploitable by attackers, who can tamper with
 the integrity or the availability of legitimate I/O operations, factually changing how a PLC interacts with sensors and actuators.
 Based on these observations, they introduced a novel attack technique against PLCs, which they call Pin Control Attack (also I/O attack).
@@ -80,8 +82,8 @@ The PLC is connected to a SCADA server (Supervisory Control And Data Acquisition
 The server is accessible from a terminal, through which an operator can load the logic into the PLC and monitor its current state.
 
 Suppose that the PLC logic is programmed to read the values from the temperature sensor, and to open the relief valve if the temperature goes over $80^\circ C$.
-An attacker could tamper the temperature value read by the PLC, reconfiguring the pin related to the sensor as output and writing its own desired value
-(e.g. always $50^\circ C$) regardless of the actual temperature.
+An attacker could tamper the temperature value read by the PLC, re-configuring the pin related to the sensor as output and writing its own desired value
+(\eg always $50^\circ C$) regardless of the actual temperature.
 Even simpler, one could reconfigure the pin connected to the valve (\eg setting it as input) factually disabling any eventual command to the actuator.
 
 Actually there is no detection mechanism able to react to these configuration changes, neither in the PLC firmware nor in the control system.

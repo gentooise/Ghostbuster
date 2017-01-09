@@ -4,6 +4,9 @@
 In this chapter we summarise the state of the art about security of embedded systems at the time of writing.
 First, we discuss about the attacks of the recent years, showing how the embedded systems security concerns are rising.
 Next, we analyse the defense mechanisms currently available in the literature, realising that they are still in a very early stage of their life.
+Finally, we consider the existing attacks and defenses which targets the hardware level as Pin Control Attack does,
+showing that they are currently not applicable to embedded systems.
+
 
 \section{Attacks}
 
@@ -59,7 +62,7 @@ to the existing logic code of the PLC. They developed a proof-of-concept tool ca
 
 \subsection{Control flow modification}
 
-Many recent advisories \cite{schneider-bof,rockwell-vuln,rockwell-vuln2,elcsoft-vuln} from ICS-CERT (Industrial Control System Cyber Emergency Response Team)
+Many recent advisories \cite{abb-codesys,codesys-server,schneider-bof,rockwell-vuln,rockwell-vuln2,elcsoft-vuln} from ICS-CERT (Industrial Control System Cyber Emergency Response Team)
 report about various programming vulnerabilities affecting both PLC firmwares and control softwares. Most of them allow remote code execution and could be exploited
 without requiring particularly high skills.
 The vulnerabilities discovered by Beresford \cite{siemens-s7} also allow the attacker to insert a payload into the logic and subvert the control flow to execute
@@ -115,12 +118,12 @@ on resource-constrained embedded devices without requiring CPU security extensio
 A trusted computing architecture can also enable attestation, through which a system, called verifier, can verify the integrity state of another system, called prover,
 which should provide a cryptographic proof of its integrity. Similar technologies could also be used to design a secure firmware upgrade mechanism.
 The PLC vendors need the possibility to provide firmware updates for their own devices, most likely when some vulnerabilities are discovered after release.
-Fuchs et al. \cite{tpm2} discussed the benefits of Trusted Computing Group’s Trusted Platform Module (TPM) 2.0 as a security-anchor for embedded systems,
+Fuchs et al. \cite{tpm2} discussed the benefits of Trusted Computing Group's Trusted Platform Module (TPM) 2.0 as a security-anchor for embedded systems,
 and proposed a proof-of-concept implementation of advanced remote firmware upgrade for embedded systems relying on the unique features of TPM 2.0.
 
 A different approach is proposed by Lee, B. \& Lee, J. \cite{blockchain}, which leverages blockchain technology to securely check firmware versions,
 validate the correctness of firmware, and download the latest firmware for the embedded devices.
-Even though their work is focused on embedded systems intensively inter-connected within an IoT environment, the increasing number of internet-facing controllers
+Even though their work is focused on intensively inter-connected embedded systems, such as in an IoT environment, the increasing number of internet-facing controllers
 let us suppose that may be worth investigating whether this technology could be applied to PLCs as well. 
 
 
@@ -137,8 +140,10 @@ and the hypervisor and the PLC can communicate through shared memory. Their appr
 Cui et al. \cite{symbiotes} proposed a host-based defense mechanism called Symbiotic Embedded Machines (SEM), designed for injecting
 intrusion detection functionalities into embedded system firmware code. The injected Symbiotes are basically code structures that will co-exist
 with the legacy firmware, sharing computational resources with it while protecting it against code modification.
-The SEM injection process is randomised, so that the payload is divided into slices at random locations, called control-flow intercepts,
-and are activated when the firmware execution reaches these points. In this way SEM executes itself alongside the original OS while remaining stealthy.
+The SEM injection process is randomised, so that the firmware payload is divided into slices at random locations, called control-flow intercepts.
+Each code slice has its own Symbiote, which is basically a checksum of the corresponding section.
+When an intercept is reached by the firmware execution, the control goes to the Symbiote Manager which verifies the current portion of the code against the stored checksum.
+In this way SEM executes itself alongside the original OS while remaining stealthy and causing minimal overhead.
 
 Moreover, Trusted Computing could also be used to enable malicious code detection capabilities at runtime. The main problem with this technology is to deploy it into
 embedded systems without impacting its limited resources and real-time constraints. Seshadri et al. \cite{swatt} proposed a software-based attestation technique,
@@ -158,9 +163,10 @@ Control flow hijacking is one of the most used attacks to computer systems, beca
 As more and more sophisticated control flow modification techniques were discovered, new defenses have been proposed, but only some of them are applicable to embedded systems.
 In 2012 Reeves et al. \cite{autoscopy} proposed Autoscopy Jr., an intrusion detection system designed for embedded systems, which is focused on detecting
 control flow alterations instead of malicious code insertions. Its approach consists of two phases: the learning phase and the detection phase.
-During the learning phase it collects control flow information about the function pointers used by the kernel,
-building a data structure which will be used in the second phase. The data structure basically maintains, for each monitored function pointer,
-a list of function addresses reachable from that pointer together with other control flow information. During the detection phase it continues monitoring direct and indirect calls,
+During the learning phase it collects control flow information from the function pointers used within the kernel,
+building a data structure, named Trusted Location List (TLL), which will be used in the second phase.
+The data structure basically maintains, for each monitored function pointer, a list of function addresses reachable from that pointer together
+with other control flow information (\eg valid return addresses). During the detection phase it continues monitoring direct and indirect calls,
 and it generates an alert if an unknown function is reached from a monitored function pointer.
 
 Habibi et al. \cite{disarm} proposed a defensive technique for ARM architecture, named DisARM, effective against both code-injection and code-reuse attacks.
@@ -198,3 +204,36 @@ In their model, a verifier wants to attest runtime control flows of an applicati
 First, the verifier has to generate the Control Flow Graph from a clean binary of the application, storing the measurements of all the possible control-flow paths.
 Then, it sends a challenge to the prover, containing the name of the application and a nonce. The prover executes the application, computes a digital signature
 over the challenge and the executed path, and sends it back to the verifier for validation.
+
+
+\section{Hardware-level attacks and defenses}
+
+At the time of writing, we are not aware of any attack in literature which targets I/O of embedded systems.
+Neither any defense mechanism specific for embedded systems (or for PLCs) has been designed to protect I/O configuration.
+Although hardware level attacks are quite rare due to their complexity, they are very powerful and stealthy, because they are very close to the hardware.
+Here we provide an example of an existing hardware-level rootkit, and its corresponding defense. Even though they are not applicable to embedded systems,
+they are still interesting for our purpose, due to their similarity with Pin Control Attack and Defense, respectively.
+
+Embleton et al. \cite{smm-rootkit} implemented a hardware-level rootkit which they call System management Mode Based Rootkit (SMBR).
+System Management Mode (SMM) is an isolated execution mode of the x86 architecture designed for low-level system control functions, such as power management.
+When the CPU is running in SMM mode, it uses a private memory space, it is completely non-preemptible, and it lacks any concept of privilege level
+and memory protection mechanisms. Thus, the code running in SMM mode is capable of directly accessing the underlying hardware.
+This could be very attractive for malicious users, as they demonstrated by implementing a chipset level keylogger and a network backdoor
+which interacts with the network card to send logged keystrokes to a remote machine via UDP stealthily.
+Their technique can be divided into two main steps. First, the rootkit needs to install its own SMM interrupt handler in place of the OS handler into a
+particular portion of memory called System Management RAM (SMRAM). Depending on the target system, this could require to modify and reflash the BIOS.
+Second, it re-programs the I/O APIC (Advanced Programmable Interrupt Controller) of the target peripherals in order to enable SMM mode on their interrupt signals.
+This is achieved without hooking the Interrupt Descriptor Table, making the rootkit undetectable.
+Once the target interrupt is routed, the rootkit SMM handler is called whenever the interrupt occurs (\eg at each keyboard event).
+After its job is done, the rootkit may forward the interrupt back to the previously assigned handler, or may hide it, depending on its purpose.
+
+To overcome this SMM rootkit, a defense framework called IOCheck has been proposed in \cite{iocheck}.
+The IOCheck framework leverages System Management Mode as well. It checks the integrity of the I/O configuration and the firmware of I/O devices at runtime.
+It also locks the System Management RAM (SMRAM), which is the portion of memory where the SMM handler is stored. Once locked, SMRAM cannot be overwritten until a reset occurs.
+Furthermore, the BIOS firmware is securely stored in SMRAM at boot time, such that its integrity can be verified at runtime.
+In order to protect the BIOS against offline modifications as well, a Trusted Platform Module is needed.
+
+Both SMBR and IOCheck leverage SMM, which is an execution mode existing on x86 architectures.
+Since x86 architecture is rarely used in embedded devices, we can state that those techniques are not applicable to PLCs.
+Furthermore, even if x86 is used, switching to SMM mode would take about 4 milliseconds, as reported in \cite{iocheck}.
+This might be a low performance overhead for many computer systems, but it is certainly not acceptable for real-time embedded systems like PLCs.
