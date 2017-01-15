@@ -6,31 +6,46 @@ ghostbuster-y := main.o
 # Set the following to enable the corresponding monitor.
 IO_MONITOR_ENABLED=y
 DR_MONITOR_ENABLED=y
+MAP_MONITOR_ENABLED=y
 
 # Enable state dump for each monitor, for debug purposes.
 # If the corresponding monitor is not enabled, it has no effect.
 #IO_DEBUG=y
 #DR_DEBUG=y
+#MAP_DEBUG=y
 
-# A monitor is active if it actively restores the trusted state when a change is detected.
-# Set the following to make the corresponding monitor active.
-# Otherwise the monitor will be passive, giving only alarms about detections.
-IO_MONITOR_ACTIVE=y
-DR_MONITOR_ACTIVE=y
+# A monitor can be compiled either in active or in passive mode.
+# Set the following flags to make the corresponding monitor active,
+# otherwise it defaults to passive.
+#
+# When I/O monitor is in active mode, it restores the I/O trusted state
+# when a change is detected, otherwise it only logs detection events.
+IO_MONITOR_ACTIVE=y # Default: active
+# When DR monitor is in active mode, it restores the DR trusted state
+# when a change is detected, otherwise it only logs detection events.
+DR_MONITOR_ACTIVE=y # Default: active
+# When MAP monitor is in active mode, it prevents programs in user space from
+# mapping I/O configuration addresses, otherwise it only logs mapping requests.
+#MAP_MONITOR_ACTIVE=y # Default: passive
 
 ######   End of configuration    ######
 
 ghostbuster-$(IO_MONITOR_ENABLED) += io_monitor.o
 ghostbuster-$(DR_MONITOR_ENABLED) += dr_monitor.o
+ghostbuster-$(MAP_MONITOR_ENABLED) += map_monitor.o
 
 ccflags-y := -I$(src)/inc/
+ccflags-y += -I$(src)/arch/$(ARCH)
 ccflags-y += -I$(src)/arch/$(ARCH)/$(SOC_MODEL)
 ccflags-$(IO_DEBUG) += -DIO_DEBUG
 ccflags-$(DR_DEBUG) += -DDR_DEBUG
+ccflags-$(MAP_DEBUG) += -DMAP_DEBUG
 ccflags-$(IO_MONITOR_ENABLED) += -DIO_MONITOR_ENABLED
 ccflags-$(DR_MONITOR_ENABLED) += -DDR_MONITOR_ENABLED
+ccflags-$(MAP_MONITOR_ENABLED) += -DMAP_MONITOR_ENABLED
 ccflags-$(IO_MONITOR_ACTIVE) += -DIO_MONITOR_ACTIVE
 ccflags-$(DR_MONITOR_ACTIVE) += -DDR_MONITOR_ACTIVE
+ccflags-$(MAP_MONITOR_ACTIVE) += -DMAP_MONITOR_ACTIVE
 
 KDIR := ../../linux
 PWD := $(shell pwd)

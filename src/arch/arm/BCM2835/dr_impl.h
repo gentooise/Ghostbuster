@@ -1,5 +1,5 @@
-#ifndef __BCM2835_H
-#define __BCM2835_H
+#ifndef __DR_IMPL_H
+#define __DR_IMPL_H
 
 #include <uapi/linux/hw_breakpoint.h> // For TYPE_INST and TYPE_DATA
 #include <asm/hw_breakpoint.h>

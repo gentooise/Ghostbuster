@@ -4,6 +4,7 @@
 #include "log.h"
 #include "io_monitor.h"
 #include "dr_monitor.h"
+#include "map_monitor.h"
 
 int __init init_module(void) {
 	int res;
@@ -14,9 +15,14 @@ int __init init_module(void) {
 	if ( (res = start_dr_monitor()) )
 		goto dr_failed;
 
+	if ( (res = start_map_monitor()) )
+		goto map_failed;
+
 	log_info("Ghostbuster started\n");
 	return 0;
 
+map_failed:
+	stop_dr_monitor();
 dr_failed:
 	stop_io_monitor();
 io_failed:
@@ -24,6 +30,7 @@ io_failed:
 }
 
 void __exit cleanup_module() {
+	stop_map_monitor();
 	stop_dr_monitor();
 	stop_io_monitor();
 	log_info("Ghostbuster stopped\n");

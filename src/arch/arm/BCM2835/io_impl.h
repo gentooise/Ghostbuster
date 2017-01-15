@@ -1,5 +1,5 @@
-#ifndef __BCM2835_H
-#define __BCM2835_H
+#ifndef __IO_IMPL_H
+#define __IO_IMPL_H
 
 #include <asm/io.h>
 
