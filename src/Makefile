@@ -11,6 +11,7 @@ MAP_MONITOR_ENABLED=y
 # A monitor can be compiled either in active or in passive mode.
 # Set the following flags to make the corresponding monitor active,
 # otherwise it defaults to passive.
+# If the corresponding monitor is not enabled, the flag has no effect.
 #
 # When I/O monitor is in active mode, it restores the I/O trusted state
 # when a change is detected, otherwise it only logs detection events.

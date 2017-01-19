@@ -14,13 +14,19 @@ static const io_conf_t* io_conf; // Physical I/O configuration
 static volatile void** addrs; // I/O virtual addresses
 static const void* trusted_state; // Trusted state in I/O memory
 static struct task_struct* task; // I/O monitor main task
+static int runtime_pid;
+static void* runtime_vaddr;
 
 static int monitor_loop(void* data);
 static int map_addrs(void);
 static void unmap_addrs(int mapped);
 
-int start_io_monitor() {
+int start_io_monitor(int pid, void* vaddr) {
 	int res;
+
+	// Store PLC runtime info
+	runtime_pid = pid;
+	runtime_vaddr = vaddr;
 
 	// Get model-specific physical I/O configuration
 	io_conf = PHYS_IO_CONF;
@@ -77,11 +83,20 @@ static int monitor_loop(void* data) {
 }
 
 void handle_io_detection(io_detect_t* info) {
-	log_info("Change detected on I/O address 0x%08lx [old value = %ld, new value = %ld]\n",
-		(long)info->target, info->old_val, info->new_val);
+	log_info("I/O change detected: 0x%08lx [old value = 0x%08lx, new value = 0x%08lx]\n",
+	         (long)info->target, info->old_val, info->new_val);
+
 	dump_io_state();
-	restore_io_state(info);
+
+	if (is_legitimate(info, runtime_pid, runtime_vaddr)) {
+		update_io_state(info);
+		log_info("Legitimate change, configuration updated!\n");
+	} else {
+		log_info("Illegal change: Pin Control Attack!\n");
+		restore_io_state(info);
+	}
 }
+
 
 void stop_io_monitor(void) {
 	kthread_stop(task);

@@ -87,6 +87,38 @@ static inline void get_io_state(volatile void** addrs, void* state);
 static inline void check_io_state(volatile void* block, const void* state, unsigned index);
 
 /*
+ * Verify whether an I/O configuration change is legitimate or not.
+ * In case of pin multiplexing, it should be considered always not legitimate.
+ * In caso of pin configuration, it should be considered legitimate only if subsequent accesses to the pin
+ * made by the PLC logic are conforming with the new configuration.
+ * For any other configuration register (e.g. event detect, pull-up/down, etc.) it is implementation defined
+ * whether a change is part of the protocol that is using the pins or it is actual Pin Control Attack.
+ * Every implementation must handle these cases according to its own specific configuration.
+ * If a change to some register could happen for either normal PLC runtime operation or Pin Control Attack,
+ * and it is not easily distinguishable, then a statistic-based approach could be used.
+ * The implementation may need to know the PID and the virtual address used by the PLC runtime in order to
+ * intercept read/write operations.
+ *
+ * @info: detection info pointer, as filled in by check_io_state()
+ * @pid: PID of the running PLC runtime
+ * @vaddr: virtual base address of the pin controller in use by the PLC runtime
+ *
+ * Return: LEGITIMATE if change is considered legitimate, NOT_LEGITIMATE otherwise.
+ */
+
+#define NOT_LEGITIMATE  	0
+#define LEGITIMATE      	1
+static inline int is_legitimate(io_detect_t* info, int pid, void* vaddr);
+
+/*
+ * Update the trusted I/O configuration to reflect the new legitimate state.
+ * When a change is legitimate, the I/O monitor needs to update its trusted state with the new one.
+ *
+ * @info: detection info pointer, as filled in by check_io_state()
+ */
+static inline void update_io_state(io_detect_t* info);
+
+/*
  * Restore the I/O memory to its trusted state.
  * detect_info_t contains an extra opaque pointer (@target_info) which can be managed (allocated and freed)
  * by the specific implementation, in order to apply the correct access type needed by the target address.

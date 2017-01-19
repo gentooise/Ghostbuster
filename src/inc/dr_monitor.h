@@ -1,6 +1,9 @@
 #ifndef __DR_MONITOR_H
 #define __DR_MONITOR_H
 
+#include <linux/perf_event.h>
+#include <linux/hw_breakpoint.h>
+
 /*
  * This monitor is responsible for protecting debug registers from malicious usage.
  * There are basically two ways to use debug registers:
@@ -28,7 +31,33 @@
  * this monitor should also modify the behaviour of register_user_hw_breakpoint.
  * Since this debug register user interface is often used for debug purposes only,
  * and it is not needed on a deployed system, this monitor may simply disable it.
+ *
+ * Furthermore, even if this monitor is disabled, an interface to have access to debug registers is always available
+ * for other parts of the module (e.g. I/O monitor needs it to intercept read/write operations of the PLC logic).
+ * When the DR monitor is enabled, it mediates the access to DRs, so that they can be used only through this interface.
  */
+
+typedef void (*dr_handler_t)(struct perf_event*, struct perf_sample_data*, struct pt_regs*);
+
+static inline void* __set_dr(int pid, void* vaddr, dr_handler_t handler, unsigned type) {
+	struct perf_event_attr attr;
+	hw_breakpoint_init(&attr);
+	attr.bp_addr = (unsigned long)vaddr;
+	attr.bp_len = HW_BREAKPOINT_LEN_4;
+	attr.bp_type = type;
+	/*if (pid > 0) { // Not supported for now, requires re-enabling user side interface
+		tsk = pid_task(find_vpid(ppid), PIDTYPE_PID);
+		if (!tsk) return NULL;
+		return (void*)register_user_hw_breakpoint(&attr, handler, NULL, tsk);
+	}*/
+	return register_wide_hw_breakpoint(&attr, handler, NULL);
+}
+
+static inline void __reset_dr(void* dr) {
+	if (dr) {
+		unregister_wide_hw_breakpoint((struct perf_event**)dr);
+	}
+}
 
 #ifdef DR_MONITOR_ENABLED
 
@@ -42,10 +71,19 @@ int start_dr_monitor(void);
 
 void stop_dr_monitor(void);
 
+// Debug registers interface
+void* set_read_dr(int pid, void* vaddr, dr_handler_t handler);
+void* set_write_dr(int pid, void* vaddr, dr_handler_t handler);
+void reset_dr(void*);
+
 #else
 
-#define start_dr_monitor()	0
-#define stop_dr_monitor() 	(void)0
+#define start_dr_monitor()   	0
+#define stop_dr_monitor()    	(void)0
+
+#define set_read_dr(p, v, h) 	__set_dr(p, v, h, HW_BREAKPOINT_R)
+#define set_write_dr(p, v, h)	__set_dr(p, v, h, HW_BREAKPOINT_W)
+#define reset_dr(d)          	__reset_dr(d)
 
 #endif
 
