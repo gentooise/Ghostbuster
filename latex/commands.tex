@@ -22,7 +22,6 @@
 % Create figures with PowerPoint and then export them individually
 % in PDF, PNG, JPEG, or GIF format (in order of preference)
 %
-%\usepackage[pdftex]{graphicx}
 %\DeclareGraphicsExtensions{.pdf,.png,.jpg,.gif}
 %
 % For pasting text files
@@ -50,6 +49,7 @@
 %
 % For subfigure environment
 %
+\usepackage{graphicx}
 \usepackage{subcaption}
 \usepackage{cleveref}
 \captionsetup[subfigure]{subrefformat=simple,labelformat=simple}
@@ -70,8 +70,8 @@
 %
 % For itemize and enumerate spacing
 %
-\usepackage{enumitem}
-% 
+\usepackage[inline]{enumitem}
+%
 % For International System of Units (SI)
 %
 %\usepackage[binary-units]{siunitx}

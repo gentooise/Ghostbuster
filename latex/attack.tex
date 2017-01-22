@@ -202,16 +202,18 @@ As shown in \myfig{\ref{fig:plc_swarch}}, this architecture can be divided into 
 
 \myfig{\ref{fig:plc_swarch}} also summarises the execution flow of each layer, from bottom to top, highlighting (in green) the tasks directly related with the I/O.
 
-When the firmware is loaded into memory and the system is booting, one of the early operation performed is the I/O initialisation.
-In this phase, the drivers loaded within the kernel start to configure their own I/O registers with their default values.
-Depending on the implementation, this may be the configuration desired by the final application, or not. That is, the I/O configuration may be changed later in time.
-After the I/O has been initialised, the firmware loads the main application needed by the controller: the runtime.
+When the firmware is loaded into memory and the system is booting, one of the early operation performed is known as I/O initialisation sequence.
+In this phase, the drivers within the kernel configure their own I/O registers with their default values.
+I/O initialisation includes both pin configuration and pin multiplexing. Normally, pin multiplexing is only performed at boot time, and, even though it is not forbidden,
+pin multiplexing is never modified at run-time. Conversely, pin configuration may be changed later at run-time. Thus, depending on the implementation, the configuration
+written during I/O initialisation may correspond or not to the one desired by the final application.
 
+After the I/O has been initialised, the firmware loads the main application needed by the controller: the runtime.
 The PLC runtime waits for a logic to be uploaded into the PLC from a terminal connected via the network interface.
-The execution flow reported in \myfig{\ref{fig:plc_swarch}} is a general process, including the case when a PLC is started for the first time.
+The execution flow reported in \myfig{\ref{fig:plc_swarch}} for the runtime layer is a general process, including the case when a PLC is started for the first time.
 If a PLC is already in production, it is rarely restarted. However, when a reboot is needed (\eg for firmware update),
 it may be configured to persistently save the current logic into a non-volatile memory and restore it after reboot.
-In this case the wait step in \myfig{\ref{fig:plc_swarch}} can be simply skipped.
+In this case the ``Wait for logic'' step in \myfig{\ref{fig:plc_swarch}} can be simply skipped, because a logic may be already available from disk.
 
 When a logic is available, from network or from disk, the PLC runtime analyses its content.
 The I/O configuration expected by a specific logic is bundled with the logic itself, because it is decided by the operator who has knowledge of the physical process
@@ -337,7 +339,45 @@ Both kind of attacks leverage the SoC properties described in \sec \ref{sec:embe
 The attack is performed by misusing the control registers used to program the I/O peripherals, writing malicious values into them.
 If the attack targets I/O configuration registers, it is a Pin Configuration Attack, otherwise, if the targeted registers are related to the multiplexing state of the pins,
 then it is a Pin Multiplexing attack. In some architectures, I/O configuration and multiplexing is achieved by using the same set of registers
-(\eg different values written on the same register may have different purposes).
+(\eg different bits of the same register may have different purposes).
+
+In both cases, the main principle behind the attack is something that they called \emph{memory illusion}, which is represented in \myfig{\ref{fig:illusion}}.
+In a system equipped with a Memory Management Unit (MMU), that is the most common scenario for PLCs, each process cannot directly access to physical address space.
+Every memory access is mediated by the MMU, which creates an abstraction called \emph{virtual address space}, or \emph{virtual memory}.
+When a process wants to access physical memory, it has to request a mapping to the system between physical address space and virtual address space.
+In this way, every process has its own ``virtual view'' of the physical memory. This is valid also for I/O memory, which is part of the physical memory.
+Once a mapping has been established, the I/O can be managed by accessing the mapped virtual memory.
+\begin{figure}[h]
+\centerline{\includegraphics[width=0.9\textwidth]{res/illusion}}
+\caption{Pin Control Attack memory illusion \label{fig:illusion}}
+\begin{minipage}{0.1\textwidth}
+\phantomsubcaption{\label{fig:mapping_request}}
+\end{minipage}
+\begin{minipage}{0.1\textwidth}
+\phantomsubcaption{\label{fig:mapping_provided}}
+\end{minipage}
+\begin{minipage}{0.1\textwidth}
+\phantomsubcaption{\label{fig:conf_change}}
+\end{minipage}
+\begin{minipage}{0.1\textwidth}
+\phantomsubcaption{\label{fig:phys_change}}
+\end{minipage}
+\begin{minipage}{0.1\textwidth}
+\phantomsubcaption{\label{fig:virt_write}}
+\end{minipage}
+\begin{minipage}{0.1\textwidth}
+\phantomsubcaption{\label{fig:write_failure}}
+\end{minipage}
+\end{figure}
+Thus, as \myfig{\ref{fig:illusion}} outlines, an attacker can do the following: first, it has to request a mapping for I/O memory \subref{fig:mapping_request};
+once a virtual mapping is provided by the operating system \subref{fig:mapping_provided}, the malicious process is able to alter the pin configuration (\eg change an output pin to input)
+through virtual memory \subref{fig:conf_change}. This change is immediately reflected into physical memory via MMU translation \subref{fig:phys_change}. When the PLC logic,
+which is a normal process in the system, tries to update the value of the pin through virtual memory \subref{fig:virt_write},
+the target address of the write instruction arrives to the MMU, which translates it to the corresponding physical address.
+Unfortunately, since the pin has been changed to input, the execution of the instruction does not actually affect physical memory \subref{fig:write_failure}.
+Therefore, the write silently fails, but no signal error is reported back to the CPU, and from the process virtual perspective everything went correctly.
+As explained later in \chap \ref{chap:defense}, the fact that the virtual address of the instruction actually reaches the MMU will be a crucial mechanism
+for the design of our defense.
 
 Moreover, we imagine that many other attack possibilities may exist. An attacker can tamper with the I/O configuration in many other ways depending on the
 specific I/O peripheral and on its features (\eg event detect, interrupts, clock signals, etc.), and the effects of the attack are unpredictable.
