@@ -1,7 +1,7 @@
-Exercise 4: Pin Control Attack implementation with LKM.
+drk4: Pin Control Attack implementation with LKM.
 -------------------------------------------------------
 
-Method: Debug registers and Pin Configuration.
+Method: Debug registers and Pin Multiplexing.
 Effect: PWM disabling.
 
 Target system: RaspberryPi with Adafruit PWM controller connected via I2C interface.
@@ -11,6 +11,6 @@ A servo motor is attached to PWM, and the PLC logic uses a sinus wave to make it
 rotating from -45° to +45°.
 
 This implementation uses debug registers to catch write operations to pin 2.
-It simply changes the pin mode into input, so the PLC logic could not write it
-anymore and the servo motor stops moving.
+It simply changes the pin mode into GPIO, so that the PLC logic cannot write to it
+anymore through I2C controller and the servo motor stops moving.
 The Codesys Runtime is not able to detect it.

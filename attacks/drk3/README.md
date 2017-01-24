@@ -1,4 +1,4 @@
-Exercise 3: Pin Control Attack implementation with LKM.
+drk3: Pin Control Attack implementation with LKM.
 -------------------------------------------------------
 
 Method: GPIO base remap, pin value polling.

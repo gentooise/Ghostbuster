@@ -1,4 +1,4 @@
-Exercise 5: Pin Control Attack implementation with LKM.
+drk5: Pin Control Attack implementation with LKM.
 -------------------------------------------------------
 
 **NOT WORKING**: Needs investigations to figure out why, maybe some problem at hardware level to be fixed.

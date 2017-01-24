@@ -1,4 +1,4 @@
-Exercise 2: Pin Control Attack implementation with LKM.
+drk2: Pin Control Attack implementation with LKM.
 -------------------------------------------------------
 
 Method: Debug registers.
