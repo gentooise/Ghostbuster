@@ -8,7 +8,8 @@
 static int hijack = 0;
 volatile unsigned* gpio = 0x00;
 int g1 = 22; // Pin 22 attached to LED
-int g2 = 2; // Pin 2 (controlled by I2C) attached to Adafruit PWM controller
+int g2 = 24;
+int g3 = 2; // Pin 2 (controlled by I2C) attached to Adafruit PWM controller
 
 module_param(hijack, int, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 MODULE_PARM_DESC(hijack, "Hijack the control"); // 1=Yes, 0=No
@@ -37,9 +38,12 @@ static int __init hw_break_module_init(void) {
 
 	if (hijack == 1) {
 		INP_GPIO(g1);
-		INP_GPIO(g2);
 		OUT_GPIO(g1); // Reset LED pin as output
-		SET_GPIO_ALT(g2, 0); // Reset PWM pin as alternate function 0
+
+		INP_GPIO(g2); // Reset button pin as input
+
+		INP_GPIO(g3);
+		SET_GPIO_ALT(g3, 0); // Reset PWM pin as alternate function 0
 	}
 
 	return 0;
@@ -48,7 +52,7 @@ static int __init hw_break_module_init(void) {
 
 static void __exit hw_break_module_exit(void) {
 	iounmap(gpio);
-	printk(KERN_INFO "[DR] exit\n");
+	printk(KERN_INFO "[RK] exit\n");
 }
 
 module_init(hw_break_module_init);
