@@ -37,7 +37,7 @@
  * Needs further analysis to find a proper value.
  * It strongly depends on the target system.
  */
-#define IO_MONITOR_INTERVAL 50 // ms
+#define IO_MONITOR_INTERVAL 10 // ms
 
 int start_io_monitor(int, void*);
 

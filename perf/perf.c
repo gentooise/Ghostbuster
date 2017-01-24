@@ -4,11 +4,12 @@
 #include <linux/delay.h>
 
 #define SCAN_CYCLE_DURATION     	10 // ms
-#define SCAN_CYCLES_PER_INTERVAL	100
+#define SCAN_CYCLES_PER_INTERVAL	10
 #define PERF_INTERVAL_DURATION  	(SCAN_CYCLE_DURATION * SCAN_CYCLES_PER_INTERVAL)
 #define PERF_INTERVALS          	100
 
-#define PMCR_VAL                	0x0000000D // Reset and Enable Cycle Counter Register. Set divider to 1 (count each 64 cycles)
+#define PMCR_VAL_NODIV          	0x00000005 // Reset and Enable Cycle Counter Register. No divider (count each cycle).
+#define PMCR_VAL                	0x0000000D // Reset and Enable Cycle Counter Register. Set divider to 1 (count each 64 cycles).
 
 static struct task_struct* task;
 
@@ -19,12 +20,12 @@ static int perf_loop(void* data) {
 	for (i = 0; i < PERF_INTERVALS; i++) {
 		
 		// Write Performance Monitor Control Register (PMCR)
-		asm volatile("mcr p15, 0, %0, c15, c12, 0" : : "r" (PMCR_VAL));
+		asm volatile("mcr p15, 0, %0, c15, c12, 0" : : "r" (PMCR_VAL_NODIV));
 		msleep(PERF_INTERVAL_DURATION);
 		// Read Cycle Counter Register value
 		asm volatile("mrc p15, 0, %0, c15, c12, 1" : "=r" (count));
 
-		printk(KERN_INFO "Perf: [%u] CPU cycles = %u\n", i, count);
+		printk(KERN_INFO "Perf: [%2u] CPU cycles = %u\n", i, count);
 		if (kthread_should_stop()) goto reset_exit;
 	}
 
