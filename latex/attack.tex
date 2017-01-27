@@ -12,13 +12,13 @@ Based on our architecture analysis and our tests, we can finally demonstrate tha
 \section{Embedded architecture}
 \label{sec:embed_arch}
 
-As briefly reported into \chap \ref{chap:intro}, PLCs use I/O interfaces to communicate with sensors and actuators, and in general with any external device.
+As briefly reported into \mychap{chap:intro}, PLCs use I/O interfaces to communicate with sensors and actuators, and in general with any external device.
 Digging into their architecture, we know that PLCs are usually based on a so called System on Chip (SoC).
 A SoC is basically an integrated circuit made of a microprocessor, a memory block and a set of peripheral controllers all enclosed together in the same chip substrate.
 Thus, the SoC technology provides fully capable computers having both very small size and low power-consumption.
 A SoC usually comes with a set of connections, also known as \emph{pins}, usually soldered to a printed circuit board to facilitate interconnection with external modules.
 Many types of pins may be included in a SoC, having different purposes (power, clock, I/O, etc.).
-An example of such a system is the Raspberry Pi board shown in \myfig{\ref{fig:raspberry}}, based on a Broadcom System on Chip.
+An example of such a system is the Raspberry Pi board shown in \myfig{fig:raspberry}, based on a Broadcom System on Chip.
 \begin{figure}[h]
 \centerline{\includegraphics[width=0.56\textwidth]{res/raspberry}}
 \caption{Raspberry Pi \cite{raspberry} with Broadcom System on Chip \label{fig:raspberry}}
@@ -44,7 +44,7 @@ As the I/O attack is a very low-level attack, it is necessary to dig further int
 \label{sec:iopins}
 
 I/O interfaces of a System on Chip provide a connection between internal modules and external electronic devices.
-As shown in \myfig{\ref{fig:chips}}, they are physically visible from the outside of the chip package,
+As shown in \myfig{fig:chips}, they are physically visible from the outside of the chip package,
 usually in the form of pins \subref{fig:pins} or soldering balls \subref{fig:balls}.
 
 \begin{figure}[h]
@@ -72,7 +72,7 @@ For our purpose, we can describe them in an implementation-independent manner by
 \subsubsection{Pin configuration}
 \label{sec:pinconf}
 
-The schematic depicted in \myfig{\ref{fig:pinconf}} helps us to discuss about the first set of features: pin configuration.
+The schematic depicted in \myfig{fig:pinconf} helps us to discuss about the first set of features: pin configuration.
 The operation mode described in this section is also known as General Purpose I/O (GPIO).
 
 \begin{figure}[h]
@@ -97,7 +97,7 @@ the circuit is divided into two different parts: one for output and one for inpu
 		namely a defined state maintained while the pin is not actively driven from outside. This feature is useful to avoid so called ``floating'' inputs.
 \end{itemize}
 
-For Pin Control Attack, what is more interesting about the circuit in \myfig{\ref{fig:pinconf}} are the following two properties:
+For Pin Control Attack, what is more interesting about the circuit in \myfig{fig:pinconf} are the following two properties:
 \begin{itemize}
 	\item there is no checking about the input state, so it is possible to perform a read even when the pin is in output mode;
 	\item vice versa, it is not possible to write to a pin which has been configured as output.
@@ -120,9 +120,9 @@ Even though pin multiplexing is designed for hardware configuration, in almost a
 \caption{Generic I/O pin multiplexing circuit \label{fig:pinmux}}
 \end{figure}
 
-\myfig{\ref{fig:pinmux}}~ shows a possible hardware implementation of pin multiplexing.
+\myfig{fig:pinmux}~ shows a possible hardware implementation of pin multiplexing.
 The I/O pin in the figure is connected to two different peripherals inside the chip, namely A and B,
-and it is also accessible through basic GPIO as described in \sec \ref{sec:pinconf} above.
+and it is also accessible through basic GPIO as described in \mysec{sec:pinconf} above.
 The access to the GPIO output driver is regulated by two in cascade multiplexers for each signal of the module.
 If the peripheral A is enabled, then the signals driven by A go through the multiplexers and can drive the actual value of the pin,
 while GPIO and peripheral B output signals are blocked. Instead, if only peripheral B is enabled then only its signals are able to reach the I/O pin.
@@ -131,7 +131,7 @@ Thus, the cascading of multiplexers actually implements a priority mechanism bet
 If neither A nor B are enabled, then no alternate function is active for the I/O pin and it could be driven by GPIO signals.
 Each peripheral may also have its own dedicated input line, to get values from the I/O port in the same way as GPIO does.
 
-For our purpose, at least two interesting properties can be inferred from pin multiplexing schematic of \myfig{\ref{fig:pinmux}}:
+For our purpose, at least two interesting properties can be inferred from pin multiplexing schematic of \myfig{fig:pinmux}:
 \begin{itemize}
 	\item it is possible to block output signals from peripherals by simply changing the multiplexing configuration;
 	\item the GPIO value can be read at any time, independently from the current multiplexing state of the output.
@@ -140,7 +140,7 @@ For our purpose, at least two interesting properties can be inferred from pin mu
 
 \subsection{PLC architecture}
 
-As introduced in \chap \ref{chap:intro}, Programmable Logic Controllers are a particular kind of embedded systems,
+As introduced in \mychap{chap:intro}, Programmable Logic Controllers are a particular kind of embedded systems,
 designed to work into harsh environments and to control a physical process, typically an industrial or other critical processes.
 In this section we examine the hardware and the software architecture of a PLC. This analysis will be needed later to better explain
 the threat model and the implementation of Pin Control Attack.
@@ -149,7 +149,7 @@ the threat model and the implementation of Pin Control Attack.
 \subsubsection{Hardware architecture}
 
 Since it is built for working into a rough environment, the internal hardware of a PLC is shielded and not directly visible as the Raspberry Pi one.
-\myfig{\ref{fig:wagoplc}} shows an example of a basic PLC, provided by Wago. This model will be later used for our tests.
+\myfig{fig:wagoplc} shows an example of a basic PLC, provided by Wago. This model will be later used for our tests.
 Note that, although we provide this specific example, the basic concepts described here are still valid for most of the PLC on the market, unless otherwise specified.
 
 \begin{figure}[h]
@@ -165,7 +165,7 @@ Vendors know that their PLC could be deployed in many different physical process
 Clearly, it is unreasonable to put every possible I/O interface on the same SoC. For this reason, most of the available PLCs comes with the possibility
 of connecting a certain number of external components called \emph{I/O modules}. Each I/O module contains its own embedded SoC,
 responsible for a specific subset of I/O interfaces (\eg digital input/output, analog input/output, pulse-width modulation, communication, etc.).
-This hardware architecture is summarised in \myfig{\ref{fig:plc_arch}}.
+This hardware architecture is summarised in \myfig{fig:plc_arch}.
 
 \begin{figure}[h]
 \centerline{\includegraphics[width=0.8\textwidth]{res/plc_arch}}
@@ -175,7 +175,7 @@ This hardware architecture is summarised in \myfig{\ref{fig:plc_arch}}.
 The main portion of the PLC communicates with the I/O modules via a system bus, which is, in turn, connected to the I/O interfaces of the PLC.
 This architecture with I/O modules adds one level of indirection between the targeted PLC and the external world, since there is another SoC in the middle.
 Anyway, the same concepts of Pin Control Attack can be applied to such an architecture as well. It is sufficient to consider that the I/O interface of the PLC,
-connected to the internal bus, is now the new direct target of our attack, while the final I/O becomes an indirect target. As we demonstrate in \sec \ref{sec:attack_plc},
+connected to the internal bus, is now the new direct target of our attack, while the final I/O becomes an indirect target. As we demonstrate in \mysec{sec:attack_plc},
 by tampering with the I/O related to the communication bus it is possible to achieve equivalent results, proving that Pin Control Attack is still applicable on real PLCs.
 
 
@@ -185,7 +185,7 @@ The PLC typically comes with a real-time operating system (\eg Linux with RT-pre
 Above the operating system, a software called \emph{PLC runtime} is responsible for managing the execution state of the control process and regulating the access to the PLC.
 Through the runtime, the industrial operator can connect its terminal to the PLC and upload the desired control program, the \emph{logic}.
 The PLC logic is the application code responsible for the control of the physical process, dealing with input and output interfaces.
-As shown in \myfig{\ref{fig:plc_swarch}}, this architecture can be divided into three layers, laying one above the other.
+As shown in \myfig{fig:plc_swarch}, this architecture can be divided into three layers, laying one above the other.
 
 \begin{itemize}
 	\item \itemname{Firmware}: the lowest layer, which basically corresponds to the operating system kernel. Although they are typically two distinct parts,
@@ -200,7 +200,7 @@ As shown in \myfig{\ref{fig:plc_swarch}}, this architecture can be divided into 
 \caption{PLC software architecture \label{fig:plc_swarch}}
 \end{figure}
 
-\myfig{\ref{fig:plc_swarch}} also summarises the execution flow of each layer, from bottom to top, highlighting (in green) the tasks directly related with the I/O.
+\myfig{fig:plc_swarch} also summarises the execution flow of each layer, from bottom to top, highlighting (in green) the tasks directly related with the I/O.
 
 When the firmware is loaded into memory and the system is booting, one of the early operation performed is known as I/O initialisation sequence.
 In this phase, the drivers within the kernel configure their own I/O registers with their default values.
@@ -210,20 +210,20 @@ written during I/O initialisation may correspond or not to the one desired by th
 
 After the I/O has been initialised, the firmware loads the main application needed by the controller: the runtime.
 The PLC runtime waits for a logic to be uploaded into the PLC from a terminal connected via the network interface.
-The execution flow reported in \myfig{\ref{fig:plc_swarch}} for the runtime layer is a general process, including the case when a PLC is started for the first time.
+The execution flow reported in \myfig{fig:plc_swarch} for the runtime layer is a general process, including the case when a PLC is started for the first time.
 If a PLC is already in production, it is rarely restarted. However, when a reboot is needed (\eg for firmware update),
 it may be configured to persistently save the current logic into a non-volatile memory and restore it after reboot.
-In this case the ``Wait for logic'' step in \myfig{\ref{fig:plc_swarch}} can be simply skipped, because a logic may be already available from disk.
+In this case the ``Wait for logic'' step in \myfig{fig:plc_swarch} can be simply skipped, because a logic may be already available from disk.
 
 When a logic is available, from network or from disk, the PLC runtime analyses its content.
 The I/O configuration expected by a specific logic is bundled with the logic itself, because it is decided by the operator who has knowledge of the physical process
-and knows how sensors and actuators are connected to the PLC I/O ports. With respect to the hardware architecture shown in \myfig{\ref{fig:plc_arch}},
+and knows how sensors and actuators are connected to the PLC I/O ports. With respect to the hardware architecture shown in \myfig{fig:plc_arch},
 a change in the input/output required by the operator is actually reflected into a configuration change of the external I/O modules.
 Whether this process involves a change in the I/O configuration of the PLC itself depends on the implementation and on the modification extend
 (\eg if a new I/O module has been attached, this will probably require a change in the communication protocol and so on the I/O interface of the PLC).
 After the new I/O configuration has been applied, the logic can be executed. From an operating system point of view, the logic is running in the same context of the PLC runtime.
 
-As briefly discussed in \chap \ref{chap:intro}, the PLC logic executes the main \emph{scan cycle}. For each iteration, it reads from inputs, executes the control algorithm,
+As briefly discussed in \mychap{chap:intro}, the PLC logic executes the main \emph{scan cycle}. For each iteration, it reads from inputs, executes the control algorithm,
 and writes to outputs. The control algorithm has been programmed by the industrial operator, and loaded through the interface provided by the PLC runtime.
 When the logic is running, input and output pins have already been configured by the runtime, and the logic assumes that the I/O configuration does not change during its execution.
 Both the logic and the runtime interacts with the I/O, but in different ways. The runtime deals with I/O configuration registers, while the logic performs read/write operations
@@ -232,12 +232,12 @@ related to I/O values. Both kind of interactions, anyway, require the same privi
 
 \section{Attack Design}
 
-Given the properties discussed in \sec \ref{sec:embed_arch}, it is possible to misuse the registers used to configure I/O peripherals,
+Given the properties discussed in \mysec{sec:embed_arch}, it is possible to misuse the registers used to configure I/O peripherals,
 and that is what Pin Control Attack does. This can happen at run-time, during the execution of the controller on a real process,
 without any reaction from the PLC runtime or the operating system, thus remaining completely stealth.
 
 We can argue that Pin Control Attack is actually applicable on any System on Chip having the
-architecture described in \sec \ref{sec:embed_arch}. However, PLCs represent a particularly interesting target among all the embedded systems based on SoC.
+architecture described in \mysec{sec:embed_arch}. However, PLCs represent a particularly interesting target among all the embedded systems based on SoC.
 PLCs leverage the interfaces of a SoC to interact with sensors and actuators, having direct effects on our physical world.
 Therefore, if the I/O of a PLC is compromised, this constitutes a much more significant security and safety risk with respect to other
 non-critical embedded system. For this reason, PLCs represent one of the most attractive targets for Pin Control Attack.
@@ -287,7 +287,7 @@ Therefore, it is able to detect only \emph{data hooks} but not \emph{code hooks}
 
 Anyway, these two defenses may be used in combination, thus providing a host-based IDS able to detect both code and data hooks.
 Even if they are deployed together, however, attacks through dynamic memory and without function hooking are still possible,
-since monitoring dynamic memory is a far more complex issue. One of the implementations of Pin Control Attack (see \sec \ref{sec:attack_impl})
+since monitoring dynamic memory is a far more complex issue. One of the implementations of Pin Control Attack (see \mysec{sec:attack_impl})
 leverages exactly the kernel dynamic memory to reach its purpose.
 
 Host-based detection mechanisms like the ones discussed above will likely be deployed into many commercial products within the next years \cite{symbiote_web, autoscopy_web},
@@ -295,8 +295,9 @@ raising the bar for attackers. Therefore, Pin Control Attack will become more an
 
 
 \subsection{Threat model}
+\label{sec:threat_model}
 
-In our work, we assume that the system is protected at least by the HIDSs described in \sec \ref{sec:def_analysis}, or equivalent.
+In our work, we assume that the system is protected at least by the HIDSs described in \mysec{sec:def_analysis}, or equivalent.
 Hence, we assume that the attacker cannot tamper with operating system (kernel) functions and data structures, but it can still use dynamic memory to insert its malicious code
 and tamper with the I/O configuration. The attacker can also write its own version of kernel functions if needed, and call them separately in order to avoid HIDSs.
 This approach, anyway, requires very high effort and would really be the last option for an attacker.
@@ -320,9 +321,9 @@ factually lowering the bar for attackers which do not need an a priori knowledge
 Based on the previous assumptions, Abbasi et al. \cite{ghostplc} crafted Pin Control Attack, which is capable of manipulating the physical process
 controlled by a PLC without requiring any firmware or logic modification.
 The idea of Pin Control Attack is that the attacker operates at the lowest level possible, targeting the interaction
-between the firmware and the I/O, as shown in \myfig{\ref{fig:target}}. For this reason the attack is also known as I/O attack.
+between the firmware and the I/O, as shown in \myfig{fig:target}. For this reason the attack is also known as I/O attack.
 Despite its crucial function in embedded systems, I/O hardware architecture and I/O drivers are currently designed
-without taking into account any concept of security, assuming that I/O is reliable. Unfortunately, given the properties inferred in \sec \ref{sec:embed_arch}
+without taking into account any concept of security, assuming that I/O is reliable. Unfortunately, given the properties inferred in \mysec{sec:embed_arch}
 from a generic hardware architecture, this is often not the case.
 
 \begin{figure}[h]
@@ -330,18 +331,18 @@ from a generic hardware architecture, this is often not the case.
 \caption{Pin Control Attack target, from \cite{ghostplc} \label{fig:target}}
 \end{figure}
 
-As described in \cite{ghostplc}, Pin Control Attack is designed to evade off-the-shelf HIDSs presented in \sec \ref{sec:def_analysis}.
+As described in \cite{ghostplc}, Pin Control Attack is designed to evade off-the-shelf HIDSs presented in \mysec{sec:def_analysis}.
 In particular, it leverages kernel dynamic memory (in one implementation variant) or it uses a simple user code (in a second variant).
 Both variants are able to circumvent the above detection mechanisms.
 
 The authors of \cite{ghostplc} have found at least two different attack vectors for Pin Control Attack: \emph{Pin Configuration} and \emph{Pin Multiplexing}.
-Both kind of attacks leverage the SoC properties described in \sec \ref{sec:embed_arch}.
+Both kind of attacks leverage the SoC properties described in \mysec{sec:embed_arch}.
 The attack is performed by misusing the control registers used to program the I/O peripherals, writing malicious values into them.
 If the attack targets I/O configuration registers, it is a Pin Configuration Attack, otherwise, if the targeted registers are related to the multiplexing state of the pins,
 then it is a Pin Multiplexing attack. In some architectures, I/O configuration and multiplexing is achieved by using the same set of registers
 (\eg different bits of the same register may have different purposes).
 
-In both cases, the main principle behind the attack is something that they called \emph{memory illusion}, which is represented in \myfig{\ref{fig:illusion}}.
+In both cases, the main principle behind the attack is something that they called \emph{memory illusion}, which is represented in \myfig{fig:illusion}.
 In a system equipped with a Memory Management Unit (MMU), that is the most common scenario for PLCs, each process cannot directly access to physical address space.
 Every memory access is mediated by the MMU, which creates an abstraction called \emph{virtual address space}, or \emph{virtual memory}.
 When a process wants to access physical memory, it has to request a mapping to the system between physical address space and virtual address space.
@@ -369,15 +370,23 @@ Once a mapping has been established, the I/O can be managed by accessing the map
 \phantomsubcaption{\label{fig:write_failure}}
 \end{minipage}
 \end{figure}
-Thus, as \myfig{\ref{fig:illusion}} outlines, an attacker can do the following: first, it has to request a mapping for I/O memory \subref{fig:mapping_request};
+Thus, as \myfig{fig:illusion} outlines, an attacker can do the following: first, it has to request a mapping for I/O memory \subref{fig:mapping_request};
 once a virtual mapping is provided by the operating system \subref{fig:mapping_provided}, the malicious process is able to alter the pin configuration (\eg change an output pin to input)
 through virtual memory \subref{fig:conf_change}. This change is immediately reflected into physical memory via MMU translation \subref{fig:phys_change}. When the PLC logic,
 which is a normal process in the system, tries to update the value of the pin through virtual memory \subref{fig:virt_write},
 the target address of the write instruction arrives to the MMU, which translates it to the corresponding physical address.
 Unfortunately, since the pin has been changed to input, the execution of the instruction does not actually affect physical memory \subref{fig:write_failure}.
 Therefore, the write silently fails, but no signal error is reported back to the CPU, and from the process virtual perspective everything went correctly.
-As explained later in \chap \ref{chap:defense}, the fact that the virtual address of the instruction actually reaches the MMU will be a crucial mechanism
+As explained later in \mychap{chap:defense}, the fact that the virtual address of the instruction actually reaches the MMU will be a crucial mechanism
 for the design of our defense.
+
+As reported in \cite{ghostplc}, only by leveraging the configuration of pins they crafted an attack which is able to do the following:
+\begin{itemize}
+	\item reconfigure an I/O pin as input when the PLC logic is attempting to write;
+	\item reconfigure an I/O pin as output and write a malicious value when the PLC logic is attempting to read.
+\end{itemize}
+In this way, the attacker can make specific write operations fail and can feed the PLC logic with malicious input values at the same time.
+We discuss about some limitations of this approach in \mysec{sec:attack_impl}.
 
 Moreover, we imagine that many other attack possibilities may exist. An attacker can tamper with the I/O configuration in many other ways depending on the
 specific I/O peripheral and on its features (\eg event detect, interrupts, clock signals, etc.), and the effects of the attack are unpredictable.
@@ -389,19 +398,122 @@ sent from a PWM controller to a memory module, which may burn the memory.
 
 On the other side, from our analysis on a real PLC, we found that another attack vector is viable at a different abstraction level than hardware configuration.
 Commonly, the I/O peripherals are used through operating system drivers, which in turn are used from user space applications like the PLC runtime.
-As we show in \sec \ref{sec:attack_plc}, an attacker can target these drivers, or even these applications, to obtain equivalent effects without dealing with
+As we show in \mysec{sec:attack_plc}, an attacker can target these drivers, or even these applications, to obtain equivalent effects without dealing with
 the underlying hardware and/or I/O registers directly.
 
 
 \section{Attack Implementation}
 \label{sec:attack_impl}
 
-TODO Implementation.
+In this section we first describe the available implementation presented in \cite{ghostplc}, which was the starting point of our analysis.
+Next, we introduce a possible attack implementation on a real PLC. Both implementations are designed for Linux systems, and they have two different
+variants: kernel side and user side. Each variant imposes different requirements for the attacker, which will be discussed in more detail in the next sections.
 
 
 \subsection{Raspberry Pi}
+The system used for our experiments with the first implementation is a \emph{Raspberry Pi 1 Model B} based on an ARMv6 architecture, running the following kernel:
+\begin{Verbatim}[fontsize=\small]
+	Linux raspberrypi 4.4.22+ #912 Mon Sep 26 19:00:13 BST 2016 armv6l GNU/Linux
+\end{Verbatim}
+The Raspberry Pi 1 features a Broadcom System on Chip named \emph{BCM2835}. With reference to the BCM2835 documentation \cite{bcm2835},
+we set up the system I/O by connecting a button as input, an LED and a servo motor as outputs. Button and LED are accessed via $2$ GPIO interfaces,
+one configured as input and one as output, respectively. To connect the micro servo, we needed an external PWM controller. The controller is attached to the system
+through the I2C interface, which requires two pins: one for the data line, \emph{Signal DAta} line (SDA), and one for the clock line, \emph{Signal CLock} line (SCL).
+The resulting system on which we conducted our experiments is shown in \myfig{fig:pi_system}, and its I/O configuration is summarised in \mytab{tab:pi_pins}.
 
-TODO Raspberry Pi implementation.
+\begin{figure}[h]
+\centerline{\includegraphics[width=0.8\textwidth]{res/pi_system}}
+\caption{Raspberry Pi system used for experiments \label{fig:pi_system}}
+\end{figure}
+
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\thead{Pin} & \thead{Multiplexing} & \thead{Configuration} & \thead{Connected to} \\
+\hline
+24 & GPIO & Input & Button \\
+\hline
+22 & GPIO & Output & LED \\
+\hline
+2 & I2C SDA & - & PWM controller (servo) \\
+\hline
+3 & I2C SCL & - & PWM controller (servo) \\
+\hline
+\end{tabular}
+\caption{I/O configuration of our Raspberry Pi testing system}
+\label{tab:pi_pins}
+\end{table}
+
+To enable PLC capabilities on such a system, we installed a PLC runtime on it. In particular, we used \emph{CODESYS Control for Raspberry Pi SL}
+provided by 3S-Smart Software Solutions GmbH \cite{codesys_runtime}. Through the CODESYS Development System \cite{codesys_dev},
+we designed the PLC logic shown in \myfig{fig:pi_logic}, whose code is executed for each scan cycle.
+\begin{figure}[h]
+\centerline{\includegraphics[width=0.8\textwidth]{res/pi_logic}}
+\caption{PLC logic loaded into the target system \label{fig:pi_logic}}
+\end{figure}
+We chose a $10ms$ scan cycle interval, however, since this PLC runtime is not real-time, the timing may be affected by small errors ($\approx 50\micro s$).
+At each scan cycle, the logic reads from pin 24 (push-button), and writes the outputs accordingly.
+The motor is driven with a sinus wave which makes it going forward and backward in the interval $[-45^\circ, +45^\circ]$.
+If the button is not pressed, which corresponds to value $1$ (high), the LED is toggled every $2s$ and the motor completes a round in $2s$.
+If the button is pressed, that is value $0$ (low), both LED and motor frequencies are multiplied by $4$, and the new round time becomes $500ms$.
+The timing of the write operations, which is a multiple of the scan cycles, is controlled by software counters embedded into the logic.
+Thus, while the input is high the counters are updated at normal speed; while the input is low they get updated $4$ times faster.
+
+Given the system above, a possible implementation of Pin Control Attack can target input or output pins, having different effects.
+By reconfiguring an output pin as input, it is possible to disable the PLC logic write operations.
+Instead, by changing an input pin into output, and writing its own values, an attacker can actually modify the behaviour of the outputs.
+In our case, if the attacker is able to intercept PLC logic read operations and write its own values, he can actually decide the frequency of the outputs.
+For instance, as demonstrated by our attack experiments, if the attacker feeds the logic with $0$ and $1$ alternatively at each scan cycle,
+the round time of the outputs becomes the average between $2s$ and $500ms$, factually having a frequency that is not even programmed into the logic.
+But there is a limitation to this attack approach, implied by the architecture described in \mysec{sec:pinconf} and confirmed by the experiments:
+the read operation is not reliable if the pin is configured as output pin. In our case, if we reconfigure pin 24 as output, the malicious value written into the write register
+is not always the same value read by the PLC logic. That is probably because the voltage on the pin is actually driven by two entities at the same time,
+the external sensor (the button) and our attack, so it is not deterministic whether, at the time of reading the pin level register, the voltage is considered a $1$ or a $0$.
+
+The authors of Pin Control Attack described two different ways of intercepting read (or write) operations, and they implemented them into the following attack variants:
+\begin{enumerate}
+	\item a Linux loadable kernel module which is able to intercept logic read and write operations by leveraging the \emph{Debug subsystem};
+	\item a user code which maps the physical I/O memory, or re-use PLC logic mapping, and manually watches the I/O values to synchronize itself with the PLC logic operations.
+\end{enumerate}
+Once the target operation has been caught, the attack modifies the I/O configuration according to its purpose.
+Both implementations are able to evade the HIDSs analysed in \mysec{sec:def_analysis}, because they reside into kernel and user dynamic memory, respectively,
+and they do not alter any control flow. Here follows a brief description of these two possible implementations, focused on the findings of our experiments.
+For a more detailed analysis of the original version of the attacks refer to \cite{ghostplc}.
+
+
+\subsubsection{Kernel module}
+This variant requires root privileges, in order to be able to insert a loadable module into the kernel.
+The kernel module makes use of debug registers, available in many embedded architectures, to catch PLC logic operations.
+A debug register takes a virtual address, and optionally a process context, and raises a CPU exception when the address is accessed within the given context.
+The access type may be read, write or execute: the first two are intended for data addresses, the last one for instruction addresses.
+Thus, to use a debug register, the attacker needs to know the mapped virtual address used by the PLC logic to read/write the I/O pins.
+These addresses are typically mapped by the PLC runtime before starting the logic, and can be easily obtained by looking into the \verb|/proc/<pid>/maps|
+file, which lists the current mappings owned by a process identified by \verb|pid| (process id).
+As discussed in \mysec{sec:threat_model} the attacker needs to know the running PLC logic, and so the mapping between the I/O pins and
+the physical process he wants to tamper. With reference to our target system, if the attacker knows that the input button is connected to pin $24$
+and wants to intercept a read operation, then he can get the physical address of the read register from the SoC documentation \cite{bcm2835} (\verb|0x20200034|),
+and finally the virtual address from the current PLC runtime mappings (\eg \verb|0xb6f40034|). With this information, he can install a debug exception handler
+by setting a debug register: the malicious handler will be called whenever the PLC logic tries to read from that address.
+Inside the handler, the attacker can decide whether to change the pin configuration and which value wants to feed the PLC logic with.
+The use of debug registers gives the attacker a great timing accuracy on read and write operations,
+but the overhead may be detectable by power consumption-based intrusion detection systems.
+
+
+\subsubsection{User code}
+
+This version does not need root privileges as the previous one. Since it is executed from user space, to have access to the I/O physical memory it needs to either
+request a new mapping to the kernel or use the existing mapping of the PLC runtime. In both cases, the requirement is to have the same privilege level of the PLC runtime,
+and this may be obtained by exploiting a code execution vulnerability affecting the Codesys PLC runtime \cite{abb-codesys,codesys-server}.
+The requirement needed to obtain the PLC runtime mapping is the same as the kernel module variant.
+To intercept read and write operations, the attacker cannot use debug registers, because the access to the debug subsystem is mediated by the kernel \verb|ptrace| API.
+Therefore, this version can only monitor the value of an output pin to get the relative time, and also infer timing information of other pins
+by using its knowledge of the PLC logic. In our case, if the attacker monitors the pin $22$, when its value changes he knows from the logic
+that at the same time the button input has been read, and the servo motor has just finished a round.
+This information can be used to set relative timers, which will be activated on the next I/O events.
+If the target system has real-time capabilities, as almost all real PLCs do, this technique can be even more accurate than our experiments in a non real-time environment.
+Moreover, its overhead is much less than the corresponding debug register one, and it may not be easily detectable.
 
 
 \subsection{PLC}

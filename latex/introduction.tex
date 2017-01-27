@@ -23,7 +23,7 @@ Within the context of an Industrial Control System (ICS), embedded systems are b
 PLCs are special-purpose embedded systems, usually deployed into harsh environments to control critical processes,
 \eg automotive systems, assembly lines, robotic devices or any industrial machine that requires high control precision and reliability.
 
-A simplified version of the environment in which a PLC may operate is outlined in \myfig{\ref{fig:plc_env}}.
+A simplified version of the environment in which a PLC may operate is outlined in \myfig{fig:plc_env}.
 \begin{figure}[h]
 \centerline{\includegraphics[width=0.6\textwidth]{res/plc_env}}
 \caption{PLC environment\label{fig:plc_env}}
@@ -39,7 +39,7 @@ For each scan cycle, the PLC reads the current state of the physical process mea
 Internally, the logic takes these values as input and performs some calculations based on the loaded control algorithm.
 The output of the logic is then sent to the actuators, thus modifying the state of the controlled process.
 
-The PLC main scan cycle is shown in \myfig{\ref{fig:scan_cycle}}.
+The PLC main scan cycle is shown in \myfig{fig:scan_cycle}.
 \begin{figure}[h]
 \centerline{\includegraphics[width=0.4\textwidth]{res/scan_cycle}}
 \caption{PLC logic main scan cycle\label{fig:scan_cycle}}
@@ -71,7 +71,7 @@ The salient features of this new class of attacks are:
 	\item It is viable. It is possible to build concrete attack using it.
 \end{enumerate}
 
-To better understand a possible attack scenario, \myfig{\ref{fig:control}} shows a simplified control system.
+To better understand a possible attack scenario, \myfig{fig:control} shows a simplified control system.
 \begin{figure}[h!]
 \centerline{\includegraphics[width=0.6\textwidth]{res/control}}
 \caption{Simplified control system: a possible target of Pin Control Attack.\label{fig:control}}
@@ -118,11 +118,9 @@ A brief organisation of the rest of the thesis follows in the next section.
 
 \section{Organisation}
 
-In \chap \ref{chap:related} we list the known attacks to embedded systems existing in the literature, and then discuss the off-the-shelf protection mechanisms.
+In \mychap{chap:related} we list the known attacks to embedded systems existing in the literature, and then discuss the off-the-shelf protection mechanisms.
 To the best of our knowledge at the time of writing, as Pin Control Attack is a new kind of attack, none of the existing protections is able to prevent nor detect it.
-\chap \ref{chap:attack} contains, after a brief description of the embedded systems architecture, a detailed analysis of Pin Control Attack design and implementation.
-In \chap \ref{chap:defense} we present the architecture of our proposed Pin Control Defense, then we describe the implementation and provide developer and user manual for it.
-The \chap \ref{chap:results} provides the results obtained during the experiments, showing the detection rate and the performance overhead on a PLC environment.
-Finally, in \chap \ref{chap:conclusions} we analyse the shortcomings of our defense and the possible future works and improvements.
-
-
+\mychap{chap:attack} contains, after a brief description of the embedded systems architecture, a detailed analysis of Pin Control Attack design and implementation.
+In \mychap{chap:defense} we present the architecture of our proposed Pin Control Defense, then we describe the implementation and provide developer and user manual for it.
+The \mychap{chap:results} provides the results obtained during the experiments, showing the detection rate and the performance overhead on a PLC environment.
+Finally, in \mychap{chap:conclusions} we analyse the shortcomings of our defense and the possible future works and improvements.

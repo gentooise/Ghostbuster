@@ -20,7 +20,7 @@
 %
 % For pasting text files
 %
-%\usepackage{fancyvrb}
+\usepackage{fancyvrb}
 %
 % Used to express formulas like n^th
 %
@@ -94,10 +94,10 @@ escapechar=`
 %
 \def\eg{e.g.\xspace}
 \def\ie{i.e.\xspace}
-\def\chap{Chapter\xspace}
-\def\sec{Section\xspace}
-\def\myfig#1{Fig.~#1\xspace} % usage: \myfig{\ref{fig:tag}}
-\def\mytab#1{Tab.~#1\xspace}
+\def\mychap#1{Chapter~\ref{#1}\xspace}
+\def\mysec#1{Section~\ref{#1}\xspace}
+\def\myfig#1{Fig.~\ref{#1}\xspace} % usage: \myfig{fig:tag}
+\def\mytab#1{Tab.~\ref{#1}\xspace}
 \newcommand{\ltx}{\LaTeX\xspace}
 \newcommand{\txw}{TeXworks\xspace}
 \newcommand{\mik}{MikTex\xspace}
