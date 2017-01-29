@@ -139,6 +139,7 @@ For our purpose, at least two interesting properties can be inferred from pin mu
 
 
 \subsection{PLC architecture}
+\label{sec:plc_arch}
 
 As introduced in \mychap{chap:intro}, Programmable Logic Controllers are a particular kind of embedded systems,
 designed to work into harsh environments and to control a physical process, typically an industrial or other critical processes.
@@ -349,26 +350,15 @@ When a process wants to access physical memory, it has to request a mapping to t
 In this way, every process has its own ``virtual view'' of the physical memory. This is valid also for I/O memory, which is part of the physical memory.
 Once a mapping has been established, the I/O can be managed by accessing the mapped virtual memory.
 \begin{figure}[h]
-\centerline{\includegraphics[width=0.9\textwidth]{res/illusion}}
-\caption{Pin Control Attack memory illusion \label{fig:illusion}}
-\begin{minipage}{0.1\textwidth}
+\centerline{
 \phantomsubcaption{\label{fig:mapping_request}}
-\end{minipage}
-\begin{minipage}{0.1\textwidth}
 \phantomsubcaption{\label{fig:mapping_provided}}
-\end{minipage}
-\begin{minipage}{0.1\textwidth}
 \phantomsubcaption{\label{fig:conf_change}}
-\end{minipage}
-\begin{minipage}{0.1\textwidth}
 \phantomsubcaption{\label{fig:phys_change}}
-\end{minipage}
-\begin{minipage}{0.1\textwidth}
 \phantomsubcaption{\label{fig:virt_write}}
-\end{minipage}
-\begin{minipage}{0.1\textwidth}
 \phantomsubcaption{\label{fig:write_failure}}
-\end{minipage}
+\includegraphics[width=0.9\textwidth]{res/illusion}}
+\caption{Pin Control Attack memory illusion \label{fig:illusion}}
 \end{figure}
 Thus, as \myfig{fig:illusion} outlines, an attacker can do the following: first, it has to request a mapping for I/O memory \subref{fig:mapping_request};
 once a virtual mapping is provided by the operating system \subref{fig:mapping_provided}, the malicious process is able to alter the pin configuration (\eg change an output pin to input)
@@ -451,18 +441,20 @@ provided by 3S-Smart Software Solutions GmbH \cite{codesys_runtime}. Through the
 we designed the PLC logic shown in \myfig{fig:pi_logic}, whose code is executed for each scan cycle.
 \begin{figure}[h]
 \centerline{\includegraphics[width=0.8\textwidth]{res/pi_logic}}
-\caption{PLC logic loaded into the target system \label{fig:pi_logic}}
+\caption{PLC logic loaded into Raspberry Pi \label{fig:pi_logic}}
 \end{figure}
-We chose a $10ms$ scan cycle interval, however, since this PLC runtime is not real-time, the timing may be affected by small errors ($\approx 50\micro s$).
+We chose a $10ms$ scan cycle interval, however, since this PLC runtime is not real-time, the timing may be affected by small errors ($\approx 50\micro s$). 
 At each scan cycle, the logic reads from pin 24 (push-button), and writes the outputs accordingly.
 The motor is driven with a sinus wave which makes it going forward and backward in the interval $[-45^\circ, +45^\circ]$.
 If the button is not pressed, which corresponds to value $1$ (high), the LED is toggled every $2s$ and the motor completes a round in $2s$.
 If the button is pressed, that is value $0$ (low), both LED and motor frequencies are multiplied by $4$, and the new round time becomes $500ms$.
 The timing of the write operations, which is a multiple of the scan cycles, is controlled by software counters embedded into the logic.
 Thus, while the input is high the counters are updated at normal speed; while the input is low they get updated $4$ times faster.
+Furthermore, the logic does not write to the outputs at each scan cycle, but only when their values change (\eg the LED pin is written only every $2s$).
+This is typically different from the normal behaviour of a real-time PLC, as discussed in \mysec{sec:attack_plc}.
 
 Given the system above, a possible implementation of Pin Control Attack can target input or output pins, having different effects.
-By reconfiguring an output pin as input, it is possible to disable the PLC logic write operations.
+By re-configuring an output pin as input, it is possible to disable the PLC logic write operations, leading to a Denial of Service (DoS) condition.
 Instead, by changing an input pin into output, and writing its own values, an attacker can actually modify the behaviour of the outputs.
 In our case, if the attacker is able to intercept PLC logic read operations and write its own values, he can actually decide the frequency of the outputs.
 For instance, as demonstrated by our attack experiments, if the attacker feeds the logic with $0$ and $1$ alternatively at each scan cycle,
@@ -470,12 +462,12 @@ the round time of the outputs becomes the average between $2s$ and $500ms$, fact
 But there is a limitation to this attack approach, implied by the architecture described in \mysec{sec:pinconf} and confirmed by the experiments:
 the read operation is not reliable if the pin is configured as output pin. In our case, if we reconfigure pin 24 as output, the malicious value written into the write register
 is not always the same value read by the PLC logic. That is probably because the voltage on the pin is actually driven by two entities at the same time,
-the external sensor (the button) and our attack, so it is not deterministic whether, at the time of reading the pin level register, the voltage is considered a $1$ or a $0$.
+the external sensor (the button) and attack code, so it is not deterministic whether, at the time of reading the pin level register, the voltage is considered a $1$ or a $0$.
 
 The authors of Pin Control Attack described two different ways of intercepting read (or write) operations, and they implemented them into the following attack variants:
 \begin{enumerate}
 	\item a Linux loadable kernel module which is able to intercept logic read and write operations by leveraging the \emph{Debug subsystem};
-	\item a user code which maps the physical I/O memory, or re-use PLC logic mapping, and manually watches the I/O values to synchronize itself with the PLC logic operations.
+	\item a user code which maps the physical I/O memory, or re-use PLC logic mapping, and manually watches the I/O values to synchronise itself with the PLC logic operations.
 \end{enumerate}
 Once the target operation has been caught, the attack modifies the I/O configuration according to its purpose.
 Both implementations are able to evade the HIDSs analysed in \mysec{sec:def_analysis}, because they reside into kernel and user dynamic memory, respectively,
@@ -491,7 +483,7 @@ The access type may be read, write or execute: the first two are intended for da
 Thus, to use a debug register, the attacker needs to know the mapped virtual address used by the PLC logic to read/write the I/O pins.
 These addresses are typically mapped by the PLC runtime before starting the logic, and can be easily obtained by looking into the \verb|/proc/<pid>/maps|
 file, which lists the current mappings owned by a process identified by \verb|pid| (process id).
-As discussed in \mysec{sec:threat_model} the attacker needs to know the running PLC logic, and so the mapping between the I/O pins and
+As discussed in \mysec{sec:threat_model} the attacker needs to know the running PLC logic, and the mapping between the I/O pins and
 the physical process he wants to tamper. With reference to our target system, if the attacker knows that the input button is connected to pin $24$
 and wants to intercept a read operation, then he can get the physical address of the read register from the SoC documentation \cite{bcm2835} (\verb|0x20200034|),
 and finally the virtual address from the current PLC runtime mappings (\eg \verb|0xb6f40034|). With this information, he can install a debug exception handler
@@ -505,7 +497,7 @@ but the overhead may be detectable by power consumption-based intrusion detectio
 
 This version does not need root privileges as the previous one. Since it is executed from user space, to have access to the I/O physical memory it needs to either
 request a new mapping to the kernel or use the existing mapping of the PLC runtime. In both cases, the requirement is to have the same privilege level of the PLC runtime,
-and this may be obtained by exploiting a code execution vulnerability affecting the Codesys PLC runtime \cite{abb-codesys,codesys-server}.
+and this may be obtained by exploiting a code execution vulnerability affecting the CODESYS PLC runtime \cite{abb-codesys,codesys-server}.
 The requirement needed to obtain the PLC runtime mapping is the same as the kernel module variant.
 To intercept read and write operations, the attacker cannot use debug registers, because the access to the debug subsystem is mediated by the kernel \verb|ptrace| API.
 Therefore, this version can only monitor the value of an output pin to get the relative time, and also infer timing information of other pins
@@ -519,4 +511,118 @@ Moreover, its overhead is much less than the corresponding debug register one, a
 \subsection{PLC}
 \label{sec:attack_plc}
 
-TODO PLC implementation.
+As we did for Raspberry Pi, we analysed a real PLC and considered the attack possibilities on this system as well.
+The provided PLC is a \emph{PFC200 750-8202} model from \emph{Wago} vendor. It runs a Linux kernel with the RT-preempt patch, which gives it hard real-time capabilities.
+In particular, the system runs the following kernel version on an ARMv7 architecture:
+\begin{Verbatim}[fontsize=\small]
+	Linux PFC200-4106BA 3.18.13-pfcxxx-02.00.02_00+14-rt10 #1 PREEMPT RT armv7l GNU/Linux
+\end{Verbatim}
+Furthermore, Wago gives complete (root/kernel) access to its system, and the user can even program its own PLC runtime \cite{wago_linux}.
+As discussed in \mysec{sec:plc_arch}, different kind of I/O modules can be attached to the PLC. For our analysis, we attached a Digital I/O module to the communication bus.
+PLC and I/O module are based on an \emph{AM3517} SoC from \emph{Texas Instruments} and an \emph{XE164} SoC from \emph{Infineon}, respectively.
+The digital I/O module has $16$ different pins, $8$ for input and $8$ for output, and we connected a button as input and an LED as output,
+obtaining the system shown in \myfig{fig:plc_system}.
+
+\begin{figure}[h]
+\centerline{\includegraphics[width=0.8\textwidth]{res/plc_system}}
+\caption{Wago PLC system used for experiments \label{fig:plc_system}}
+\end{figure}
+
+The PLC runtime environment is the \emph{e!COCKPIT} runtime provided by Wago, which is always based on CODESYS. From the Wago e!COCKPIT engineering software,
+we programmed a simple logic which toggles the value of the LED every $500ms$ only when the button is not pressed (high input). If the button is pressed,
+the LED stops blinking and maintains its current value until the button is released. The logic, in \emph{Structured Text} (ST) language, is shown in \myfig{fig:plc_logic}.
+It assumes a scan cycle of $10ms$, and uses a software counter to achieve the timing of $500ms$. The picture also shows the mapping between the variables
+and the I/O pins of the external module. Differently from the Raspberry Pi system behaviour, here the outputs are updated on every scan cycle, even if the value has not been changed
+during the last $10ms$.
+\begin{figure}[h]
+\centerline{\includegraphics[width=\textwidth]{res/plc_logic}}
+\caption{PLC logic loaded into Wago PLC \label{fig:plc_logic}}
+\end{figure}
+
+Given this system, we started our analysis to better understand its overall architecture, reported in \mysec{sec:plc_arch}, and its implementation.
+For our research we used the following materials and tools:
+\begin{itemize}
+	\item \itemname{Board Support Package} (BSP) \cite{wago_linux} provided to us by Wago, which allows to build and configure a complete disk image
+	of the system running inside the PLC. It essentially consists of: the kernel source code with all the patches applied by Wago, the libraries and
+	the applications used into the system. For most of the Wago libraries, only the binary code is provided.
+	\item \itemname{strace} tool \cite{strace}, useful to analyse the behaviour of the PLC runtime, in particular the system calls used for accessing the I/O.
+	\item \itemname{kprobes} kernel feature \cite{kprobes}, used to intercept function calls related to the I/O from kernel space.
+\end{itemize}
+
+We report the findings of our analysis as follows. With reference to the architecture described in \mysec{sec:plc_arch}, we discovered that the Wago implementation
+uses a communication bus between PLC and I/O named \emph{KBUS}. It is implemented as a kernel driver, whose code is available as kernel patches included into the BSP.
+The KBUS is basically a serial BUS built upon the Serial Peripheral Interface (SPI) protocol, used together with Direct Memory Access (DMA) to perform faster transfers.
+From strace, we found that the PLC runtime uses the driver through \verb|ioctl| calls to send and receive inputs and outputs at each scan cycle, as reported below.
+\begin{Verbatim}[fontsize=\small]
+	[...]
+	04:10:01.545185 clock_gettime(CLOCK_MONOTONIC, {122, 590121662}) = 0
+	04:10:01.545831 clock_gettime(CLOCK_REALTIME, {1335924601, 545923773}) = 0
+	04:10:01.546293 ioctl(11, _IOC(_IOC_WRITE, 0x4b, 0x01, 0x18), 0xb54a47d0) = 4
+	04:10:01.549585 clock_gettime(CLOCK_REALTIME, {1335924601, 549739477}) = 0
+	04:10:01.550047 clock_gettime(CLOCK_MONOTONIC, {122, 595045151}) = 0
+	04:10:01.550508 nanosleep({0, 3785000}, NULL) = 0
+	04:10:01.555186 clock_gettime(CLOCK_MONOTONIC, {122, 600245587}) = 0
+	04:10:01.555955 clock_gettime(CLOCK_REALTIME, {1335924601, 556078470}) = 0
+	04:10:01.556447 ioctl(11, _IOC(_IOC_WRITE, 0x4b, 0x01, 0x18), 0xb54a47d0) = 4
+	04:10:01.557493 clock_gettime(CLOCK_REALTIME, {1335924601, 557617060}) = 0
+	04:10:01.557894 clock_gettime(CLOCK_MONOTONIC, {122, 602799647}) = 0
+	04:10:01.558232 nanosleep({0, 6030000}, NULL) = 0
+	[...]
+\end{Verbatim}
+The code shows two scan cycles. Each one is basically made of an \verb|ioctl| call, plus the corresponding calls needed to achieve the timing
+of $10ms$ (\verb|clock_gettime| and \verb|nanosleep| functions).
+Each \verb|ioctl| call from user space is directed to the internal \verb|kbus_ioctl| function of the KBUS driver.
+The argument \verb|0xb54a47d0| passed to the \verb|ioctl| call is a pointer to a data buffer. Further analysis has shown that the buffer contains at least $2$
+bytes, one for input pins and one for output pins ($8$ bits each). Thus, every \verb|ioctl| call serves both as read and write operation.
+On each call, the input part of the buffer is filled in by the KBUS driver, while the output related to the previous scan cycle is written by the logic.
+From the new input obtained, the logic updates the output buffer, waits for the necessary time, and calls \verb|ioctl| again.
+One of the first attack attempts we made was hooking the \verb|kbus_ioctl| function and tampering the values
+inside the buffer. The effect was more powerful as the one achieved by Pin Control Attack, because we were able to control both inputs and outputs. Anyway, this approach required
+function hooking, which is forbidden by our threat model (\mysec{sec:threat_model}).
+
+Going deeper into the PLC runtime and into the KBUS driver through kprobes, we found another interesting behaviour, which allowed us to craft an attack able to break the I/O communication
+without the \emph{e!COCKPIT} runtime noticing anything and without hooking any function. The SPI protocol, used by KBUS, leverages four pins of the AM3517 SoC, two for data (in/out),
+one for synchronisation (clock) and one for chip select. The PLC SoC is the SPI master, and the digital I/O module is the selected SPI slave.
+Each \verb|ioctl| operation is translated into an SPI transfer, made through the DMA controller. Each DMA transfer makes use of an interrupt to signal when the transfer
+is completed (or some error occurred). The KBUS driver exposes a \verb|write| operation through which it is possible to enable/disable the interrupt.
+The PLC runtime makes use of this system call to disable the interrupt while a new logic gets uploaded into the PLC, and then enables it again before starting the logic.
+Our best guess is that, when a new logic gets uploaded, the runtime disables the interrupt because it needs to reprogram the I/O module and the KBUS interface according
+to the required I/O configuration.
+
+Our experiments show that if the interrupt related to I/O transfers is disabled while the PLC logic is running, the system is not able to read/write the I/O,
+thus obtaining a Denial of Service (DoS) condition. The PLC runtime is not able to notice the attack, no failure or error is reported and no function hook is required.
+Although it is very simple and limited to DoS, this kind of attack, which we can call \emph{IRQ Configuration Attack}, has some similarities with Pin Control Attack,
+such as the stealthiness and the hardware-level target.
+We believe that more sophisticated attacks are possible, since the basic hardware concepts described in \mysec{sec:embed_arch}
+are still valid for a real PLC. The only difference is that, in this particular case, I/O pins are used as part of more complex protocols (SPI, DMA, etc.) and
+are multiplexed to the corresponding controllers inside the SoC. Therefore, to obtain more elaborated attacks, further research effort is required.
+
+After the analysis, we developed our attack in two different variants as well: kernel side and user side.
+Both versions have basically no CPU overhead during the DoS condition, because no operation is performed after disabling the interrupt line used for I/O.
+
+
+\subsubsection{Kernel side}
+
+This version requires root privileges, since it is designed as a loadable kernel module.
+The module leverages the \verb|disable_irq| function provided by the Linux kernel, which requires the interrupt line number to disable.
+Thus, the attacker needs to know the target system model, but no knowledge of the PLC logic nor of the I/O mapping is required, because the system uses the same
+configuration independently from the current logic.
+We found the interrupt line number by inserting a kernel probe for the \verb|disable_irq| function, and triggering the PLC runtime to disable the interrupts
+while loading a new logic.
+
+
+\subsubsection{User side}
+
+This version requires at least the same privilege level of the PLC runtime, who is able to enable/disable the interrupt with the following operations (from strace):
+\begin{Verbatim}[fontsize=\small]
+	[...]
+	04:09:46.008222 open("/dev/kbus0", O_RDWR) = 11
+	[...]
+	04:09:46.009237 write(11, "\x01\x00\x00\x00", 4) = 0
+	[...]
+	04:09:46.070565 write(11, "\x00\x00\x00\x00", 4) = 0
+	[...]
+\end{Verbatim}
+Writing a $1$ into the \verb|/dev/kbus0| file disables the interrupt, while a $0$ enables it. We can implement the attack by emulating these PLC runtime operations from user space.
+The effect of this second variant is the same as the kernel module one, but it requires less privilege and it could be exploited through a
+remote code execution vulnerability of the PLC runtime, which is again based on CODESYS \cite{abb-codesys,codesys-server}.
