@@ -443,14 +443,14 @@ we designed the PLC logic shown in \myfig{fig:pi_logic}, whose code is executed 
 \centerline{\includegraphics[width=0.8\textwidth]{res/pi_logic}}
 \caption{PLC logic loaded into Raspberry Pi \label{fig:pi_logic}}
 \end{figure}
-We chose a $10ms$ scan cycle interval, however, since this PLC runtime is not real-time, the timing may be affected by small errors ($\approx 50\micro s$). 
+We chose a $\SI{10}{ms}$ scan cycle interval, however, since this PLC runtime is not real-time, the timing may be affected by small errors ($\approx \SI{50}{\micro s}$). 
 At each scan cycle, the logic reads from pin 24 (push-button), and writes the outputs accordingly.
-The motor is driven with a sinus wave which makes it going forward and backward in the interval $[-45^\circ, +45^\circ]$.
-If the button is not pressed, which corresponds to value $1$ (high), the LED is toggled every $2s$ and the motor completes a round in $2s$.
-If the button is pressed, that is value $0$ (low), both LED and motor frequencies are multiplied by $4$, and the new round time becomes $500ms$.
+The motor is driven with a sinus wave which makes it going forward and backward in the interval $[\SI{-45}{\degree}, \SI{+45}{\degree}]$.
+If the button is not pressed, which corresponds to value $1$ (high), the LED is toggled every $2s$ and the motor completes a round in $\SI{2}{s}$.
+If the button is pressed, that is value $0$ (low), both LED and motor frequencies are multiplied by $4$, and the new round time becomes $\SI{500}{ms}$.
 The timing of the write operations, which is a multiple of the scan cycles, is controlled by software counters embedded into the logic.
 Thus, while the input is high the counters are updated at normal speed; while the input is low they get updated $4$ times faster.
-Furthermore, the logic does not write to the outputs at each scan cycle, but only when their values change (\eg the LED pin is written only every $2s$).
+Furthermore, the logic does not write to the outputs at each scan cycle, but only when their values change (\eg the LED pin is written only every $\SI{2}{s}$).
 This is typically different from the normal behaviour of a real-time PLC, as discussed in \mysec{sec:attack_plc}.
 
 Given the system above, a possible implementation of Pin Control Attack can target input or output pins, having different effects.
@@ -458,7 +458,7 @@ By re-configuring an output pin as input, it is possible to disable the PLC logi
 Instead, by changing an input pin into output, and writing its own values, an attacker can actually modify the behaviour of the outputs.
 In our case, if the attacker is able to intercept PLC logic read operations and write its own values, he can actually decide the frequency of the outputs.
 For instance, as demonstrated by our attack experiments, if the attacker feeds the logic with $0$ and $1$ alternatively at each scan cycle,
-the round time of the outputs becomes the average between $2s$ and $500ms$, factually having a frequency that is not even programmed into the logic.
+the round time of the outputs becomes the average between $\SI{2}{s}$ and $\SI{500}{ms}$, factually having a frequency that is not even programmed into the logic.
 But there is a limitation to this attack approach, implied by the architecture described in \mysec{sec:pinconf} and confirmed by the experiments:
 the read operation is not reliable if the pin is configured as output pin. In our case, if we reconfigure pin 24 as output, the malicious value written into the write register
 is not always the same value read by the PLC logic. That is probably because the voltage on the pin is actually driven by two entities at the same time,
@@ -528,12 +528,12 @@ obtaining the system shown in \myfig{fig:plc_system}.
 \caption{Wago PLC system used for experiments \label{fig:plc_system}}
 \end{figure}
 
-The PLC runtime environment is the \emph{e!COCKPIT} runtime provided by Wago, which is always based on CODESYS. From the Wago e!COCKPIT engineering software,
-we programmed a simple logic which toggles the value of the LED every $500ms$ only when the button is not pressed (high input). If the button is pressed,
+The PLC runtime environment is the \emph{e!RUNTIME} provided by Wago, which is always based on CODESYS. From the Wago \emph{e!COCKPIT} engineering software,
+we programmed a simple logic which toggles the value of the LED every $\SI{500}{ms}$ only when the button is not pressed (high input). If the button is pressed,
 the LED stops blinking and maintains its current value until the button is released. The logic, in \emph{Structured Text} (ST) language, is shown in \myfig{fig:plc_logic}.
-It assumes a scan cycle of $10ms$, and uses a software counter to achieve the timing of $500ms$. The picture also shows the mapping between the variables
+It assumes a scan cycle of $\SI{10}{ms}$, and uses a software counter to achieve the timing of $\SI{500}{ms}$. The picture also shows the mapping between the variables
 and the I/O pins of the external module. Differently from the Raspberry Pi system behaviour, here the outputs are updated on every scan cycle, even if the value has not been changed
-during the last $10ms$.
+during the last $\SI{10}{ms}$.
 \begin{figure}[h]
 \centerline{\includegraphics[width=\textwidth]{res/plc_logic}}
 \caption{PLC logic loaded into Wago PLC \label{fig:plc_logic}}
@@ -570,7 +570,7 @@ From strace, we found that the PLC runtime uses the driver through \verb|ioctl| 
 	[...]
 \end{Verbatim}
 The code shows two scan cycles. Each one is basically made of an \verb|ioctl| call, plus the corresponding calls needed to achieve the timing
-of $10ms$ (\verb|clock_gettime| and \verb|nanosleep| functions).
+of \SI{10}{ms} (\verb|clock_gettime| and \verb|nanosleep| functions).
 Each \verb|ioctl| call from user space is directed to the internal \verb|kbus_ioctl| function of the KBUS driver.
 The argument \verb|0xb54a47d0| passed to the \verb|ioctl| call is a pointer to a data buffer. Further analysis has shown that the buffer contains at least $2$
 bytes, one for input pins and one for output pins ($8$ bits each). Thus, every \verb|ioctl| call serves both as read and write operation.
@@ -581,7 +581,7 @@ inside the buffer. The effect was more powerful as the one achieved by Pin Contr
 function hooking, which is forbidden by our threat model (\mysec{sec:threat_model}).
 
 Going deeper into the PLC runtime and into the KBUS driver through kprobes, we found another interesting behaviour, which allowed us to craft an attack able to break the I/O communication
-without the \emph{e!COCKPIT} runtime noticing anything and without hooking any function. The SPI protocol, used by KBUS, leverages four pins of the AM3517 SoC, two for data (in/out),
+without \emph{e!RUNTIME} noticing anything and without hooking any function. The SPI protocol, used by KBUS, leverages four pins of the AM3517 SoC, two for data (in/out),
 one for synchronisation (clock) and one for chip select. The PLC SoC is the SPI master, and the digital I/O module is the selected SPI slave.
 Each \verb|ioctl| operation is translated into an SPI transfer, made through the DMA controller. Each DMA transfer makes use of an interrupt to signal when the transfer
 is completed (or some error occurred). The KBUS driver exposes a \verb|write| operation through which it is possible to enable/disable the interrupt.
@@ -595,9 +595,18 @@ Although it is very simple and limited to DoS, this kind of attack, which we can
 such as the stealthiness and the hardware-level target.
 We believe that more sophisticated attacks are possible, since the basic hardware concepts described in \mysec{sec:embed_arch}
 are still valid for a real PLC. The only difference is that, in this particular case, I/O pins are used as part of more complex protocols (SPI, DMA, etc.) and
-are multiplexed to the corresponding controllers inside the SoC. Therefore, to obtain more elaborated attacks, further research effort is required.
+are multiplexed to the corresponding controllers inside the SoC.
+For instance, our experiments revealed that multiplexing a data pin of SPI leads the PLC runtime to wait indefinitely for data, thus giving a chance to the operator
+for noticing the anomalous delay. Therefore, to understand how each pin is used and obtain more elaborated attacks (\eg faking data through GPIO),
+further research effort is required.
+\myfig{fig:plc_io} shows the results of our reverse engineering analysis on Wago PLC, outlining the main control flow executed during each I/O operation.
+The scheme may be used as a starting point for future research.
+\begin{figure}[h]
+\centerline{\includegraphics[width=0.9\textwidth]{res/plc_io}}
+\caption{PLC I/O operations executed for each scan cycle \label{fig:plc_io}}
+\end{figure}
 
-After the analysis, we developed our attack in two different variants as well: kernel side and user side.
+To conclude our PLC analysis, we developed the IRQ DoS attack in two different variants: kernel side and user side.
 Both versions have basically no CPU overhead during the DoS condition, because no operation is performed after disabling the interrupt line used for I/O.
 
 

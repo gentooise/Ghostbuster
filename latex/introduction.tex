@@ -83,7 +83,7 @@ The server is accessible from a terminal, through which an operator can load the
 
 Suppose that the PLC logic is programmed to read the values from the temperature sensor, and to open the relief valve if the temperature goes over $80^\circ C$.
 An attacker could tamper the temperature value read by the PLC, re-configuring the pin related to the sensor as output and writing its own desired value
-(\eg always $50^\circ C$) regardless of the actual temperature.
+(\eg always $\SI{50}{\degree C}$) regardless of the actual temperature.
 Even simpler, one could reconfigure the pin connected to the valve (\eg setting it as input) factually disabling any eventual command to the actuator.
 
 Actually there is no detection mechanism able to react to these configuration changes, neither in the PLC firmware nor in the control system.
