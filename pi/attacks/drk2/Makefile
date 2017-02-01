@@ -1,5 +1,5 @@
 obj-m:= drk.o
-KDIR := ../../../linux_pi
+KDIR := ../../../../linux_pi
 PWD := $(shell pwd)
 
 default:
