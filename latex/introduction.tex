@@ -62,7 +62,7 @@ They can be easily written by a malicious application even while the system is r
 As a consequence, the behaviour of the I/O interface, hence the interaction with the physical process, may be altered in a dramatic way.
 In \cite{ghostplc}, Abbasi et al. showed how this feature is exploitable by attackers, who can tamper with
 the integrity or the availability of legitimate I/O operations, factually changing how a PLC interacts with sensors and actuators.
-Based on these observations, they introduced a novel attack technique against PLCs, which they call Pin Control Attack (also I/O attack).
+Based on these observations, they introduced a novel attack technique against PLCs, which they call Pin Control Attack (also I/O attack \cite{tech_ghostplc}).
 The salient features of this new class of attacks are:
 \begin{enumerate}[itemsep=2pt,topsep=0pt]
 	\item It is intrinsically stealth. The alteration of the pin configuration does not generate any interrupt, preventing the Operating System (OS) to react to it.

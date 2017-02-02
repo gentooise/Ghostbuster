@@ -110,8 +110,8 @@ In these cases the effects strongly depends on the actual implementation of the 
 
 \subsubsection{Pin multiplexing}
 
-Inside the chip an I/O pin may be connected to more than one device, which can be selected depending on the application,
-that is the way of soldering or wiring the package into an electronic board.
+Inside a chip, each I/O pin may be connected to more than one device, which can be selected depending on the application
+(i.e. the way of soldering or wiring the package into an electronic board).
 This SoC feature is known as pin multiplexing (also ball multiplexing, pad multiplexing, alternate functions).
 Even though pin multiplexing is designed for hardware configuration, in almost all modern chips it is possible to change the function at run-time.
 
@@ -284,7 +284,7 @@ Second, the references used by both defenses are \emph{static}, which means that
 Thus, an attacker could still use dynamic memory, whose content changes during run-time, to conduct its own attack.
 In the case of SEM, only static code regions (which are immutable) are taken into account, so any malware placed in dynamic memory will not be detected.
 Autoscopy Jr., instead, considers the function pointers used inside the kernel, including the ones inside the System Call Table and other similar tables.
-Therefore, it is able to detect only \emph{data hooks} but not \emph{code hooks}, that is, any direct code modification (\eg of the kernel text) is still possible.
+Therefore, it is able to detect only \emph{data hooks} but not \emph{code hooks}; in other words, any direct code modification (\eg of the kernel text) is still possible.
 
 Anyway, these two defenses may be used in combination, thus providing a host-based IDS able to detect both code and data hooks.
 Even if they are deployed together, however, attacks through dynamic memory and without function hooking are still possible,
@@ -604,7 +604,7 @@ The second byte represents the input value related to the previous scan cycle, w
 In the above case, \verb|0x00| means that all the digital input lines were low.
 
 Each I/O operation begins with a call to \verb|gpio_set_value|, which writes on a GPIO pin, indicating to the I/O module that a transfer is starting.
-The pin used for this purpose is the GPIO pin $97$, that is pin $1$ of GPIO bank $4$ (each bank controls $32$ pins). The value written into the pin is $0$,
+The pin used for this purpose is the GPIO pin $97$, i.e. pin $1$ of GPIO bank $4$ (each bank controls $32$ pins). The value written into the pin is $0$,
 since the signal is active low. Afterwards, the data buffer is encapsulated into an SPI message, starting an SPI transfer.
 The SPI interface leverages four pins of the AM3517 SoC, two for data input and output (MOSI: Master Output Slave Input, and MISO: Master Input Slave Output),
 one for synchronisation (SCL: Serial CLock) and one for chip select (SS: Slave Select).
@@ -636,12 +636,21 @@ After having a good knowledge of the KBUS driver, we finally crafted three diffe
 noticing anything and without hooking any function. The first two attacks are about Pin Configuration and Pin Multiplexing.
 From the previous analysis, we know that the pin 97, multiplexed as GPIO and configured as output, is used by KBUS to send the \emph{transfer start} signal.
 If we either multiplex or configure the pin in a different way, we are able to prevent e!RUNTIME from reading and writing values to the I/O.
-This implementation demonstrate that I/O attack is perfectly applicable to real PLCs, even though we only obtained a Denial of Service effect.
+This implementation demonstrates that I/O attack is perfectly applicable to real PLCs, even though it is still less powerful with respect to the
+original version described in \mysec{sec:attack_pi}. In fact, our version enables the attacker to perform only one of the operations defined for Pin Control Attack:
+disabling the output. Actually, since read and write are performed within the context of the same SPI transfer, also the input gets disabled at the same time.
+However, this is irrelevant because the PLC logic cannot write to output in any case, independently from the input.
+As discussed before, whether this operation may allow the attacker to alter the physical process, or not, is highly variable case by case.
+For instance, in our target system, we proved that by repeating the attack every $\SI{50}{ms}$ with a trivial script, we were able to modify the logic behaviour:
+the LED output started blinking every $\SI{50}{ms}$ instead of the original $\SI{500}{ms}$.
 Furthermore, we found another interesting attack vector, which leverages the interrupt line used by the DMA controller and the \verb|write| interface provided by the KBUS driver.
-Our experiments show that if this interrupt is masked while the PLC logic is running, the system is not able to read/write the I/O, thus obtaining again a
-Denial of Service (DoS) condition. Although it is still very simple and limited to DoS, this kind of attack, which we can call \emph{IRQ Configuration Attack},
+Our experiments show that if this interrupt is masked while the PLC logic is running, the system is not able to read/write the I/O,
+thus obtaining again the same effect as the previous implementation. Although it is still very simple, this kind of attack, which we can call \emph{IRQ Configuration Attack},
 has some similarities with Pin Control Attack, such as the stealthiness and the hardware-level target.
 The PLC runtime is not able to notice our attacks, no failures or errors are reported and no function hooks are required.
+For both attack versions, the CPU overhead depends on the actual implementation, since the attacker can decide at which frequency disabling/enabling the I/O.
+Generally speaking, the overhead is very low, because only one operation is needed to do/undo the attack, respectively, which is typically translated into two or three
+processor instructions.
 
 As discussed above, we believe that more sophisticated attacks are possible, since the basic hardware concepts described in \mysec{sec:embed_arch}
 are still valid for a real PLC. The only difference is that, in this particular case, I/O pins are used as part of more complex protocols (SPI, DMA, etc.) and
@@ -669,7 +678,6 @@ Re-using already mapped addresses is theoretically feasible, because the control
 However, the attacker needs to know the kernel virtual addresses (\eg by looking at page tables) in order to have access to the mapped registers.
 
 Finally, for our IRQ configuration attack, we implemented it in two different variants as well: kernel side and user side.
-Both versions have basically no CPU overhead during the DoS condition, because no operation is performed after disabling the interrupt line used for I/O.
 
 
 \paragraph{Kernel side}
