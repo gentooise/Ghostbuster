@@ -111,7 +111,7 @@ In these cases the effects strongly depends on the actual implementation of the 
 \subsubsection{Pin multiplexing}
 
 Inside a chip, each I/O pin may be connected to more than one device, which can be selected depending on the application
-(i.e. the way of soldering or wiring the package into an electronic board).
+(\ie the way of soldering or wiring the package into an electronic board).
 This SoC feature is known as pin multiplexing (also ball multiplexing, pad multiplexing, alternate functions).
 Even though pin multiplexing is designed for hardware configuration, in almost all modern chips it is possible to change the function at run-time.
 
@@ -604,7 +604,7 @@ The second byte represents the input value related to the previous scan cycle, w
 In the above case, \verb|0x00| means that all the digital input lines were low.
 
 Each I/O operation begins with a call to \verb|gpio_set_value|, which writes on a GPIO pin, indicating to the I/O module that a transfer is starting.
-The pin used for this purpose is the GPIO pin $97$, i.e. pin $1$ of GPIO bank $4$ (each bank controls $32$ pins). The value written into the pin is $0$,
+The pin used for this purpose is the GPIO pin $97$, \ie pin $1$ of GPIO bank $4$ (each bank controls $32$ pins). The value written into the pin is $0$,
 since the signal is active low. Afterwards, the data buffer is encapsulated into an SPI message, starting an SPI transfer.
 The SPI interface leverages four pins of the AM3517 SoC, two for data input and output (MOSI: Master Output Slave Input, and MISO: Master Input Slave Output),
 one for synchronisation (SCL: Serial CLock) and one for chip select (SS: Slave Select).
