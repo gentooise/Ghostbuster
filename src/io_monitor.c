@@ -97,6 +97,9 @@ void handle_io_detection(io_detect_t* info) {
 	}
 }
 
+int map_overlaps_io(unsigned long start, unsigned long end) {
+	__map_overlaps_io(start, end);
+}
 
 void stop_io_monitor(void) {
 	kthread_stop(task);

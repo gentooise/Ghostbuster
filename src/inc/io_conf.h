@@ -1,10 +1,6 @@
 #ifndef __IO_CONF_H
 #define __IO_CONF_H
 
-/*
- * I/O definitions
- */
-
 // I/O configuration to monitor, modeled as a set of I/O memory blocks.
 typedef struct {
 	const void** addrs; // Set of address blocks
@@ -44,10 +40,14 @@ extern void handle_io_detection(io_detect_t*);
  * The implementation must define an io_conf_t object named phys_io_conf, filling all the necessary fields.
  * The structure must be statically initialized and const, so it will be put in the read-only section by the compiler.
  *
- * Declaration example:
+ * Definition example:
  * static const io_conf_t phys_io_conf = {
  * 	<physical_values>
  * };
+ *
+ * The I/O configuration must be defined separately in a header file named "io_defs.h".
+ * This separation is needed in order to provide the I/O configuration to the map monitor,
+ * even if the I/O monitor is disabled.
  *
  * The structure will be then accessed by the monitor through the following macro.
  */

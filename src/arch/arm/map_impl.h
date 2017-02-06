@@ -14,6 +14,7 @@
 static void** sys_call_table;
 static void* original_syscalls[HOOKS_COUNT];
 static free_maps_t free_maps_callback;
+static void* mmap_mem; // Pointer to '/dev/mem' mmap function (used to recognize physical memory requests)
 
 static int exit_notifier(struct notifier_block *self, unsigned long cmd, void *t) {
 	struct thread_info* thread = t;
@@ -62,12 +63,25 @@ static void hook_map_syscalls(void** hooks, void** addrs, free_maps_t fm) {
 	addrs[REMAP_FILE_PAGES_INDEX] = original_syscalls[REMAP_FILE_PAGES_INDEX];
 	addrs[MUNMAP_INDEX] = original_syscalls[MUNMAP_INDEX];
 
+	mmap_mem = (void*)kallsyms_lookup_name("mmap_mem"); // Initialize mmap_mem function pointer
+
 	// Place our hooks
 	free_maps_callback = fm;
 	patch_map_syscalls(hooks);
 	// Use the notifier implemented for ARM (<asm/thread_notify.h>).
 	// Overhead: normal function call.
 	thread_register_notifier(&exit_notifier_block);
+}
+
+static inline int is_phys_mem(unsigned long fd) {
+	int res = NOT_PHYS_MEM;
+	struct file *f = fget(fd);
+	if (!f) goto bad_fd;
+	if (f->f_op->mmap == mmap_mem) // mmap requested on physical memory /dev/mem
+		res = PHYS_MEM;
+	fput(f);
+bad_fd:
+	return res;
 }
 
 static void restore_map_syscalls(void) {

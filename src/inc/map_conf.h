@@ -21,8 +21,11 @@
  *                                           unsigned long flags);
  * - static asmlinkage long munmap(unsigned long addr, size_t len);
  *
- * These functions needs to be monitored in order to keep track of who is requesting access
- * to some protected portion of I/O memory.
+ * The above interface needs to be monitored in order to keep track of who is requesting access
+ * to some protected portion of I/O memory. In Linux, these mapping functions are not only used
+ * for physical memory, but in general for mapping any file, device, etc.
+ * Thus, the implementation should provide a mechanism to determine when a request refers to
+ * physical memory, that is our target.
  *
  * Furthermore, it is needed to have a notification whenever a process is exiting,
  * that is, when the kernel is freeing its address space (inside do_exit).
@@ -49,7 +52,6 @@ typedef asmlinkage long (*munmap_t)(unsigned long, size_t);
 
 typedef asmlinkage void (*free_maps_t)(int);
 
-
 /*
  * Hook the given mapping syscalls with the given addresses and store the function pointers to
  * the original syscalls. After the monitor has finished its check on a hooked syscall,
@@ -63,6 +65,18 @@ typedef asmlinkage void (*free_maps_t)(int);
  */
 
 static void hook_map_syscalls(void** hooks, void** addrs, free_maps_t fm);
+
+/*
+ * Determines whether the current mapping request is targeting physical memory or not.
+ *
+ * @fd: the request file descriptor
+ *
+ * Return: PHYS_MEM if the target is physical memory, NOT_PHYS_MEM otherwise.
+ */
+
+#define NOT_PHYS_MEM		0
+#define PHYS_MEM    		1
+static inline int is_phys_mem(unsigned long fd);
 
 /*
  * Restore the original mapping syscalls.

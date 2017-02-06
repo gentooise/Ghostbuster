@@ -29,24 +29,57 @@
  * Thus, to protect I/O memory from any attack (kernel or user), it is enough to monitor its state from kernel space.
  * This monitor should check the target I/O memory every DR_MONITOR_INTERVAL milliseconds,
  * and eventually restore the trusted state back whenever a change is detected.
+ *
+ * Furthermore, it provides an interface to determine whether a mapping request overlaps
+ * with some protected I/O address. This interface is available also if I/O monitor is disabled.
  */
+
+// Map overlap checking interface
+#define NOT_OVERLAPPING    	0
+#define OVERLAPPING        	1
+#define __map_overlaps_io(start, end) do {                              	\
+	unsigned i;                                                     	\
+	unsigned long b_start, b_end;                                   	\
+	for (i = 0; i < PHYS_IO_CONF->blocks; i++) {                    	\
+		b_start = (unsigned long)PHYS_IO_CONF->addrs[i];        	\
+		b_end = b_start + (unsigned long)PHYS_IO_CONF->sizes[i];	\
+		if ( (start >= b_start && start <= b_end) ||            	\
+		     (end >= b_start && end <= b_end) )                 	\
+			return OVERLAPPING;                             	\
+	}                                                               	\
+	return NOT_OVERLAPPING;                                         	\
+} while(0)
+
 
 #ifdef IO_MONITOR_ENABLED
 
-/*
- * Needs further analysis to find a proper value.
- * It strongly depends on the target system.
- */
-#define IO_MONITOR_INTERVAL 10 // ms
+#define IO_MONITOR_INTERVAL	10 // ms
 
 int start_io_monitor(int, void*);
 
 void stop_io_monitor(void);
 
+// Map interface delegated to I/O monitor.
+int map_overlaps_io(unsigned long start, unsigned long end);
+
 #else
 
 #define start_io_monitor(x,y)	0
 #define stop_io_monitor()    	(void)0
+
+// Include only basic I/O configuration to provide map interface.
+typedef struct {
+	const void** addrs; // Set of address blocks
+	const unsigned* sizes; // Size of each block in bytes
+	const unsigned blocks; // Number of blocks
+	const unsigned size; // Total size
+} io_conf_t;
+#define PHYS_IO_CONF	((const io_conf_t*)&phys_io_conf)
+#include "io_defs.h"
+
+static inline int map_overlaps_io(unsigned long start, unsigned long end) {
+	__map_overlaps_io(start, end);
+}
 
 #endif
 

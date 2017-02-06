@@ -4,16 +4,8 @@
 #include <asm/io.h>
 #include <linux/delay.h>
 
+#include "io_defs.h"
 #include "dr_monitor.h"
-
-/*
- *
- * Broadcom 2835 System-on-Chip used in the first generation of Raspberry Pi board.
- * https://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2835/README.md
- *
- * BCM2835 Datasheet: https://www.raspberrypi.org/wp-content/uploads/2012/02/BCM2835-ARM-Peripherals.pdf
- *
- */
 
 /*
  * We monitor pin configuration and pin multiplexing registers (which are the same registers in BCM2835).
@@ -39,112 +31,6 @@
  *   1) A Pin Multiplexing register has been changed
  *   2) A Pin Configuration register has been changed, and it is not conforming with actual operation performed by the PLC logic.
  */
-
-/*
- * We have 6 different I/O control registers in the target system, starting from physical address 0x20200000,
- * for both pin multiplexing and pin configuration. Each register is 32-bit wide, having
- * 3 bits for each I/O pin, for a total of 10 pins managed by each register.
- */
-#define IO_BLOCKS            	1 // Registers are contiguous, only one block needed
-#define PINS_PER_REG         	10
-
-// Block 1
-#define PIN_CTRL_BASE        	((void*)0x20200000) // Pin controller start address
-#define PIN_CTRL_SIZE        	24 // 6 regs * 4 bytes each
-
-// Other blocks here...
-// #define ...
-
-#define __IO_STATE_TOTAL_SIZE	24 // Total size of I/O memory to monitor in bytes
-
-/*
- * Pin modes:       _
- *   000 Input       | Pin Configuration
- *   001 Output     _|
- *   010 Function 0  |
- *   ... ...         | Pin Multiplexing
- *   111 Function 5 _|
- */
-#define CTRL_BITS_PER_PIN    	3
-#define __PIN_CTRL_MASK        	0x07 // 111b: the three control bits of a pin
-#define __PIN_MUX_MASK         	0x06 // 110b: the most significant bits are for multiplexing 
-#define __PIN_CONF_MASK        	0x01 // 001b: the least significant bit is for configuration (input/output)
-
-#define PIN_CTRL_MASK(p)     	(__PIN_CTRL_MASK << (p * CTRL_BITS_PER_PIN))
-#define PIN_MUX_MASK(p)      	(__PIN_MUX_MASK << (p * CTRL_BITS_PER_PIN))
-#define PIN_CONF_MASK(p)     	(__PIN_CONF_MASK << (p * CTRL_BITS_PER_PIN))
-
-/*
- * Registers needed for checking the actual operation of PLC runtime.
- * We have 3 types of registers in BCM2835:
- *   - Level registers: used to READ the value of a pin
- *   - Clear registers: used to WRITE 0 to the value of a pin
- *   - Set registers: used to WRITE 1 to the value of a pin
- *
- * For each type, we have 2 registers: the first one is for pins [0-31],
- * the second one is for pins [32-53] (some bits unused).
- *
- * Since we want to monitor how these register are used by the PLC logic,
- * we need relative offsets with respect to physical address 0x20200000.
- * These offsets will be added to the virtual starting address mapped
- * by the PLC runtime, and the result will be provided to debug registers.
- */
-#define REG_NUM     	2
-
-#define REG_LEV0    	0x34
-#define REG_LEV1    	0x38
-
-#define REG_CLR0    	0x28
-#define REG_CLR1    	0x2C
-
-#define REG_SET0    	0x1C
-#define REG_SET1    	0x20
-
-static const unsigned lev_regs[REG_NUM] = {
-	REG_LEV0,
-	REG_LEV1
-};
-
-static const unsigned clr_regs[REG_NUM] = {
-	REG_CLR0,
-	REG_CLR1
-};
-
-static const unsigned set_regs[REG_NUM] = {
-	REG_SET0,
-	REG_SET1
-};
-
-// Macros for global pin number and LEV, CLR, SET registers
-// Global pin range: [0-63] -> 000000 - 111111
-// Bit 5 -----> index
-// Bit [0-4] -> shift
-#define PIN_INDEX(p)	(((p) & 32) >> 5) // bit 5
-#define PIN_SHIFT(p)	((p) & 31) // bits 0-4
-
-#define LEV_REG(pin)	(lev_regs[PIN_INDEX(pin)])
-#define CLR_REG(pin)	(clr_regs[PIN_INDEX(pin)])
-#define SET_REG(pin)	(set_regs[PIN_INDEX(pin)])
-
-
-static const void* bcm2835_io_addrs[IO_BLOCKS] = {
-	PIN_CTRL_BASE
-};
-
-static const unsigned bcm2835_io_sizes[IO_BLOCKS] = {
-	PIN_CTRL_SIZE
-};
-
-// Fill in the required global struct.
-static const io_conf_t phys_io_conf = {
-	.addrs = bcm2835_io_addrs,
-	.sizes = bcm2835_io_sizes,
-	.blocks = IO_BLOCKS,
-	.size = __IO_STATE_TOTAL_SIZE
-};
-
-
-#define IO_BLOCK_SIZE(b) (phys_io_conf.sizes[b] / sizeof(u32))
 
 /*
  * Our target platform has all 32-bit wide registers, we can use u32 for every read/write.
@@ -212,6 +98,15 @@ static inline void check_io_state(volatile void* block, const void* state, unsig
  *
  */
 
+static void* volatile hw_break = NULL;
+static DEFINE_MUTEX(dr_lock);
+#define atomic_reset_dr(dr) do {	\
+	mutex_lock(&dr_lock);   	\
+	if (dr) reset_dr(dr);   	\
+	dr = NULL;              	\
+	mutex_unlock(&dr_lock); 	\
+} while (0)
+
 static volatile int legitimate = LEGITIMATE; // Default state
 static volatile unsigned pin;
 
@@ -227,10 +122,11 @@ static void dr_write_handler(struct perf_event *bp, struct perf_sample_data *dat
 	// to write to the pin while it's in input mode: Pin Control Attack.
 	if (regs->ARM_r2 & (1 << PIN_SHIFT(pin))) {
 		legitimate = NOT_LEGITIMATE;
+		atomic_reset_dr(hw_break); // Remove watchpoint
 	}
 }
 
-#define WAIT_FOR_LOGIC_R	30
+#define WAIT_FOR_LOGIC_R	15
 static void dr_read_handler(struct perf_event *bp, struct perf_sample_data *data, struct pt_regs *regs) {
 	// Read instruction of PLC runtime:
 	//  - LDR	R2, [R3] (00 20 93 E5)
@@ -238,6 +134,7 @@ static void dr_read_handler(struct perf_event *bp, struct perf_sample_data *data
 	// really considered input), because the register includes 32 pins. Therefore, we assume that
 	// PLC logic may have only one input on the watched register, so any read here means Pin Control Attack.
 	legitimate = NOT_LEGITIMATE;
+	atomic_reset_dr(hw_break); // Remove watchpoint
 }
 
 /*
@@ -271,12 +168,14 @@ static void dr_read_handler(struct perf_event *bp, struct perf_sample_data *data
 
 static inline int is_legitimate(io_detect_t* info, int pid, void* vaddr) {
 	target_info_t* tinfo = (target_info_t*)info->target_info;
-	void* hw_break = NULL;
 
 	pid = 0; // PID not supported for now
 
-	if (tinfo->diff & PIN_MUX_MASK(tinfo->reg_pin)) {
-		// Pin Multiplexing is not legitimate
+	// It is pin multiplexing if either pin mux bits are modified or
+	// at least one of pin mux bits is not 0 and pin conf bit is modified
+	if ( (tinfo->diff & PIN_MUX_MASK(tinfo->reg_pin)) ||
+	     (info->old_val & PIN_MUX_MASK(tinfo->reg_pin)) ) {
+		// Pin Multiplexing is never legitimate
 		return NOT_LEGITIMATE;
 	} else {
 		// Pin Configuration: check if PLC logic is conforming with configuration
@@ -295,7 +194,7 @@ static inline int is_legitimate(io_detect_t* info, int pid, void* vaddr) {
 			hw_break = set_write_dr(pid, vaddr + SET_REG(pin), dr_write_handler);
 			msleep(WAIT_FOR_LOGIC_W);
 		}
-		reset_dr(hw_break);
+		atomic_reset_dr(hw_break); // Remove watchpoint
 		if (legitimate) return LEGITIMATE;
 		legitimate = LEGITIMATE; // Reset flag
 		return NOT_LEGITIMATE;

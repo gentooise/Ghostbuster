@@ -5,7 +5,7 @@
 #include <linux/file.h>
 #include <linux/mman.h>
 
-#include "io_conf.h"
+#include "io_monitor.h" // For map_overlaps_io
 #include "map_list.h"
 #include "map_conf.h"
 #include "map_monitor.h"
@@ -39,27 +39,10 @@ static void* original[HOOKS_COUNT];
 #define remap_file_pages_real	((remap_file_pages_t)original[REMAP_FILE_PAGES_INDEX])
 #define munmap_real          	((munmap_t)original[MUNMAP_INDEX])
 
-static void* mmap_mem; // Pointer to /dev/mem mmap function (used to recognize /dev/mem requests)
-
 int start_map_monitor(void) {
-	mmap_mem = (void*)kallsyms_lookup_name("mmap_mem");
-
 	hook_map_syscalls(hooks, original, free_maps);
 
 	log_info("MAP monitor started\n");
-	return 0;
-}
-
-static int map_overlaps_io(unsigned long start, unsigned long end) {
-	unsigned i;
-	unsigned long b_start, b_end;
-	for (i = 0; i < PHYS_IO_CONF->blocks; i++) {
-		b_start = (unsigned long)PHYS_IO_CONF->addrs[i];
-		b_end = b_start + (unsigned long)PHYS_IO_CONF->sizes[i];
-		if ( (start >= b_start && start <= b_end) ||
-		     (end >= b_start && end <= b_end) )
-			return 1; // Overlaps
-	}
 	return 0;
 }
 
@@ -72,37 +55,31 @@ static asmlinkage long my_mmap2(unsigned long addr, unsigned long len,
                                 unsigned long prot, unsigned long flags,
                                 unsigned long fd, unsigned long pgoff) {
 	unsigned long start, end, vaddr;
-	struct file *file = NULL;
 	pid_t pid = current->pid;
 	char* comm = current->comm;
 
 	len = PAGE_ALIGN(len);
 	
-	file = fget(fd);
-	if (!file) goto original_mmap2;
-	if (file->f_op->mmap == mmap_mem) { // mmap requested on physical memory /dev/mem
+	if (is_phys_mem(fd)) {
 		// Check I/O physical address overlap
 		start = pgoff << PAGE_SHIFT;
 		end = start + len; // end is also pagealigned
 		if (map_overlaps_io(start, end)) {
 			log_info("mmap2 request: phys[0x%08lx - 0x%08lx] from %s (%d)", start, end, comm, pid);
 			handle_mmap(vaddr, mmap2_real, addr, len, prot, flags, fd, pgoff);
-			goto mapping_add;
+		} else {
+			vaddr = mmap2_real(addr, len, prot, flags, fd, pgoff);
 		}
-		vaddr = mmap2_real(addr, len, prot, flags, fd, pgoff);
-mapping_add:
+
 		if (!IS_ERR_VALUE(vaddr)) {
 			if (add_mapping(start, len, vaddr, pid)) {
 				log_err("Unable to allocate kernel space for page mappings\n");
 				stop_map_monitor();
 			}
 		}
-		if (file) fput(file);
 		return vaddr;
 	}
 
-	if (file) fput(file);
-original_mmap2:
 	return mmap2_real(addr, len, prot, flags, fd, pgoff);
 }
 
@@ -119,7 +96,7 @@ static asmlinkage long my_mremap(unsigned long addr,
 	if (flags & MREMAP_FIXED) n_addr = new_addr;
 	else n_addr = addr;
 
-	if (!(paddr = get_mapped_phys(addr, pid))) goto original_mremap;
+	if (!(paddr = get_mapped_phys(addr, pid))) goto original_mremap; // Not referred to physical memory
 
 	if (new_len > old_len) { // Growing is dangerous
 		end = paddr + new_len;
@@ -155,7 +132,7 @@ static asmlinkage long my_remap_file_pages(unsigned long addr, unsigned long len
 	addr = addr & PAGE_MASK;
 	len = PAGE_ALIGN(len);
 
-	if (!(paddr = get_mapped_phys(addr, pid))) goto original_remap_file_pages;
+	if (!(paddr = get_mapped_phys(addr, pid))) goto original_remap_file_pages; // Not referred to physical memory
 
 	start = pgoff << PAGE_SHIFT;
 	end = start + len;
@@ -182,9 +159,8 @@ static asmlinkage long my_munmap(unsigned long addr, size_t len) {
 	if (addr & ~PAGE_MASK) goto original_munmap;
 	len = PAGE_ALIGN(len);
 
-	if (!get_mapped_phys(addr, pid)) goto original_munmap;
-	log_info("munmap request: virt[0x%08lx - 0x%08lx] from %s (%d)\n",
-	         addr, addr + len, comm, pid);
+	if (!get_mapped_phys(addr, pid)) goto original_munmap; // Not referred to physical memory
+	log_info("munmap request: virt[0x%08lx - 0x%08lx] from %s (%d)\n", addr, addr + len, comm, pid);
 
 	delete_mapping(addr, len, pid);
 
