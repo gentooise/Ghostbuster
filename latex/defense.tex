@@ -14,14 +14,14 @@ Then, a detailed description of the defense architecture concludes the section.
 \subsection{Preliminary analysis}
 \label{sec:pre_analysis}
 
-The main goal of our defense is to detect Pin Control Attack while being able to not consume the limited resources inside the target system,
+The main goal of our defense is to detect and hinder Pin Control Attack while being able to not consume the limited resources inside the target system,
 and to not affect real-time operations. The timing of the operations is fundamental in systems like PLCs, on which the minimum delay may alter the physical process.
 
 We make the same assumptions contained in the threat model of \mysec{sec:threat_model}.
 Therefore, we assume that the system, and our defense as well, is protected by the previously discussed HIDSs.
 Starting from the analysis reported in \mychap{chap:attack}, we identify the I/O configuration as the main resource we aim to protect from Pin Control Attack.
 To target I/O configuration, the attacker may use other system capabilities, such as virtual address mapping and debug registers.
-Before describing our defense approach, we define the following components of a SoC:
+First of all, we define the following components of a SoC, to which we refer several times in the rest of the paper:
 \begin{itemize}
 	\item \itemname{I/O subsystem}: the set of all the control registers actively used by the SoC, whose unathorized modification may have direct or indirect
 		effects on the controlled process. The values contained inside these registers represent the I/O configuration.
@@ -42,7 +42,17 @@ Before describing our defense approach, we define the following components of a 
 		(thus, I/O configuration) either by requesting a new mapping to the system or by using an already existing mapping.
 \end{itemize}
 
-In order to choose the strategy to detect Pin Control Attack, we compared different approaches, as proposed in \cite{ghostplc}:
+Given the architecture described in \mysec{sec:embed_arch}, protecting I/O configuration is not straightforward because the hardware lacks
+any protection mechanism related to the I/O subsystem. For instance, the SoC might generate a trap for each modification to I/O registers.
+However, this approach would not be reasonable, because of the huge overhead imposed to any I/O access.
+Alternatively, a trap could be generated only when an I/O access is malicious. For example, to prevent pin configuration attack,
+a trap signal might be delivered to the CPU when the internal signal of a pin is different from the external one, meaning that the pin is misconfigured.
+A similar approach may be used for pin multiplexing, by checking the internal signal connected to the multiplexed device.
+Unfortunately, since these approaches would require significant hardware modifications, with subsequent updates of all the SoC drivers, they are very unlikely to be applied.
+
+Thus, we need to define an alternative approach that does not have the above limitations: it must be easily applicable and have a minimal overhead.
+Since the hardware-based solution is unpractical, we analysed the possible software-based solutions.
+In order to choose the best strategy against Pin Control Attack, we compared the following approaches, as proposed in \cite{ghostplc}:
 \begin{enumerate}
 	\item monitoring I/O configuration to detect changes;
 	\item monitoring the use of debug registers;
@@ -51,8 +61,10 @@ In order to choose the strategy to detect Pin Control Attack, we compared differ
 	\item using a trusted execution environment.
 \end{enumerate}
 These approaches are not mutually exclusive, and may be used simultaneously to get a higher protection level.
-In this work, we designed and implemented the first three approaches in combination. A discussion about this design choice is reported in \mysec{sec:def_arch}.
-Our solution, however, may be extended to include the last two approaches as well, which we briefly discuss in the following sections.
+In this work, we decided to design and implement the first three approaches in combination, because they directly protect the three different resources that the attacker may use.
+Thus, they represent a good minimum set of countermeasures capable of raising the bar for the attacker (see \mysec{sec:def_arch}).
+Our solution, however, may be extended to include the last two approaches as well, to cover some existing limitations (see \mysec{sec:def_sec}).
+Before describing our design phase, we briefly discuss these two further protections in the following sections.
 
 
 \subsubsection{Monitoring performance overhead}
@@ -64,8 +76,9 @@ In our case, a performance monitor would be helpful to cover those attacks that 
 although, as discussed in the following sections, those are very limited cases.
 Deploying a performance monitoring system, anyway, does not require very high effort because it can leverage \emph{Hardware Performance Counters} (HPC),
 nowadays available in almost all the SoC processors. The most challenging part would be, of course, integrating the monitor with the PLC runtime.
-When a new logic is uploaded, a burst of operations are executed, and they must be excluded from the detection. Furthermore, a new logic may perform different operations
-with respect to the previous one; therefore, the monitor should be able to recognise the event and update its statistics as well.
+When a new logic is uploaded to the PLC, a burst of operations are executed by the runtime to check the new logic code, apply the new configuration and start the logic.
+These extra operations, of course, must not be labeled as malicious. Furthermore, once a new logic started, it may perform operations that are different
+with respect to the previous one; therefore, the monitor should be able to recognise this change and update its statistics as well.
 
 
 \subsubsection{Trusted execution environment}
@@ -87,38 +100,42 @@ To improve the performance of this architecture, TLBs and caches may support the
 This enables Secure and Non-secure entries to co-exist avoiding TLB and cache flushes on every switch between the two worlds.
 The switching between Secure and Non-secure world is managed through a specific Secure Monitor Call (SMC) instruction,
 which changes the core mode into Monitor Mode. The code executed into monitor mode is always Secure, and it basically performs the context switch
-between the two virtual cores. If a Secure process is loaded, the core NS-bit is set accordingly.
+between the two virtual cores. If a Secure process is loaded, NSTID bit is set accordingly.
 Since the Secure world may contain a whole parallel micro-kernel with trusted user applications, it may be possible
 to deploy Pin Control Defense inside the trusted domain, protecting the defense itself from defense-aware attackers.
 However, the overhead imposed by a trusted execution environment may be unacceptable for embedded systems with real-time constraints like PLCs.
+Hence, the impact of this solution still needs to be investigated.
 
 
 \subsection{Defense Architecture}
 \label{sec:def_arch}
 
-Based on the previous considerations, we designed a defense which is able to detect Pin Control Attack at three different levels.
+Based on the previous considerations, we designed a detection system which is able to protect against Pin Control Attack at three different levels,
+corresponding to the SoC I/O, debug and map subsystems. The system is designed to run as part of the operating system, thus having kernel privilege level.
 Its overall architecture is shown in \myfig{fig:defense}.
 \begin{figure}[h]
 \centerline{\includegraphics[width=0.8\textwidth]{res/defense}}
-\caption{ \label{fig:defense}}
+\caption{Pin Control Defense general architecture \label{fig:defense}}
 \end{figure}
-Considering that the attacker can possibly follow any of the paths highlighted in red in \myfig{fig:defense},
-our monitoring system has been divided into three main components deployed alongside the operating system:
+Considering that the attacker can possibly follow any of the paths highlighted in red in the figure,
+our monitoring system has been divided into three main components:
 \begin{itemize}
-	\item \itemname{I/O monitor}: its purpose is to watch the I/O configuration and detect any malicious change.
+	\item \itemname{I/O monitor}: its purpose is to watch the I/O configuration, detect and react to any malicious change.
 	\item \itemname{Debug monitor}: it aims to protect the debug subsystem from malicious usage.
 	\item \itemname{Map monitor}: it acts as a filter for mapping requests targeting I/O memory.
 \end{itemize}
 
-These monitors are responsible for reporting detection information related to interesting events of the respective subsystems.
-The reported events are not necessarily due to Pin Control Attack. In particular, the I/O monitor should decide whether a particular I/O modification
-can be considered legitimate or not. Debug and map monitors, instead, serve at least the following purposes:
+Each monitor is responsible for reporting detection information related to any interesting event of the respective subsystem,
+and reacting to these events according to its own configuration. The events are not necessarily due to Pin Control Attack,
+\eg an I/O configuration change event may be caused by the PLC runtime.
+Therefore, the I/O monitor should decide whether a particular I/O modification can be considered legitimate or not.
+Debug and map monitors, instead, serve at least the following purposes:
 \begin{itemize}
 	\item \itemname{early detection}: the attack can be detected before it modifies the I/O configuration;
 	\item \itemname{raising the bar}: they limit the attacker possibilities, by restricting the access to the corresponding subsystem;
-	\item \itemname{logging}: they provide additional information, useful to figure out how an eventual attack has been conducted.
+	\item \itemname{reporting info}: they provide additional information, useful to figure out how an eventual attack has been conducted.
 \end{itemize}
-Since these modules are designed to be customizable, the effects depends on their actual configuration.
+Since these modules are designed to be customisable, the actual effects depends on their configuration.
 The following sections describe in more detail the design and the role of each module.
 
 
@@ -260,4 +277,103 @@ In any case, if the system allows to have an exact detection mechanism, the moni
 \section{Implementation}
 \label{sec:def_impl}
 
-TODO Pin Control Defense implementation.
+We describe here our implementation of the above strategies, discussing the engineering problems encountered and the adopted solutions.
+Since the authors of the attack presented their work as ``Ghost in the PLC'' \cite{ghostplc}, we called our defense implementation \emph{Ghostbuster}.
+Ghostbuster is a kernel module written in C language, targeting Embedded Linux running on ARM architecture.
+It is designed to be highly configurable and as architecture-independent as possible, following the guideline of the Linux kernel itself.
+A portion of the code, \ie the lowest level code, is still dependent from the specific architecture (\eg ARM), but is separated from the general implementation template.
+This allows Ghostbuster to be easily extendable to other architectures and SoCs running Linux. At the same time, we focused on maintaining the lowest overhead possible,
+which is always crucial for PLCs.
+
+Our defense can be either dynamically inserted as a Loadable Kernel Module (LKM), or can be built-in into the Linux kernel.
+The second approach requires a kernel re-compilation to obtain a new kernel image including our module.
+The security implications of these two approaches are discussed in \mysec{sec:def_sec}.
+In the following report, we describe the specific implementation related to the Raspberry Pi system,
+discussing in detail the modifications required to run on Wago PLC as well. The detailed report serves as developer manual for Ghostbuster module.
+
+
+\subsection{Implementation details}
+
+The implementation architecture is based on the general one described in \mysec{sec:def_arch}. Thus, we implemented I/O, debug and map monitors.
+Each one of them has been divided into two main parts, following the template method pattern: the main strategy and the sub-actions implementation.
+The aim of this separation is to minimise the effort needed to deploy our defense into different systems, thus improving its portability.
+In particular, we considered the following variables: each target system may have its own System on Chip, firmware and PLC runtime.
+During the design part, we defined high-level monitor strategies, which allowed us to provide an abstraction adaptable to any Linux-based system,
+independently from these variables. The resulting architecture is shown in \myfig{fig:def_impl}, which associates each specific role to the corresponding
+source file(s) (in red).
+\begin{figure}[h]
+\centerline{\includegraphics[width=\textwidth]{res/def_impl}}
+\caption{Ghostbuster implementation architecture \label{fig:def_impl}}
+\end{figure}
+Furthermore, the compilation of our module can be parameterised in different ways, as shown by the green labels in the figure.
+Each green label, associated to a rectangle container in the figure, corresponds to a compiler flag that affects the compilation of the enclosed portion.
+The compilation is managed by a \verb|Makefile|, in which all the required flags are defined.
+The \verb|Makefile| needs to know the location of the target Linux kernel source directory.
+
+In particular, each monitor can be enabled or disabled by means of the following flags:
+\begin{Verbatim}[fontsize=\small]
+	IO_MONITOR_ENABLED
+	DR_MONITOR_ENABLED
+	MAP_MONITOR_ENABLED
+\end{Verbatim}
+If a monitor is disabled, it will not be included into the compilation at all, reducing the final binary size.
+This may be useful to exclude a particular monitor that is not needed by the target system
+(\eg DR monitor if debug support is not enabled into the kernel, see discussion in \mysec{sec:def_arch}).
+
+When a monitor is enabled, its execution mode may be controlled by one of the following flags, respectively:
+\begin{Verbatim}[fontsize=\small]
+	IO_MONITOR_ACTIVE
+	DR_MONITOR_ACTIVE
+	MAP_MONITOR_ACTIVE
+\end{Verbatim}
+If one of these flags is not defined, the corresponding monitor is compiled in \emph{passive} mode: it will only reports about events, without taking any further action.
+Otherwise, the monitor is \emph{active} and it will include its specific reactions to the events.
+If a monitor is disabled, the corresponding active flag is ignored.
+
+The messages reported by each monitor may be extended by enabling the following debug flags:
+\begin{Verbatim}[fontsize=\small]
+	IO_DEBUG
+	DR_DEBUG
+	MAP_DEBUG
+\end{Verbatim}
+If a debug flag is defined, the corresponding monitor will print out its complete state at each event detection.
+
+Finally, the \verb|ARCH| and \verb|SOC_MODEL| variables are used to select a specific implementation for the enabled monitors.
+An implementation is identified by an architecture name and a SoC model (\eg \verb|arm|, \verb|BCM2835|). Given this information,
+the implementation files will be automatically included from the \verb|<ARCH>/<SOC_MODEL>/| sub-directory.
+We chose to directly include the implementation part into header files, instead of external compilation units (\verb|.c| files), to allow the usage of \verb|inline|
+functions. The code of an inline function is directly included into the caller, and it does not need an explicit function call.
+This may cause some code duplication, which we tried to minimise, but it achieves better performance,
+especially for those functions that are called many times (\eg in the main loop of a monitor).
+
+When Ghostbuster is loaded, the three main monitors are started in parallel.
+The monitors are independent from each other, and every monitor has its own kernel thread.
+When a monitor has to report an event to the system, it uses the common logging subsystem available into the kernel
+(see \mysec{sec:def_sec} for a possible improvement on the reporting mechanism).
+In the following sections we describe in more detail the structure and the operations performed by each monitor.
+
+
+\subsubsection{I/O monitor}
+
+TODO I/O monitor.
+
+
+\subsubsection{DR monitor}
+
+TODO DR monitor.
+
+
+\subsubsection{MAP monitor}
+
+TODO MAP monitor.
+
+
+\subsection{User Manual}
+
+TODO User Manual.
+
+
+\section{Security considerations}
+\label{sec:def_sec}
+
+TODO Security considerations.
