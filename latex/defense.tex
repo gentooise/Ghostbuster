@@ -23,8 +23,8 @@ Starting from the analysis reported in \mychap{chap:attack}, we identify the I/O
 To target I/O configuration, the attacker may use other system capabilities, such as virtual address mapping and debug registers.
 First of all, we define the following components of a SoC, to which we refer several times in the rest of the paper:
 \begin{itemize}
-	\item \itemname{I/O subsystem}: the set of all the control registers actively used by the SoC, whose unathorized modification may have direct or indirect
-		effects on the controlled process. The values contained inside these registers represent the I/O configuration.
+	\item \itemname{I/O subsystem}: the subsystem that controls the I/O configuration. I/O configuration is defined as the set of all the control registers
+		actively used by the SoC, whose unathorized modification may have direct or indirect effects on the controlled process.
 		In particular, we are interested into pin control registers, which directly determine the behaviour of the SoC I/O pins.
 		However, a SoC typically contains many devices and controllers which may be in charge of a subset of I/O pins. In other words, some pins
 		can be multiplexed to specifical devices inside the SoC. Since these devices are programmed through their own control registers,
@@ -139,7 +139,8 @@ Since these modules are designed to be customisable, the actual effects depends 
 The following sections describe in more detail the design and the role of each module.
 
 
-\subsubsection{I/O monitor}
+\subsection{I/O monitor}
+\label{sec:io_design}
 
 The I/O monitor plays the most critical role into our detection system.
 Its main task is to cyclically check the values contained into I/O configuration registers, to verify that they are conforming with the logic currently loaded into the PLC.
@@ -152,25 +153,45 @@ and this is not reasonable in our highly constrained system.
 
 To tackle this problem, we designed the following strategy, which we used to implement the I/O monitor:
 \begin{enumerate}
+	\item define I/O configuration registers;
 	\item define a trusted behavioural model of the I/O configuration;
 	\item \label{enum:io_monitor} constantly monitor the I/O configuration to detect possible modifications;
 	\item if a change is detected, verify whether it is conforming to the defined behaviour or not;
 	\item if it is, accept the new configuration and go back to \ref{enum:io_monitor};
 	\item otherwise, it is probably Pin Control Attack: react according to the configured monitor action and go back to \ref{enum:io_monitor}.
 \end{enumerate}
+The first step is to choose which registers should be included into the I/O configuration, \ie which registers should be protected.
+This set of registers includes, ideally, all the registers whose modification may produce an effect on the physical process.
+However, it is not always possible to define a behavioural model or enable the protection for each register. For instance,
+some registers may be write-only (\eg pull-up/down registers), and there is no way to verify their current value.
+Whether to include or not a register into I/O configuration should be decided case by case,
+according to the protection feasibility and the possible effects of a malicious modification.
+
 To define the behavioural model, it is required to determine the set of configuration registers actively used into the target system,
 \ie the set of registers that may affect the physical process. Then, for each register (or for each bit of each register if necessary),
 the model should define under which conditions the corresponding value may change. These conditions are highly dependent on the target implementation.
 Generally speaking, they can be represented by simple time constraints (\eg the value cannot change twice within $\SI{20}{ms}$),
 logical conditions (\eg the value must be conforming to the running PLC logic), a statistical model, or a combination of these.
 Each condition can either provide an exact distinction between a trustworthy and a malicious modification (typically logical conditions),
-or a heuristic only.
+or a heuristic only. For this purpose, we analyse in more detail the proposed logical condition, since it is able to completely exclude false positives.
+The condition states that a change can be accepted only if the new I/O configuration is in line with the operations performed by the running PLC logic.
+Checking this condition is feasible as long as enough knowledge of the PLC runtime is available. To obtain this knowledge, two ways are doable:
+\begin{itemize}
+	\item \itemname{reverse engineering}: by analysing the PLC software it is possible to dynamically obtain the required information from the running logic;
+	\item \itemname{PLC runtime vendor collaboration}: if the PLC software is designed to be aware of the defense mechanism,
+		it could better expose the required information to the I/O monitor at run-time, thus removing the need for reverse engineering.
+\end{itemize}
+Once the I/O monitor is able to determine which operations the PLC logic is carrying on, it can easily decide if an I/O configuration is malicious or not,
+and can effectively detect Pin Control Attack (see our approach in \mysec{sec:io_impl}).
+Note that, if the information on the current I/O operations is made available by the PLC runtime, the attacker can modify it as well while conducting the attack.
+In this case, however, the attacker needs to modify the PLC logic, and this may be easily noticed if further protection mechanisms are provided by the PLC runtime.
+Therefore, the attack would lose one of the features that made it stealth.
 
 An important parameter to discuss is the time interval of the main monitor loop. Since no other mechanisms are provided by the hardware,
 such as interrupts, we can only detect I/O configuration changes by cyclically checking its current values. Greater scanning intervals may give the attacker
 enough time-window to reach its purpose. For instance, given a PLC scan cycle of $\SI{10}{ms}$ and a monitor interval of $\SI{50}{ms}$,
-if the attack is able to synchronise itself with the monitor loop, it has enough time to alter $\left \lfloor{\frac{\SI{50}{ms}}{\SI{10}{ms}}}\right \rfloor = 5$ consecutive I/O operations
-and then restore the configuration back before getting noticed. Smaller intervals, instead, may cause too much performance overhead.
+if the attack is able to synchronise itself with the monitor loop, it has enough time to alter $\left \lfloor{\frac{\SI{50}{ms}}{\SI{10}{ms}}}\right \rfloor = 5$
+consecutive I/O operations and then restore the configuration back before getting noticed. Smaller intervals, instead, may cause too much performance overhead.
 We provide our experimental results in \mychap{chap:results}.
 
 Another challenging aspect of this approach is to decide which action the monitor should follow if an attack has been detected.
@@ -188,7 +209,8 @@ stopping the control process may be considered as a more cautious alternative.
 In general, if a monitor only reports about events we call it \emph{passive}, otherwise it is an \emph{active} monitor.
 
 
-\subsubsection{Debug monitor}
+\subsection{Debug monitor}
+\label{sec:dr_design}
 
 This monitor is responsible for protecting the debug subsystem from malicious usage. Debug registers may be used by the attacker to gain accurate timing
 information about the PLC logic I/O operations.
@@ -221,7 +243,8 @@ although the passive mode is strongly discouraged for the above reasons. If the 
 who cannot leverage debug registers anymore.
 
 
-\subsubsection{Mapping monitor}
+\subsection{Mapping monitor}
+\label{sec:map_design}
 
 As discussed in \mysec{sec:pre_analysis}, the attacker may either request a new mapping between physical and virtual memory, or re-use an existing one before
 modifying I/O configuration. The map monitor leverages this fact, providing a further detection mechanism usable in combination with the previous two.
@@ -278,33 +301,29 @@ In any case, if the system allows to have an exact detection mechanism, the moni
 \label{sec:def_impl}
 
 We describe here our implementation of the above strategies, discussing the engineering problems encountered and the adopted solutions.
-Since the authors of the attack presented their work as ``Ghost in the PLC'' \cite{ghostplc}, we called our defense implementation \emph{Ghostbuster}.
+Since the authors of the attack presented their work as ``Ghost in the PLC'' \cite{ghostplc}, we called our defense prototype implementation \emph{Ghostbuster}.
 Ghostbuster is a kernel module written in C language, targeting Embedded Linux running on ARM architecture.
 It is designed to be highly configurable and as architecture-independent as possible, following the guideline of the Linux kernel itself.
 A portion of the code, \ie the lowest level code, is still dependent from the specific architecture (\eg ARM), but is separated from the general implementation template.
 This allows Ghostbuster to be easily extendable to other architectures and SoCs running Linux. At the same time, we focused on maintaining the lowest overhead possible,
-which is always crucial for PLCs.
-
-Our defense can be either dynamically inserted as a Loadable Kernel Module (LKM), or can be built-in into the Linux kernel.
-The second approach requires a kernel re-compilation to obtain a new kernel image including our module.
-The security implications of these two approaches are discussed in \mysec{sec:def_sec}.
-In the following report, we describe the specific implementation related to the Raspberry Pi system,
-discussing in detail the modifications required to run on Wago PLC as well. The detailed report serves as developer manual for Ghostbuster module.
+which is always crucial for PLCs. We proceed with the description of the overall architecture, and then we go deep into each module of the architecture.
+Finally, we describe the usage of our kernel module.
 
 
-\subsection{Implementation details}
+\subsection{Implementation architecture}
 
 The implementation architecture is based on the general one described in \mysec{sec:def_arch}. Thus, we implemented I/O, debug and map monitors.
 Each one of them has been divided into two main parts, following the template method pattern: the main strategy and the sub-actions implementation.
 The aim of this separation is to minimise the effort needed to deploy our defense into different systems, thus improving its portability.
 In particular, we considered the following variables: each target system may have its own System on Chip, firmware and PLC runtime.
 During the design part, we defined high-level monitor strategies, which allowed us to provide an abstraction adaptable to any Linux-based system,
-independently from these variables. The resulting architecture is shown in \myfig{fig:def_impl}, which associates each specific role to the corresponding
-source file(s) (in red).
+independently from these variables.
 \begin{figure}[h]
 \centerline{\includegraphics[width=\textwidth]{res/def_impl}}
 \caption{Ghostbuster implementation architecture \label{fig:def_impl}}
 \end{figure}
+The resulting architecture is shown in \myfig{fig:def_impl}, which associates each specific role to the corresponding
+source file(s) (in red).
 Furthermore, the compilation of our module can be parameterised in different ways, as shown by the green labels in the figure.
 Each green label, associated to a rectangle container in the figure, corresponds to a compiler flag that affects the compilation of the enclosed portion.
 The compilation is managed by a \verb|Makefile|, in which all the required flags are defined.
@@ -318,7 +337,7 @@ In particular, each monitor can be enabled or disabled by means of the following
 \end{Verbatim}
 If a monitor is disabled, it will not be included into the compilation at all, reducing the final binary size.
 This may be useful to exclude a particular monitor that is not needed by the target system
-(\eg DR monitor if debug support is not enabled into the kernel, see discussion in \mysec{sec:def_arch}).
+(\eg DR monitor if debug support is not enabled into the kernel, see discussion in \mysec{sec:dr_design}).
 
 When a monitor is enabled, its execution mode may be controlled by one of the following flags, respectively:
 \begin{Verbatim}[fontsize=\small]
@@ -350,27 +369,448 @@ When Ghostbuster is loaded, the three main monitors are started in parallel.
 The monitors are independent from each other, and every monitor has its own kernel thread.
 When a monitor has to report an event to the system, it uses the common logging subsystem available into the kernel
 (see \mysec{sec:def_sec} for a possible improvement on the reporting mechanism).
+The target systems used to test our defense are exactly the same as the ones described for the attack part in \mychap{chap:attack}, with the same PLC logic and I/O configuration.
+In particular, for each monitor, we first refer to the Raspberry Pi system (BCM2835 SoC); then we discuss the modifications required to run on Wago PLC as well.
 In the following sections we describe in more detail the structure and the operations performed by each monitor.
+From now on, we will refer to the abstract part of each monitor as the \emph{interface}, and to the architecture-dependent part as the \emph{implementation}.
 
 
-\subsubsection{I/O monitor}
+\subsection{I/O monitor}
+\label{sec:io_impl}
 
-TODO I/O monitor.
+This monitor is responsible for protecting I/O configuration memory from malicious usage.
+The monitor interface includes the I/O configuration data type, modeled as a set of memory blocks by means of the \verb|io_conf_t| structure:
+\begin{lstlisting}
+typedef struct {
+	const void** addrs; // Set of block base addresses
+	const unsigned* sizes; // Size of each block in bytes
+	const unsigned blocks; // Number of blocks
+	const unsigned size; // Total size in byte
+} io_conf_t;
+\end{lstlisting}
+This model takes into account the fact that I/O registers may be located at different addresses, resulting in a non-contiguous I/O memory.
+
+With reference to the BCM2835 manual \cite{bcm2835} and to the target configuration defined in \mysec{sec:attack_pi},
+we defined, into the implementation part, the set of I/O registers we want to protect.
+In particular, since our system uses GPIO pins, two of which multiplexed to I2C, we chose to protect GPIO pin control registers, whose physical base address is \verb|0x2020000|.
+These registers are responsible both for pin configuration and pin multiplexing. Each register is 32-bit wide, having 3 bits for each I/O pin: it can control $10$ different pins.
+Although our target system uses only four pins for its I/O, to be more general, we decided to protect all the available GPIO pins ($54$).
+Hence, we included all $6$ pin control registers into the definition of our I/O configuration, by filling in the \verb|io_conf_t| global structure:
+\begin{lstlisting}
+#define IO_BLOCKS            	1 // Registers are contiguous: one block needed
+#define PIN_CTRL_BASE        	((void*)0x20200000) // Pin control base address
+#define PIN_CTRL_SIZE        	24 // 6 regs * 4 bytes each
+#define __IO_STATE_TOTAL_SIZE	24 // Total size in bytes
+
+static const void* bcm2835_io_addrs[IO_BLOCKS] = { PIN_CTRL_BASE };
+static const unsigned bcm2835_io_sizes[IO_BLOCKS] = { PIN_CTRL_SIZE };
+
+static const io_conf_t phys_io_conf = {
+	.addrs = bcm2835_io_addrs,
+	.sizes = bcm2835_io_sizes,
+	.blocks = IO_BLOCKS,
+	.size = __IO_STATE_TOTAL_SIZE
+};
+\end{lstlisting}
+Of course our implementation is only a prototype, and many other registers may be included into the I/O configuration (\eg event detect, edge detect, I2C control registers, etc.).
+
+The next step is to define the trusted behaviour of the I/O configuration.
+In particular, we have pin multiplexing (\emph{pinmux}) and pin configuration (\emph{pinconf}) registers, and we assumed the following behaviour:
+\begin{itemize}
+	\item \itemname{pinmux registers}: they are initialised at boot time, and never change during run-time;
+	\item \itemname{pinconf registers}: they are initialised at boot time, but can be modified at any time by the PLC runtime, maintaining the following invariant:
+		every pin configuration (input or output mode) must be conforming to the running PLC logic.
+\end{itemize}
+
+After I/O configuration has been defined, we can describe the interface and implementation of the I/O monitor.
+The abstract part is essentially made of the monitor loop, which executes the mainstrategy,
+and the detection handler, called by the implementation when an I/O modification has been detected. Both codes are shown in \myalg{alg:io_iface},
+and they are independent from any specific architecture or SoC model.
+\algnewcommand\algorithmicforeach{\textbf{for each}}
+\algdef{S}[FOR]{ForEach}[1]{\algorithmicforeach\ #1\ \algorithmicdo}
+\begin{algorithm}[h]
+\caption{I/O monitor interface: main loop and detection handler}
+\label{alg:io_iface}
+\begin{algorithmic}[1]
+\Function{IOMainLoop}{\null}
+	\State $t \gets$ monitor scan interval \Comment{The monitor interval in $\SI{}{ms}$}
+	\State $C \gets$ physical I/O configuration \Comment{The defined I/O configuration}
+	\State $T \gets$ \Call{GetIOState}{$C$} \Comment{Read trusted state from I/O registers}
+	\Loop
+		\ForEach{block $B \in C$ having index $i$}
+			\State \Call{CheckIOState}{$B, T[i]$} \Comment{Compare current and trusted state of block $B$}
+		\EndFor
+		\If{monitor should stop}
+			\State \Return \Comment{Return if Ghostbuster is being stopped}
+		\EndIf
+		\State \Call{msleep}{$t$} \Comment{Wait for next cycle}
+	\EndLoop
+\EndFunction
+\Statex
+\end{algorithmic}
+
+\begin{algorithmic}[1]
+\Function{HandleIODetection}{$D$} \Comment{React to the detection $D$}
+	\State report about D
+	\If{I/O debug enabled}
+		\State dump entire I/O state
+	\EndIf
+	\If{\Call{IsLegitimate}{$D$}}
+		\State \Call{UpdateIOState}{$D$} \Comment{Accept new configuration, update trusted state}
+	\Else
+		\State report about Pin Control Attack
+		\If{I/O monitor is active}
+			\State \Call{RestoreIOState}{$D$} \Comment{Reject new configuration, restore trusted state back}
+		\EndIf
+	\EndIf
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+Each iteration of the main loop is executed every $t~\SI{}{ms}$, where the specific value of $t$ is defined into the \verb|IO_MONITOR_INTERVAL| flag.
+The loop terminates only if an external signal indicates that Ghostbuster is being stopped (see \mysec{sec:def_usage}).
+The verification of the current I/O configuration is performed at block level against the golden reference, which is obtained by \textproc{GetIOState} before starting the loop.
+Since we assume that the system is in a safe state when our module is deployed, the initial I/O state read from configuration registers is considered trusted.
+When a modification is detected by \textproc{CheckIOState}, the detection handler is called back and the monitor strategy is applied.
+Note that the handler may be called many times from the same call to \textproc{CheckIOState}, because there may be more than one single modification within one contiguous block.
+The detection granularity is decided by the implementation part (\eg for each single pin in our implementation).
+If the modification is considered legitimate, then the reference I/O state is updated with the new configuration.
+Otherwise, we report the attack to the system and, since we have an exact detection condition which cannot give false positives,
+we may safely restore the previous configuration back if the I/O monitor is in active mode.
+
+All the low-level I/O functions are defined into the implementation part, and may be different for each target system.
+These functions deal with the effective accesses to I/O registers, which depend on many factors. The implementation knows the way to access these registers,
+their size and their bits arrangement. In \myalg{alg:io_impl} we show our implementation related to the BCM2835 SoC, where all registers are 32-bits wide.
+\begin{algorithm}[h]
+\caption{I/O monitor implementation functions}
+\label{alg:io_impl}
+\begin{algorithmic}[1]
+\Function{GetIOState}{$C$} \Comment{Read current I/O state}
+	\State $T \gets \emptyset$
+	\ForEach{block $B$ in $C$}
+		\ForEach{register $R \in B$}
+			\State $T \gets T \cup \Call{ioread32}{$R$}$ \Comment{Save value of register $R$ into the trusted state}
+		\EndFor
+	\EndFor
+	\State \Return $T$
+\EndFunction
+\Statex
+\end{algorithmic}
+
+\begin{algorithmic}[1]
+\Function{CheckIOState}{$B, T_B$} \Comment{Verify block $B$ against its trusted state $T_B$}
+	\ForEach{register $R \in B$ having index $i$}
+		\State $C_R \gets \Call{ioread32}{$R$}$ \Comment{Read current value of register $R$}
+		\State $T_R \gets T_B[i]$ \Comment{Trusted value of register $R$}
+		\ForEach{pin $p \in R$ having index $j$}
+			\State $d \gets C_R[j] \oplus T_R[j]$ \Comment{Difference between current and trusted value}
+			\If{$d \neq 0$}
+				\State $D \gets \{C_R, T_R, j, d\}$ \Comment{Fill in detection information}
+				\State \Call{HandleIODetection}{$D$} \Comment{Call detection handler}
+			\EndIf
+		\EndFor
+	\EndFor
+\EndFunction
+\Statex
+\end{algorithmic}
+
+\begin{algorithmic}[1]
+\Function{IsLegitimate}{$D$}
+	\If{$D$ is pin multiplexing}
+		\State \Return false \Comment{Pin multiplexing is not allowed at run-time}
+	\EndIf
+	\If{$D$ is pin configuration}
+		\If{new I/O configuration is conforming to PLC logic}
+			\State \Return true \Comment{Change performed by the PLC runtime}
+		\Else
+			\State \Return false \Comment{Malicious change}
+		\EndIf
+	\EndIf
+\EndFunction
+\Statex
+\end{algorithmic}
+
+\begin{algorithmic}[1]
+\Function{UpdateIOState}{$D$}
+	\State $D.T_R[j] = D.C_R[j]$ \Comment{Update the trusted value according to new I/O configuration}
+\EndFunction
+\Statex
+\end{algorithmic}
+
+\begin{algorithmic}[1]
+\Function{RestoreIOState}{$D$}
+	\State \Call{iowrite32}{$D.T_R \oplus D.d$} \Comment{Restore I/O configuration to the trusted value}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+The detection events are managed at pin level, \ie if an attacker modifies the configuration of more than one pin at a time, only one pin at a time is verified.
+The critical function of the implementation part is the \textproc{IsLegitimate} function, which decides whether a configuration change is legal or not.
+Based on our behavioural model, pin multiplexing can never be legitimate during run-time, so the implementation is straightforward.
+In the case of pin configuration, instead, the implementation needs to check if the I/O configuration after the change is in conflict with the PLC logic.
+A conflict occurs in one of the following two cases:
+\begin{itemize}
+	\item \itemname{write}: the pin is set as input and the logic is trying to write from it;
+	\item \itemname{read}: the pin is set as output and the logic is trying to read from it.
+\end{itemize}
+The most challenging problem here is to figure out which operation the logic is performing on a given I/O pin.
+To solve this problem, we applied the reverse engineering approach proposed in \mysec{sec:io_design}, reported below. 
+
+Inside the BCM2835, a specific set of 32-bit registers is used to interact with I/O pins: LVL registers to read the pin value,
+CLR registers to write a $0$ and SET registers to write a $1$ \cite{bcm2835}. Every register contains a bit for each pin, for a total of 32 pins per register.
+To have access to the operations performed by the PLC logic on these registers, we leveraged the debug subsystem.
+In ARM architecture, the debug subsystem provides two different types of debug registers: breakpoint and watchpoint (see \mysec{sec:dr_impl}).
+When a pin configuration change is detected, the I/O monitor inserts a watchpoint to the corresponding LVL, CLR or SET register of the affected pin,
+in order to intercept the I/O operation performed by the PLC logic. The watchpoint can be set for either a read or a write, according to the specific case we want to verify.
+From a reverse engineering analysis of the PLC runtime, we found that read and write operations are performed with the following instructions, respectively:
+\begin{itemize}
+	\item \verb|STR R2, [R3]| (Opcode \verb|0x002083E5|, \verb|R3| contains the address of a STR or CLR register);
+	\item \verb|LDR R2, [R3]| (Opcode \verb|0x002093E5|, \verb|R3| contains the address of a LVL register).
+\end{itemize}
+\verb|R3| always contains the virtual address targeted by our watchpoint. When a watchpoint is hit, the debug exception handler is called,
+and all the execution context of the process is passed as argument. Inside the debug handler, we proceed as follows, according to the case:
+\begin{itemize}
+	\item \itemname{write}: we look at the content of \verb|R2| to check if the PLC logic is trying to write to the specific pin changed to input.
+		If \verb|R2| contains a $1$ corresponding to the target pin, then we can conclude that the new configuration is in conflict with the logic.
+	\item \itemname{read}: in this case more reverse engineering of the PLC runtime is needed to know which pins (\ie bits) are actually used by the logic as input,
+		because the instruction always loads the entire register (32 pins).
+		To simplify the detection in our prototype version, we supposed that the PLC logic may only have one input pin for each register.
+		In this case, reading from the register implies that the PLC logic is trying to read from the given pin. Thus, we can report a conflict.
+		To remove this assumption, which limits the applicability of our defense, more knowledge about the PLC runtime is required.
+		As previously discussed, this knowledge can be obtained either from a deeper reverse engineering analysis or from a collaboration with the PLC runtime vendor.
+		For instance, each PLC logic may be designed to contain a constant bit mask having one bit for each pin,
+		where each bit specifies whether the corresponding pin is currently used as input or output. If such data was available,
+		the I/O monitor could look at it instead of inserting a watchpoint and looking for the actual operations.
+		This mechanism raise the bar for the attacker, who would need to alter the PLC logic code as well to conduct the attack,
+		thus defeating its stealthiness.
+\end{itemize}
+
+Note that from a performance perspective our approach is feasible, because it inserts a debug exception only in case of an I/O modification to determine if it is malicious.
+Thus, this may cause an overhead when a good I/O configuration is updated by the PLC runtime as well. See \mychap{chap:results} for more details about our results.
 
 
-\subsubsection{DR monitor}
+\subsubsection{Wago PLC version}
 
-TODO DR monitor.
+To port the I/O monitor to the Wago PLC system, only the following changes are necessary:
+\begin{itemize}
+	\item \itemname{I/O configuration}: the I/O configuration and the behavioural model must be redefined according to the registers used by the Wago PLC.
+		In particular, the implementation may include pin configuration and pin multiplexing registers as well, plus SPI, DMA and IRQ registers.
+		The way to access registers is pretty much equal to the Raspberry Pi system, because are both ARM architectures with 32-bit wide registers.
+		On Wago PLC, pin configuration and pin multiplexing are managed by two different set of registers. Therefore, the low-level implementation
+		is even simplified, because it does not need to distinguish configuration and multiplexing bits inside registers.
+		However, including other registers (\eg SPI, DMA, IRQ, etc.) may lead to more complex behavioural models which need to be analysed.
+	\item \itemname{Debug subsystem}: given the engineering problem described later in \mysec{sec:dr_impl}, the same solution using watchpoint cannot be directly applied.
+		To get the needed information about the PLC logic, two ways are possible. Either the debug interface is implemented into the kernel for AM3517 SoC,
+		or a better integration with the PLC runtime is required, as already discussed.
+\end{itemize}
 
 
-\subsubsection{MAP monitor}
+\subsection{DR monitor}
+\label{sec:dr_impl}
+
+The DR monitor aims to protect the debug subsystem. As described for the design phase, the DR monitor needs to accomplish two goals:
+\begin{itemize}
+	\item disable debug interface access from userspace;
+	\item watch over debug registers value to detect malicious events.
+\end{itemize}
+
+In Linux, the debug user interface is based on the following functions \cite{hw-breakpoint}:
+\begin{lstlisting}
+struct perf_event* register_user_hw_breakpoint(struct perf_event_attr* attr,
+                                               perf_overflow_handler_t handler,
+                                               struct task_struct* tsk);
+
+int modify_user_hw_breakpoint(struct perf_event *bp,
+                              struct perf_event_attr *attr);
+
+void unregister_hw_breakpoint(struct perf_event *bp);
+\end{lstlisting}
+To disable these funtions, we dynamically patched the kernel text replacing the prologue instructions of each function.
+In particular, they have the following prologue:
+\begin{Verbatim}[fontsize=\small]
+	c00d3cb0 <register_user_hw_breakpoint>:
+	c00d3cb0: e1a0c00d  mov  ip, sp
+	c00d3cb4: e92dd800  push {fp, ip, lr, pc}
+	c00d3cb8: e24cb004  sub  fp, ip, #4
+	c00d3cbc: e24dd008  sub  sp, sp, #8
+	[...]
+
+	c00d3e30 <modify_user_hw_breakpoint>:                                
+	c00d3e30: e1a0c00d  mov  ip, sp
+	c00d3e34: e92ddff0  push {r4, r5, r6, r7, r8, r9, sl, fp, ip, lr, pc}
+	c00d3e38: e24cb004  sub  fp, ip, #4
+	c00d3e3c: e24dd00c  sub  sp, sp, #12
+	[...]
+
+	c00d3ce8 <unregister_hw_breakpoint>:
+	c00d3ce8: e1a0c00d  mov   ip, sp
+	c00d3cec: e92dd800  push  {fp, ip, lr, pc}
+	c00d3cf0: e24cb004  sub   fp, ip, #4
+	[...]
+\end{Verbatim}
+We replaced the prologue instructions with the following ones:
+\begin{enumerate}
+	\item \itemname{return value}: if the function is not void (\eg in the first two cases), we need to return a value to the caller.
+		Thus, we move the value \verb|-EACCES| ($-13$) into R0 by using the move-negate instruction: \verb|mvn r0, #0xC|.
+		\verb|EACCES| is defined into the \verb|errno-base.h| kernel header as \verb|Permission denied|;
+	\item \itemname{branch}: jump back to the caller by branching to the link register: \verb|bx lr|.
+\end{enumerate}
+After the patch, the kernel text becomes the following:
+\begin{Verbatim}[fontsize=\small]
+	c00d3cb0 <register_user_hw_breakpoint>:
+	c00d3cb0: e3e0000c  mvn  r0, #0xC
+	c00d3cb4: e12fff1e  bx   lr
+	[...]
+
+	c00d3e30 <modify_user_hw_breakpoint>:                                
+	c00d3e30: e3e0000c  mvn  r0, #0xC
+	c00d3e34: e12fff1e  bx   lr
+	[...]
+
+	c00d3ce8 <unregister_hw_breakpoint>:
+	c00d3ce8: e12fff1e  bx   lr
+	[...]
+\end{Verbatim}
+
+Once the user access to debug registers has been disabled, we activate the DR monitor to protect them from attackers who gain kernel access.
+As for the I/O monitor, we report the interface part and the implementation.
+The abstract strategy of the DR monitor is rather simple, and is listed in \myalg{alg:dr_iface}.
+The scheme is a simplification of the I/O monitor, in which any debug register modification is considered malicious.
+Since in our implementation the I/O monitor makes use of the debug subsystem, we used the DR monitor to mediate any access to debug registers.
+Therefore, any modification performed by the I/O monitor is excluded from the detection, and the DR state is protected from concurrent access by a mutual exclusion mechanism.
+\begin{algorithm}[h]
+\caption{DR monitor interface: main loop and detection handler}
+\label{alg:dr_iface}
+\begin{algorithmic}[1]
+\Function{DRMainLoop}{\null}
+	\State $m_T \gets$ mutex \Comment{Global mutex to protect trusted state}
+	\State $t \gets$ monitor scan interval \Comment{The monitor interval in $\SI{}{ms}$}
+	\State $T \gets$ \Call{GetDRState}{\null} \Comment{Read trusted state from debug registers}
+	\Loop
+		\State \Call{lock}{$m_T$}
+		\State \Call{CheckDRState}{$T$} \Comment{Compare current and trusted state of debug registers}
+		\State \Call{unlock}{$m_T$}
+		\If{monitor should stop}
+			\State \Return \Comment{Return if Ghostbuster is being stopped}
+		\EndIf
+		\State \Call{msleep}{$t$} \Comment{Wait for next cycle}
+	\EndLoop
+\EndFunction
+%\Statex
+\end{algorithmic}
+\end{algorithm}
+\begin{algorithm}[h]
+\ContinuedFloat
+\begin{algorithmic}[1]
+\Function{HandleDRDetection}{$D$} \Comment{React to the detection $D$}
+	\If{DR debug enabled}
+		\State dump entire DR state
+	\EndIf
+	\State report about Pin Control Attack
+	\If{DR monitor is active}
+		\State \Call{RestoreDRState}{$D$} \Comment{Restore debug register trusted state}
+	\EndIf
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+The interface exposed to the I/O monitor is listed in \myalg{alg:dr_ioiface}.
+\begin{algorithm}[h]
+\caption{DR monitor interface for I/O monitor}
+\label{alg:dr_ioiface}
+\begin{algorithmic}[1]
+\Function{SetDR}{$r$} \Comment{Set a debug register $r$}
+	\State \Call{lock}{$m_T$}
+	\State \Call{register\_wide\_hw\_breakpoint}{$r$} \Comment{Use kernel interface for debug registers}
+	\State $T \gets$ \Call{GetDRState}{\null} \Comment{Update trusted state}
+	\State \Call{unlock}{$m_T$}
+\EndFunction
+\Statex
+\end{algorithmic}
+
+\begin{algorithmic}[1]
+\Function{ResetDR}{$r$} \Comment{Reset a previously set debug register $r$}
+	\State \Call{lock}{$m_T$}
+	\State \Call{unregister\_wide\_hw\_breakpoint}{$r$} \Comment{Use kernel interface for debug registers}
+	\State $T \gets$ \Call{GetDRState}{\null} \Comment{Update trusted state}
+	\State \Call{unlock}{$m_T$}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+%the interface is usable by the attacker?
+
+All the details about debug registers are handled by the implementation part, shown in \myalg{alg:dr_impl}.
+\begin{algorithm}[h]
+\caption{DR monitor implementation functions}
+\label{alg:dr_impl}
+\begin{algorithmic}[1]
+\Function{GetDRState}{\null} \Comment{Read current I/O state}
+	\State $T \gets \emptyset$
+	\State $D \gets hardware debug registers$
+	\ForEach{debug register $r \in D$}
+		\State $T \gets T \cup \Call{DRread}{$r$}$ \Comment{Save value of debug register $r$ into $T$}
+	\EndFor
+	\State \Return $T$
+\EndFunction
+\Statex
+\end{algorithmic}
+
+\begin{algorithmic}[1]
+\Function{CheckDRState}{$T$} \Comment{Verify debug registers against trusted state $T_B$}
+	\ForEach{debug register $r \in B$ having index $i$}
+		\State $C_r \gets \Call{DRread}{$r$}$ \Comment{Read current value of register $r$}
+		\State $T_r \gets T[i]$ \Comment{Trusted value of register $r$}
+		\State $d \gets C_r \oplus T_r$ \Comment{Difference between current and trusted value}
+		\If{$d \neq 0$}
+			\State $D \gets \{C_r, T_r, r\}$ \Comment{Fill in detection information}
+			\State \Call{HandleDRDetection}{$D$} \Comment{Call detection handler}
+		\EndIf
+	\EndFor
+\EndFunction
+%\Statex
+\end{algorithmic}
+\end{algorithm}
+\begin{algorithm}[h]
+\ContinuedFloat
+\begin{algorithmic}[1]
+\Function{RestoreDRState}{$D$}
+	\State \Call{DRwrite}{$D.r, D.T_r$} \Comment{Restore debug register to the trusted value}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+The ARM architecture supports two type of hardware debug registers: breakpoints for instruction addresses, and watchpoints for data addresses.
+The DR monitor protects both of them, and the detection is handled at register level. Each register is accessed through specific coprocessor instructions.
+A special read-only register, the \emph{Debug ID Register} (DIDR), specifies the number of debug registers available and other useful information on the SoC configuration.
+In particular, since the BCM2835 SoC supports 2 watchpoints and 6 breakpoints, the DR monitor can be deployed.
+
+
+\subsubsection{Wago PLC version}
+
+To adapt the DR monitor for Wago PLC, the following engineering problem needs to be solved.
+The AM3517 SoC model embedded into this PLC provides a different interface for debug registers. In particular, it uses a memory mapped interface
+instead of specific coprocessor instructions \cite{am35x}.
+Unfortunately, it turns out that this particular interface is not supported by the Linux kernel debug framework, as reported in \cite{dr-mapped}:
+``The memory-mapped extended debug interface is unsupported due to its unreliability in real implementations''.
+Apart from this technical problem, the DR monitor is designed to be applicable to any other ARM implementation that supports debug registers.
+To port it for other architectures than ARM, only the implementation part must be adapted.
+
+
+\subsection{MAP monitor}
 
 TODO MAP monitor.
 
 
-\subsection{User Manual}
+\subsubsection{Wago PLC version}
 
-TODO User Manual.
+TODO Wago PLC version.
+
+
+\subsection{Module usage}
+\label{sec:def_usage}
+
+%Our defense can be either dynamically inserted as a Loadable Kernel Module (LKM), or can be built-in into the Linux kernel.
+%The second approach requires a kernel re-compilation to obtain a new kernel image including our module.
+%The security implications of these two approaches are discussed in \mysec{sec:def_sec}.
+TODO Module usage.
 
 
 \section{Security considerations}
