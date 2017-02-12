@@ -24,10 +24,10 @@ To target I/O configuration, the attacker may use other system capabilities, suc
 First of all, we define the following components of a SoC, to which we refer several times in the rest of the paper:
 \begin{itemize}
 	\item \itemname{I/O subsystem}: the subsystem that controls the I/O configuration. I/O configuration is defined as the set of all the control registers
-		actively used by the SoC, whose unathorized modification may have direct or indirect effects on the controlled process.
+		actively used by the SoC, whose unauthorised modification may have direct or indirect effects on the controlled process.
 		In particular, we are interested into pin control registers, which directly determine the behaviour of the SoC I/O pins.
 		However, a SoC typically contains many devices and controllers which may be in charge of a subset of I/O pins. In other words, some pins
-		can be multiplexed to specifical devices inside the SoC. Since these devices are programmed through their own control registers,
+		can be multiplexed to specific devices inside the SoC. Since these devices are programmed through their own control registers,
 		altering these registers may indirectly affect I/O pins as well. Thus, both pin control registers and device control registers
 		are considered as part of the I/O configuration. The attacker who has knowledge of the system and its I/O peripherals may access
 		all these registers to alter the physical process.
@@ -423,9 +423,11 @@ In particular, we have pin multiplexing (\emph{pinmux}) and pin configuration (\
 \end{itemize}
 
 After I/O configuration has been defined, we can describe the interface and implementation of the I/O monitor.
-The abstract part is essentially made of the monitor loop, which executes the mainstrategy,
+The abstract part is essentially made of the monitor loop, which executes the main strategy,
 and the detection handler, called by the implementation when an I/O modification has been detected. Both codes are shown in \myalg{alg:io_iface},
 and they are independent from any specific architecture or SoC model.
+\algnewcommand\True{\textbf{true}\space}
+\algnewcommand\False{\textbf{false}\space}
 \algnewcommand\algorithmicforeach{\textbf{for each}}
 \algdef{S}[FOR]{ForEach}[1]{\algorithmicforeach\ #1\ \algorithmicdo}
 \begin{algorithm}[h]
@@ -480,8 +482,8 @@ we may safely restore the previous configuration back if the I/O monitor is in a
 
 All the low-level I/O functions are defined into the implementation part, and may be different for each target system.
 These functions deal with the effective accesses to I/O registers, which depend on many factors. The implementation knows the way to access these registers,
-their size and their bits arrangement. In \myalg{alg:io_impl} we show our implementation related to the BCM2835 SoC, where all registers are 32-bits wide.
-\begin{algorithm}[h]
+their size and their bits arrangement.
+\begin{algorithm}[h!]
 \caption{I/O monitor implementation functions}
 \label{alg:io_impl}
 \begin{algorithmic}[1]
@@ -543,6 +545,7 @@ their size and their bits arrangement. In \myalg{alg:io_impl} we show our implem
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
+In \myalg{alg:io_impl} we show our implementation related to the BCM2835 SoC, where all registers are 32-bits wide.
 
 The detection events are managed at pin level, \ie if an attacker modifies the configuration of more than one pin at a time, only one pin at a time is verified.
 The critical function of the implementation part is the \textproc{IsLegitimate} function, which decides whether a configuration change is legal or not.
@@ -588,6 +591,36 @@ and all the execution context of the process is passed as argument. Inside the d
 Note that from a performance perspective our approach is feasible, because it inserts a debug exception only in case of an I/O modification to determine if it is malicious.
 Thus, this may cause an overhead when a good I/O configuration is updated by the PLC runtime as well. See \mychap{chap:results} for more details about our results.
 
+Besides its main functions, the I/O monitor provides an additional interface, which is needed by the MAP monitor.
+When the MAP monitor has to filter mapping requests coming from system processes, it needs to know whether a request of a physical address range includes
+at least one address belonging to the I/O configuration. This is provided by the I/O monitor with the function listed in \myalg{alg:io_overlap},
+which accepts a pair of physical addresses $[s, e]$ representing the start and the end addresses of the given range.
+\begin{algorithm}[h]
+\caption{I/O monitor overlap function}
+\label{alg:io_overlap}
+\begin{algorithmic}[1]
+\Function{MapOverlapsIO}{$s, e$} \Comment{Check if physical range $[s, e]$ overlaps I/O configuration}
+	\State $C \gets$ physical I/O configuration \Comment{The defined I/O configuration}
+	\ForEach{block $B$ in $C$}
+		\If{$(B.s \le s \le B.e) \lor (B.s \le e \le B.e)$} \Comment{Overlap condition at block level}
+			\State \Return \True
+		\EndIf
+	\EndFor
+	\State \Return \False
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+Since this function is needed by the MAP monitor independently from I/O monitor operations, we designed it to be available even if the I/O monitor is disabled.
+The I/O configuration, needed by \textproc{MapOverlapsIO}, is made available independently from the I/O monitor as well.
+Note that, there might exist some target systems in which disabling the I/O monitor has sense. For instance, consider a system having the following two properties:
+\begin{itemize}
+	\item the root/kernel access is properly protected (\eg kernel protected by execute only memory or TrustZone),
+		or it has sufficient security level for which is not worth to insert the I/O monitor (\eg no admin default passwords, hardened kernel, etc.);
+	\item the PLC runtime, or any other process, does not use the mapping interface (\ie on Wago PLC).
+\end{itemize}
+On such a system, the MAP monitor alone could be enough to protect the I/O configuration, because it can simply deny any access to I/O physical addresses from user space,
+while the system itself is already protected from kernel space accesses.
+
 
 \subsubsection{Wago PLC version}
 
@@ -610,7 +643,7 @@ To port the I/O monitor to the Wago PLC system, only the following changes are n
 
 The DR monitor aims to protect the debug subsystem. As described for the design phase, the DR monitor needs to accomplish two goals:
 \begin{itemize}
-	\item disable debug interface access from userspace;
+	\item disable debug interface access from user space;
 	\item watch over debug registers value to detect malicious events.
 \end{itemize}
 
@@ -625,7 +658,7 @@ int modify_user_hw_breakpoint(struct perf_event *bp,
 
 void unregister_hw_breakpoint(struct perf_event *bp);
 \end{lstlisting}
-To disable these funtions, we dynamically patched the kernel text replacing the prologue instructions of each function.
+To disable these functions, we dynamically patched the kernel text replacing the prologue instructions of each function.
 In particular, they have the following prologue:
 \begin{Verbatim}[fontsize=\small]
 	c00d3cb0 <register_user_hw_breakpoint>:
@@ -675,9 +708,6 @@ After the patch, the kernel text becomes the following:
 Once the user access to debug registers has been disabled, we activate the DR monitor to protect them from attackers who gain kernel access.
 As for the I/O monitor, we report the interface part and the implementation.
 The abstract strategy of the DR monitor is rather simple, and is listed in \myalg{alg:dr_iface}.
-The scheme is a simplification of the I/O monitor, in which any debug register modification is considered malicious.
-Since in our implementation the I/O monitor makes use of the debug subsystem, we used the DR monitor to mediate any access to debug registers.
-Therefore, any modification performed by the I/O monitor is excluded from the detection, and the DR state is protected from concurrent access by a mutual exclusion mechanism.
 \begin{algorithm}[h]
 \caption{DR monitor interface: main loop and detection handler}
 \label{alg:dr_iface}
@@ -696,11 +726,9 @@ Therefore, any modification performed by the I/O monitor is excluded from the de
 		\State \Call{msleep}{$t$} \Comment{Wait for next cycle}
 	\EndLoop
 \EndFunction
-%\Statex
+\Statex
 \end{algorithmic}
-\end{algorithm}
-\begin{algorithm}[h]
-\ContinuedFloat
+
 \begin{algorithmic}[1]
 \Function{HandleDRDetection}{$D$} \Comment{React to the detection $D$}
 	\If{DR debug enabled}
@@ -713,7 +741,9 @@ Therefore, any modification performed by the I/O monitor is excluded from the de
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
-The interface exposed to the I/O monitor is listed in \myalg{alg:dr_ioiface}.
+It is a simplification of the I/O monitor strategy, where any modification is considered malicious.
+Since in our implementation the I/O monitor makes use of the debug subsystem, the DR monitor exposes the interface listed in \myalg{alg:dr_ioiface}
+to mediate any access to debug registers.
 \begin{algorithm}[h]
 \caption{DR monitor interface for I/O monitor}
 \label{alg:dr_ioiface}
@@ -736,6 +766,8 @@ The interface exposed to the I/O monitor is listed in \myalg{alg:dr_ioiface}.
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
+By using this interface, any modification of debug registers performed by the I/O monitor is excluded from the detection.
+This mechanism requires that the DR state is protected from concurrent access by a mutual exclusion mechanism.
 %the interface is usable by the attacker?
 
 All the details about debug registers are handled by the implementation part, shown in \myalg{alg:dr_impl}.
@@ -766,11 +798,9 @@ All the details about debug registers are handled by the implementation part, sh
 		\EndIf
 	\EndFor
 \EndFunction
-%\Statex
+\Statex
 \end{algorithmic}
-\end{algorithm}
-\begin{algorithm}[h]
-\ContinuedFloat
+
 \begin{algorithmic}[1]
 \Function{RestoreDRState}{$D$}
 	\State \Call{DRwrite}{$D.r, D.T_r$} \Comment{Restore debug register to the trusted value}
@@ -780,7 +810,7 @@ All the details about debug registers are handled by the implementation part, sh
 The ARM architecture supports two type of hardware debug registers: breakpoints for instruction addresses, and watchpoints for data addresses.
 The DR monitor protects both of them, and the detection is handled at register level. Each register is accessed through specific coprocessor instructions.
 A special read-only register, the \emph{Debug ID Register} (DIDR), specifies the number of debug registers available and other useful information on the SoC configuration.
-In particular, since the BCM2835 SoC supports 2 watchpoints and 6 breakpoints, the DR monitor can be deployed.
+In particular, since the BCM2835 SoC supports 2 watchpoints and 6 breakpoints, the DR monitor can be deployed to protect them all.
 
 
 \subsubsection{Wago PLC version}
@@ -791,17 +821,249 @@ instead of specific coprocessor instructions \cite{am35x}.
 Unfortunately, it turns out that this particular interface is not supported by the Linux kernel debug framework, as reported in \cite{dr-mapped}:
 ``The memory-mapped extended debug interface is unsupported due to its unreliability in real implementations''.
 Apart from this technical problem, the DR monitor is designed to be applicable to any other ARM implementation that supports debug registers.
-To port it for other architectures than ARM, only the implementation part must be adapted.
+To port it for other architectures different than ARM, only the implementation part must be adapted.
 
 
 \subsection{MAP monitor}
 
-TODO MAP monitor.
+The purpose of the MAP monitor is to filter the user space requests delivered to the mapping subsystem. On Linux, users can use the mapping interface to
+map files or devices, and this mechanism can be used to map physical addresses to virtual addresses through special devices such as \verb|/dev/mem|.
+Among all physical memory addresses, an attacker may be able to map specific I/O memory regions to alter I/O configuration registers.
+The set of devices that can provide access to I/O physical memory depends on the specific system
+(\eg for the Linux version installed on our Raspberry Pi, either \verb|/dev/mem| or \verb|/dev/gpiomem| can be used).
+Linux provides the following system calls to deal with mapping requests:
+\begin{lstlisting}
+long mmap2(unsigned long addr, unsigned long len,
+           unsigned long prot, unsigned long flags,
+           unsigned long fd, unsigned long pgoff);
+
+long mremap(unsigned long addr,
+            unsigned long old_len, unsigned long new_len,
+            unsigned long flags, unsigned long new_addr);
+
+long remap_file_pages(unsigned long addr, unsigned long len,
+                      unsigned long prot, unsigned long pgoff,
+                      unsigned long flags);
+
+long munmap(unsigned long addr, size_t len);
+\end{lstlisting}
+Note that we are describing the interface from a kernel point of view: the interface exposed to user space may be slightly different.
+The \verb|mmap2| system call supersedes the old \verb|mmap|, and now both use the same internal function which is \verb|sys_mmap_pgoff|.
+Although these functions are used for many other types of mappings, we focus on mappings between virtual addresses and physical memory addresses.
+These system calls serve the following purpose, respectively:
+\begin{itemize}
+	\item \itemname{mmap2}: request a new mapping related to the \verb|fd| address space (\eg \verb|/dev/mem| for physical memory) having \verb|len| bytes
+		and starting from page offset \verb|pgoff|; returns the mapped virtual address pointing to the starting offset of the target address space;
+	\item \itemname{mremap}: modify an existing mapping, either remapping it to a new virtual address \verb|new_addr| (\emph{move})
+		or resizing it to \verb|new_len| bytes (\emph{grow} or \emph{shrink}); returns the virtual address after the modification;
+	\item \itemname{remap\_file\_pages}: remap an existing mapping to point to a different start page offset \verb|pgoff| of the target address space
+		(\eg to point to a different physical address); returns $0$ if successful, an error code otherwise.
+	\item \itemname{munmap}: delete an existing mapping of \verb|len| bytes related to the virtual address \verb|addr|;
+		the \verb|len| parameter is aligned to the next page boundary, and the resulting range of pages is removed.
+\end{itemize}
+The type of a requested mapping can be inferred from the \verb|fd| (file descriptor) parameter in \verb|mmap2|,
+or from the \verb|addr| parameter in the other calls, which refers to previously mapped regions.
+Every mapping is managed at a page level, and the arguments are aligned to page boundaries before handling the request.
+The scheme in \myfig{fig:map-linux} summarises a significant sequence of operations performed via the mapping interface,
+assuming physical and virtual address spaces having $\SI{4}{\kilo\byte}$ pages.
+\begin{figure}[h]
+\centerline{
+\includegraphics[width=\textwidth]{res/map_linux}}
+\caption{Accessing physical addresses through Linux mapping interface \label{fig:map-linux}}
+{\phantomsubcaption\ignorespaces\label{fig:mmap}}
+{\phantomsubcaption\ignorespaces\label{fig:mremap}}
+{\phantomsubcaption\ignorespaces\label{fig:remapfp}}
+{\phantomsubcaption\ignorespaces\label{fig:munmap}}
+\end{figure}
+As shown in the figure, there exist $3$ different ways of accessing protected I/O physical addresses by using mapping functions.
+When a mapping includes a portion (even one byte) of the I/O configuration defined by the I/O monitor, we say that an \emph{overlap} occurs.
+First, an attacker may call \verb|mmap2| (or \verb|mmap|) to directly include the I/O configuration into the requested range \subref{fig:mmap}.
+Second, he may use \verb|mremap| to extend a current mapping, possibly causing overlap on an I/O address which was not mapped before \subref{fig:mremap}.
+Third, he can re-map an already mapped virtual address to a different physical address, including a protected I/O address as well \subref{fig:remapfp}.
+Note that, the second and the third system calls identify the existing mappings by means of the virtual addresses returned by the first call to \verb|mmap2|.
+Therefore, the MAP monitor must keep track of the current existing mapping (and virtual addresses) to verify if a subsequent re-map may cause an overlapping.
+Finally, the \verb|munmap| call deletes an existing mapping (or part of it) \subref{fig:munmap}. Even if it cannot cause an overlap,
+the \verb|munmap| system call needs to be monitored as well in order to update the data structure containing the existing mappings and remain
+consistent with the kernel data structures.
+
+To keep track of the current mappings related to physical memory, our monitor uses a global list of pages. Each page is a structure containing a physical address,
+a virtual address, and a process identifier. We assume that the number of processes normally interested in physical memory is quite low.
+Hence, a global list containing mapped pages of all the processes together performs well enough for our purpose.
+If that is not the case, the monitor could be improved, \eg by using a hash-table based on process identifiers.
+The definition of our data structure, which uses the list defined into the \verb|<list.h>| kernel header, is reported below:
+\begin{lstlisting}
+typedef struct {
+	struct list_head pages; // Pointer to the rest of the list
+	unsigned long paddr; // The page physical address
+	unsigned long vaddr; // The page virtual address
+	pid_t pid; // The process who requested the mapping
+} page;
+LIST_HEAD(page_list); // The list head
+DEFINE_MUTEX(page_list_lock); // To protect the list from concurrent accesses
+\end{lstlisting}
+Since the mapping system calls may be called by different processes concurrently, our data structure needs to be protected by a mutual exclusion mechanism.
+The implementation supports classical operations such as insert, search, update and remove, each one at a page level.
+
+The abstract part of our monitor is basically made of $4$ hook functions having the same prototype of the system calls described above.
+These functions replace the original system calls, to receive all the mapping requests coming from user space.
+When a map request is not interesting (\eg does not target physical memory) or it is allowed, the monitor forwards the request to the original system call.
+Otherwise, the monitor policy is applied, and the request may be denied before reaching the original system call.
+Our approach is feasible because does not use slow mechanisms such as kprobes \cite{kprobes}, but it directly replaces the pointers into the system call table.
+Note that this mechanism is just a prototype, and it has some minor drawbacks that could be reduced. For instance, since our functions must be consistent
+with the original system calls, some code needs to be duplicated. In particular, we need to check the arguments used by the monitor in the same way the original system calls do
+(\eg for page alignment). This could be avoided by including our monitor as part of the kernel code itself. Note that this improvement may be worth considering that
+the mapping system calls might be called many times during run-time, since they are not only used for physical memory but for any file/device mapping.
+
+The abstract part of the MAP monitor, shown in \myalg{alg:map-iface}, is independent from the specific architecture.
+It makes use of the \textproc{AddMapping}, \textproc{GetMappingPhysAddr}, \textproc{UpdateMapping}, \textproc{AlterMapping} and \textproc{DeleteMapping}
+functions provided by the page list structure. We omit their implementation because it is straightforward and does not add anything to our discussion.
+\textproc{PageAlign} (and \textproc{PageMask}), \textproc{PageShift} and \textproc{error}, instead, refer to corresponding Linux kernel macros that deal with
+page alignment, page offset and error handling, respectively.
+For system calls that do not have the file descriptor as parameter, to check if a request refers to a physical memory mapping, and not to other files/devices,
+we look into our page list.
+\begin{algorithm}[h]
+\caption{MAP monitor interface: hook functions for mapping system calls}
+\label{alg:map-iface}
+\begin{algorithmic}[1]
+\Function{MyMmap}{$addr, len, prot, flags, fd, pgoff$} \Comment{mmap (mmap2) hook}
+	\State $pid \gets$ current pid
+	\State $len \gets \Call{PageAlign}{len}$ \Comment{Align len to next page boundary}
+	\If{\Call{IsPhysMem}{$fd$}} \Comment{If it is a physical memory mapping}
+		\State $s \gets \Call{PageShift}{pgoff}$ \Comment{Start physical address}
+		\State $e \gets s + len$ \Comment{End physical address}
+		\If{\Call{MapOverlapsIO}{$s, e$}} \Comment{Use I/O monitor interface}
+			\State report about overlap
+			\If{monitor is active}
+				\State \Return $-13$ \Comment{Permission denied}
+			\EndIf
+		\EndIf
+		\State $r \gets \Call{mmap2}{addr, len, prot, flags, fd, pgoff}$ \Comment{Original system call}
+		\If{$\neg \Call{error}{r}$} \Comment{Call succeeded}
+			\State \Call{AddMapping}{$s, e, r, pid$} \Comment{Add mapped pages to the page list}
+		\EndIf
+		\State \Return $r$
+	\EndIf
+	\State \Return \Call{mmap2}{$addr, len, prot, flags, fd, pgoff$} \Comment{Original system call}
+\EndFunction
+\Statex
+\end{algorithmic}
+
+\begin{algorithmic}[1]
+\Function{MyMremap}{$addr, oldLen, newLen, flags, newAddr$} \Comment{mremap hook}
+	\If{$addr$ is not page aligned} \Comment{mremap requires a page aligned address}
+		\State \Return \Call{mremap}{$addr, oldLen, newLen, flags, newAddr$} \Comment{It will fail}
+	\EndIf
+	\State $pid \gets$ current pid
+	\State $oldLen \gets \Call{PageAlign}{oldLen}$ \Comment{Align old length to next page boundary}
+	\State $newLen \gets \Call{PageAlign}{newLen}$ \Comment{Align new length to next page boundary}
+	\State $s \gets \Call{GetMappingPhysAddr}{addr, pid}$ \Comment{Search page list for start physical address}
+	\If{$\neg \Call{error}{s}$} \Comment{If it is a physical memory mapping}
+		\If{$newLen > oldLen$} \Comment{Growing is dangerous}
+			\State $e \gets s + newLen$ \Comment{End physical address}
+			\If{\Call{MapOverlapsIO}{$s, e$}} \Comment{Use I/O monitor interface}
+				\State report about overlap
+				\If{monitor is active}
+					\State \Return $-13$ \Comment{Permission denied}
+				\EndIf
+			\EndIf
+		\EndIf
+		\State $r \gets \Call{mremap}{addr, oldLen, newLen, flags, newAddr}$ \Comment{Original system call} 
+		\If{$\neg \Call{error}{r}$} \Comment{Call succeeded}
+			\State \Call{UpdateMapping}{$addr, oldLen, r, newLen, s, pid$} \Comment{Update pages in page list}
+		\EndIf
+		\State \Return $r$
+	\EndIf
+	\State \Return \Call{mremap}{$addr, oldLen, newLen, flags, newAddr$} \Comment{Original system call}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+\begin{algorithm}[h]
+\ContinuedFloat
+\begin{algorithmic}[1]
+\Function{MyRemapFilePages}{$addr, len, prot, pgoff, flags$} \Comment{remap\_file\_pages hook}
+	\State $addr \gets \Call{PageMask}{addr}$ \Comment{Align addr to previous page boundary}
+	\State $len \gets \Call{PageAlign}{len}$ \Comment{Align len to next page boundary}
+	\State $s \gets \Call{GetMappingPhysAddr}{addr, pid}$ \Comment{Search page list for start physical address}
+	\If{$\neg \Call{error}{s}$} \Comment{If it is a physical memory mapping}
+		\State $s \gets \Call{PageShift}{pgoff}$ \Comment{Start physical address}
+		\State $e \gets s + len$ \Comment{End physical address}
+		\If{\Call{MapOverlapsIO}{$s, e$}} \Comment{Use I/O monitor interface}
+			\State report about overlap
+			\If{monitor is active}
+				\State \Return $-13$ \Comment{Permission denied}
+			\EndIf
+		\EndIf
+		\State $r \gets \Call{remap\_file\_pages}{addr, len, prot, pgoff, flags}$ \Comment{Original system call} 
+		\If{$r == 0$} \Comment{Call succeeded}
+			\State \Call{AlterMapping}{$addr, s, len, pid$} \Comment{Update pages in page list}
+		\EndIf
+		\State \Return $r$
+	\EndIf
+	\State \Return \Call{remap\_file\_pages}{$addr, len, prot, pgoff, flags$} \Comment{Original system call}
+\EndFunction
+\Statex
+\end{algorithmic}
+
+\begin{algorithmic}[1]
+\Function{MyMunmap}{$addr, len$} \Comment{munmap hook}
+	\If{$addr$ is not page aligned} \Comment{munmap requires a page aligned address}
+		\State \Return \Call{munmap}{$addr, len$} \Comment{It will fail}
+	\EndIf
+	\State $s \gets \Call{GetMappingPhysAddr}{addr, pid}$ \Comment{Search page list for start physical address}
+	\If{$\neg \Call{error}{s}$} \Comment{If it is a physical memory mapping}
+		\State report about $s$ being unmapped
+		\State \Call{DeleteMapping}{$addr, len, pid$} \Comment{Delete pages from page list}
+	\EndIf
+	\State \Return \Call{munmap}{$addr, len$} \Comment{Original system call}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+If the given virtual address \verb|addr| is not mapped into the list by the current \verb|pid|, \ie it does not map a valid physical address,
+then two possibilities exist. Either the virtual address is mapped to some other device (not included into the list by our mmap hook), or the process is sending
+a bad virtual address. In both cases we are not interested to the request, and we can let the original system call manage it.
+
+The implementation part of the MAP monitor deals with the actual hooking procedure, which includes the following operations:
+\begin{enumerate}
+	\item finding the system call table base address in kernel memory;
+	\item storing a copy of the original system call pointers to allow the abstract part to call them when necessary;
+	\item replacing them with pointers to the hook functions defined above.
+\end{enumerate}
+Several technical details of these operations, which we omit in this report, depend on the actual architecture
+(\eg find system call table, page write attribute, size of pointers, system call convention, etc.).
+The interesting part of the implementation is the function responsible for identifying whether a map request refers to physical memory or not.
+This is also dependent from the particular target system.
+For instance, the code listed below is related to the \textproc{IsPhysMem} implementation for our Raspberry Pi system:
+\begin{lstlisting}
+static inline int is_phys_mem(unsigned long fd) {
+	int res = NOT_PHYS_MEM;
+	struct file *f = fget(fd);
+	if (!f) goto bad_fd;
+	if (f->f_op->mmap == mmap_mem) // mmap request for physical memory
+		res = PHYS_MEM;
+	fput(f);
+bad_fd:
+	return res;
+}
+\end{lstlisting}
+where \verb|mmap_mem| points to the kernel function which handles the requests for \verb|/dev/mem|:
+\begin{lstlisting}
+mmap_mem = (void*)kallsyms_lookup_name("mmap_mem");
+\end{lstlisting}
+
+Since in our target system the PLC runtime requests a new mapping from user space every time a PLC logic is uploaded,
+we configured the monitor as passive, to only report the mapping requests. Thus, it only provides additional information about an eventual attack from user space.
+This could be improved by providing reports based on a statistical model of the PLC runtime requests, or by designing a defense-aware PLC runtime.
+The optimal solution, in fact, would be to not request mappings from user space at all, managing the I/O only from kernel space.
 
 
 \subsubsection{Wago PLC version}
 
-TODO Wago PLC version.
+On Wago PLC system, the I/O is entirely managed from kernel space, and from our experiments we found that no user space processes send mapping requests for physical memory.
+Thus, the MAP monitor can be configured as active, to directly deny any I/O map request from user space.
+Since this PLC is based on ARM architecture as well, the MAP monitor does not need any modification to be ported to this system,
+except for the \verb|is_phys_mem| function that should target only the \verb|/dev/mem| device (\verb|/dev/gpiomem| only exists on Raspberry Pi).
+Therefore, for Wago PLC, the MAP monitor alone can actually prevent any attack residing in user space, because the operating system does not provide
+any other mechanism for users to access physical memory.
 
 
 \subsection{Module usage}

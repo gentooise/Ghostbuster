@@ -351,14 +351,14 @@ In this way, every process has its own ``virtual view'' of the physical memory. 
 Once a mapping has been established, the I/O can be managed by accessing the mapped virtual memory.
 \begin{figure}[h]
 \centerline{
-\phantomsubcaption{\label{fig:mapping_request}}
-\phantomsubcaption{\label{fig:mapping_provided}}
-\phantomsubcaption{\label{fig:conf_change}}
-\phantomsubcaption{\label{fig:phys_change}}
-\phantomsubcaption{\label{fig:virt_write}}
-\phantomsubcaption{\label{fig:write_failure}}
 \includegraphics[width=0.9\textwidth]{res/illusion}}
 \caption{Pin Control Attack memory illusion \label{fig:illusion}}
+{\phantomsubcaption\ignorespaces\label{fig:mapping_request}}
+{\phantomsubcaption\ignorespaces\label{fig:mapping_provided}}
+{\phantomsubcaption\ignorespaces\label{fig:conf_change}}
+{\phantomsubcaption\ignorespaces\label{fig:phys_change}}
+{\phantomsubcaption\ignorespaces\label{fig:virt_write}}
+{\phantomsubcaption\ignorespaces\label{fig:write_failure}}
 \end{figure}
 Thus, as \myfig{fig:illusion} outlines, an attacker can do the following: first, it has to request a mapping for I/O memory \subref{fig:mapping_request};
 once a virtual mapping is provided by the operating system \subref{fig:mapping_provided}, the malicious process is able to alter the pin configuration (\eg change an output pin to input)
