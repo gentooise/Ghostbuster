@@ -1052,13 +1052,19 @@ mmap_mem = (void*)kallsyms_lookup_name("mmap_mem");
 
 Since in our target system the PLC runtime requests a new mapping from user space every time a PLC logic is uploaded,
 we configured the monitor as passive, to only report the mapping requests. Thus, it only provides additional information about an eventual attack from user space.
-This could be improved by providing reports based on a statistical model of the PLC runtime requests, or by designing a defense-aware PLC runtime.
-The optimal solution, in fact, would be to not request mappings from user space at all, managing the I/O only from kernel space.
+This could be improved by providing reports based on a statistical model of the PLC runtime requests, or even better by designing a defense-aware PLC runtime.
+For instance, if our detection mechanism is integrated with the PLC runtime as described later in \mysec{sec:def-usage}, the MAP monitor may be used in the following way:
+\begin{itemize}
+	\item when a new mapping request has been detected, Ghostbuster can signal the PLC runtime;
+	\item the PLC runtime knows if the request is due to a current logic update; if it is not, the runtime can rethrow the alert to the operator terminal.
+\end{itemize}
+The optimal solution, of course, would be to completely avoid using mapped I/O addresses from user space, and manage the I/O from kernel space only.
+However, depending on the actual implementation, this could require several changes in the PLC software. Therefore, using the signaling approach might be preferred in that case.
 
 
 \subsubsection{Wago PLC version}
 
-On Wago PLC system, the I/O is entirely managed from kernel space, and from our experiments we found that no user space processes send mapping requests for physical memory.
+On Wago PLC system, the I/O is entirely managed from kernel space already, and from our experiments we found that no user processes send mapping requests for physical memory.
 Thus, the MAP monitor can be configured as active, to directly deny any I/O map request from user space.
 Since this PLC is based on ARM architecture as well, the MAP monitor does not need any modification to be ported to this system,
 except for the \verb|is_phys_mem| function that should target only the \verb|/dev/mem| device (\verb|/dev/gpiomem| only exists on Raspberry Pi).
