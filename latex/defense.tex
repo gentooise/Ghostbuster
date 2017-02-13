@@ -368,7 +368,7 @@ especially for those functions that are called many times (\eg in the main loop 
 When Ghostbuster is loaded, the three main monitors are started in parallel.
 The monitors are independent from each other, and every monitor has its own kernel thread.
 When a monitor has to report an event to the system, it uses the common logging subsystem available into the kernel
-(see \mysec{sec:def_sec} for a possible improvement on the reporting mechanism).
+(see \mysec{sec:def_usage} for more information).
 The target systems used to test our defense are exactly the same as the ones described for the attack part in \mychap{chap:attack}, with the same PLC logic and I/O configuration.
 In particular, for each monitor, we first refer to the Raspberry Pi system (BCM2835 SoC); then we discuss the modifications required to run on Wago PLC as well.
 In the following sections we describe in more detail the structure and the operations performed by each monitor.
@@ -826,7 +826,7 @@ To port it for other architectures different than ARM, only the implementation p
 
 \subsection{MAP monitor}
 
-The purpose of the MAP monitor is to filter the user space requests delivered to the mapping subsystem. On Linux, users can use the mapping interface to
+The purpose of the MAP monitor is to filter user space requests delivered to the mapping subsystem. On Linux, users can use the mapping interface to
 map files or devices, and this mechanism can be used to map physical addresses to virtual addresses through special devices such as \verb|/dev/mem|.
 Among all physical memory addresses, an attacker may be able to map specific I/O memory regions to alter I/O configuration registers.
 The set of devices that can provide access to I/O physical memory depends on the specific system
@@ -848,7 +848,7 @@ long remap_file_pages(unsigned long addr, unsigned long len,
 long munmap(unsigned long addr, size_t len);
 \end{lstlisting}
 Note that we are describing the interface from a kernel point of view: the interface exposed to user space may be slightly different.
-The \verb|mmap2| system call supersedes the old \verb|mmap|, and now both use the same internal function which is \verb|sys_mmap_pgoff|.
+The \verb|mmap2| system call supersedes the old \verb|mmap|, and both use the same internal function which is \verb|sys_mmap_pgoff|.
 Although these functions are used for many other types of mappings, we focus on mappings between virtual addresses and physical memory addresses.
 These system calls serve the following purpose, respectively:
 \begin{itemize}
@@ -862,10 +862,10 @@ These system calls serve the following purpose, respectively:
 		the \verb|len| parameter is aligned to the next page boundary, and the resulting range of pages is removed.
 \end{itemize}
 The type of a requested mapping can be inferred from the \verb|fd| (file descriptor) parameter in \verb|mmap2|,
-or from the \verb|addr| parameter in the other calls, which refers to previously mapped regions.
+or from the \verb|addr| parameter in the other calls, which refer to previously mapped regions.
 Every mapping is managed at a page level, and the arguments are aligned to page boundaries before handling the request.
 The scheme in \myfig{fig:map-linux} summarises a significant sequence of operations performed via the mapping interface,
-assuming physical and virtual address spaces having $\SI{4}{\kilo\byte}$ pages.
+assuming physical and virtual address spaces based on $\SI{4}{\kilo\byte}$ pages.
 \begin{figure}[h]
 \centerline{
 \includegraphics[width=\textwidth]{res/map_linux}}
@@ -1069,13 +1069,87 @@ any other mechanism for users to access physical memory.
 \subsection{Module usage}
 \label{sec:def_usage}
 
-%Our defense can be either dynamically inserted as a Loadable Kernel Module (LKM), or can be built-in into the Linux kernel.
-%The second approach requires a kernel re-compilation to obtain a new kernel image including our module.
-%The security implications of these two approaches are discussed in \mysec{sec:def_sec}.
-TODO Module usage.
+Our defense can be either dynamically inserted as a Loadable Kernel Module (LKM), or can be built-in into the Linux kernel.
+The second approach requires a kernel re-compilation to obtain a new kernel image including our module.
+There are no performance differences between the two configurations, the only difference is that if an LKM is used, it can be unloaded as well.
+The security implications of these two approaches are discussed in \mysec{sec:def_sec}.
+
+In our prototype version for Raspberry Pi, the I/O monitor needs to set a watchpoint on a PLC runtime virtual address to verify the I/O configuration
+against the current I/O operations. Therefore, we need to pass this virtual address as parameter, together with the process identifier of the PLC runtime, to our kernel module.
+This could be avoided by a better integration between our module and the PLC runtime.
+For instance, it could be the Ghostbuster module itself to start the PLC runtime process and provide the mapped virtual address.
+
+After building the module, it can be loaded by means of the following Bash script that looks for pid and I/O base virtual address of the PLC runtime:
+\begin{lstlisting}[language=bash]
+#!/bin/sh
+ppid=`pidof codesyscontrol.bin | cut -d' ' -f 1`
+vaddr=`cat /proc/$ppid/maps | grep /dev/mem | cut -d'-' -f 1 | cut -d' ' -f 1`
+
+insmod ghostbuster.ko p_pid=$ppid vaddr_base=0x$vaddr
+if [ $? = 0 ]
+then
+	echo "Loading Ghostbuster... done!"
+else
+	echo "Loading Ghostbuster... failed!"
+fi
+\end{lstlisting}
+
+When the module is running, all the information about detection events is reported among the other kernel messages, accessible by the \verb|dmesg| tool as follows:
+\begin{Verbatim}
+  root@raspberrypi:~ # dmesg -T
+  [Tue Nov 15 10:54:42 2016] Ghostbuster: I/O monitor started
+  [Tue Nov 15 10:54:42 2016] Ghostbuster: DR monitor started
+  [Tue Nov 15 10:54:42 2016] Ghostbuster: MAP monitor started
+  [Tue Nov 15 10:54:42 2016] Ghostbuster: Ghostbuster started
+  [Tue Nov 15 10:55:50 2016] [RK] init
+  [Tue Nov 15 10:55:50 2016] [RK] Pin Multiplexing Hijacked!
+  [Tue Nov 15 10:55:50 2016] Ghostbuster: I/O change detected:
+	phys[0xf2200000] [old value = 0x00048924, new value = 0x00048824]
+  [Tue Nov 15 10:55:50 2016] Ghostbuster: Illegal change: Pin Control Attack!
+  [Tue Nov 15 10:55:50 2016] Ghostbuster: I/O state restored
+\end{Verbatim}
+In the code above, the kernel module variant of Pin Control Attack (\verb|RK|) has been immediately detected by Ghostbuster.
+In the current implementation, the reporting mechanism is just a prototype that prints messages only useful for testing and logging.
+In a final version, a mechanism to send alarm signals to the PLC runtime should be implemented.
+Then, the runtime itself must be designed to handle and report these signals to a connected terminal as well,
+to allow the industrial operator to analyse the report and take further countermeasures according to the industrial policies.
 
 
 \section{Security considerations}
 \label{sec:def_sec}
 
-TODO Security considerations.
+Our detection system has been designed having in mind the threat model in \mysec{sec:threat_model} as well as the attack implementations presented in \mysec{sec:attack_impl}.
+The design is meant to be as much general as possible, since it aims to cover different attack vectors and to be applicable
+on several target systems that may be heterogeneous in their characteristics.
+The definition of the monitor strategies and policies is a key aspect for having a significant solution that raises the bar for the attacker.
+
+In our work we assumed that the system is protected from classical function and data hooking techniques, as it will likely be in the next years.
+In this scenario, malicious users will be forced to avoid these techniques, and to leverage lower level mechanisms such as I/O configuration.
+At the time of writing, the above protection mechanisms are not complete, and they still have limitations.
+In particular, an attacker who is able to gain kernel privilege level, can still duplicate some kernel code or directly write to kernel text without being noticed.
+One of the main problems to overcome is the leaking of kernel information, in particular kernel addresses.
+Once the attacker knows the address of its specific target inside the kernel, he can easily reach its goal.
+For instance, if the attacker knows the starting address of our monitor instructions that are responsible for verifying a configuration,
+then he could simply replace them with no-operations.
+For this reason, our defense should be protected against these attacks as well, in order to prevent defense-aware attackers from circumventing the protection mechanisms.
+This is not a problem of our module, but is quite a general problem affecting the whole kernel.
+The approach aimed to protect the kernel itself and reduce its attack surface is known in literature as \emph{kernel hardening} \cite{hardening}.
+Kernel hardening techniques, such as Kernel Address Space Layout Randomization (KASLR), read-only memory, execute-only memory, etc.,
+would be useful to protect our defense from kernel level attacks. Of course, the ultimate solution to this problem would be using a Trusted Execution Environment.
+Unfortunately, this is not always applicable, as in our case, due to its unacceptable overhead.
+
+Another useful mechanism to prevent attackers from gaining kernel level access is to use signed kernel modules \cite{signed-modules}.
+If an attacker is able to insert its own loadable kernel module, he has access to the entire kernel space.
+To avoid this, the kernel can be compiled including hard-coded public keys of trusted entities, who will be able to sign their own modules.
+A module, which is an ELF (Executable and Linkable Format) file, may be signed by simply including an extra section containing a digital signature
+computed on all the \verb|text| and \verb|data| sections. With this mechanism, the authenticity and the integrity of a module can be verified before being loaded.
+If a malicious users attempts to load its own unsigned module, the system can block it and may raise an alert signal,
+which can be forwarded to the industrial operator.
+
+As previously discussed, Ghostbuster could be deployed as loadable kernel module, or it can be built-in into the kernel itself.
+In general, integrating the module directly into the kernel would be a better choice from a security point of view,
+because a loadable kernel module may also be unloaded at any time. However, using a loadable version allows module users to upgrade it
+when necessary without having to reboot the machine.
+If the loadable version is chosen, it should be deployed with care. First, the privilege level required to unload the module (typically root) should be properly protected
+(\eg no default password). Second, the module itself can be protected against unloading, by leveraging the mechanisms available into the kernel
+(\eg a module which is in use by another module cannot be unloaded).
