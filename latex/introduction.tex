@@ -23,10 +23,10 @@ Within the context of an Industrial Control System (ICS), embedded systems are b
 PLCs are special-purpose embedded systems, usually deployed into harsh environments to control critical processes,
 \eg automotive systems, assembly lines, robotic devices or any industrial machine that requires high control precision and reliability.
 
-A simplified version of the environment in which a PLC may operate is outlined in \myfig{fig:plc_env}.
+A simplified version of the environment in which a PLC may operate is outlined in \myfig{fig:plc-env}.
 \begin{figure}[h]
-\centerline{\includegraphics[width=0.6\textwidth]{res/plc_env}}
-\caption{PLC environment\label{fig:plc_env}}
+\centerline{\includegraphics[width=0.6\textwidth]{res/plc-env}}
+\caption{PLC environment\label{fig:plc-env}}
 \end{figure}
 
 The PLC interacts with the physical world through external components called \emph{sensors} and \emph{actuators}.
@@ -39,10 +39,10 @@ For each scan cycle, the PLC reads the current state of the physical process mea
 Internally, the logic takes these values as input and performs some calculations based on the loaded control algorithm.
 The output of the logic is then sent to the actuators, thus modifying the state of the controlled process.
 
-The PLC main scan cycle is shown in \myfig{fig:scan_cycle}.
+The PLC main scan cycle is shown in \myfig{fig:scan-cycle}.
 \begin{figure}[h]
-\centerline{\includegraphics[width=0.4\textwidth]{res/scan_cycle}}
-\caption{PLC logic main scan cycle\label{fig:scan_cycle}}
+\centerline{\includegraphics[width=0.4\textwidth]{res/scan-cycle}}
+\caption{PLC logic main scan cycle\label{fig:scan-cycle}}
 \end{figure}
 
 Based on the nature of the controlled process, the logic must satisfy different safety and timing properties.
@@ -62,7 +62,7 @@ They can be easily written by a malicious application even while the system is r
 As a consequence, the behaviour of the I/O interface, hence the interaction with the physical process, may be altered in a dramatic way.
 In \cite{ghostplc}, Abbasi et al. showed how this feature is exploitable by attackers, who can tamper with
 the integrity or the availability of legitimate I/O operations, factually changing how a PLC interacts with sensors and actuators.
-Based on these observations, they introduced a novel attack technique against PLCs, which they call Pin Control Attack (also I/O attack \cite{tech_ghostplc}).
+Based on these observations, they introduced a novel attack technique against PLCs, which they call Pin Control Attack (also I/O attack \cite{tech-ghostplc}).
 The salient features of this new class of attacks are:
 \begin{enumerate}[itemsep=2pt,topsep=0pt]
 	\item It is intrinsically stealth. The alteration of the pin configuration does not generate any interrupt, preventing the Operating System (OS) to react to it.
