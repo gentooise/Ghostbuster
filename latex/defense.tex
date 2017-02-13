@@ -1144,18 +1144,23 @@ Kernel hardening techniques, such as Kernel Address Space Layout Randomization (
 would be useful to protect our defense from kernel level attacks. Of course, the ultimate solution to this problem would be using a Trusted Execution Environment.
 Unfortunately, this is not always applicable, as in our case, due to its unacceptable overhead.
 
-Another useful mechanism to prevent attackers from gaining kernel level access is to use signed kernel modules \cite{signed-modules}.
-If an attacker is able to insert its own loadable kernel module, he has access to the entire kernel space.
-To avoid this, the kernel can be compiled including hard-coded public keys of trusted entities, who will be able to sign their own modules.
-A module, which is an ELF (Executable and Linkable Format) file, may be signed by simply including an extra section containing a digital signature
-computed on all the \verb|text| and \verb|data| sections. With this mechanism, the authenticity and the integrity of a module can be verified before being loaded.
-If a malicious users attempts to load its own unsigned module, the system can block it and may raise an alert signal,
-which can be forwarded to the industrial operator.
-
 As previously discussed, Ghostbuster could be deployed as loadable kernel module, or it can be built-in into the kernel itself.
 In general, integrating the module directly into the kernel would be a better choice from a security point of view,
-because a loadable kernel module may also be unloaded at any time. However, using a loadable version allows module users to upgrade it
+because a loadable kernel module may be unloaded at any time. However, using a loadable version allows module users to upgrade it
 when necessary without having to reboot the machine.
 If the loadable version is chosen, it should be deployed with care. First, the privilege level required to unload the module (typically root) should be properly protected
 (\eg no default password). Second, the module itself can be protected against unloading, by leveraging the mechanisms available into the kernel
 (\eg a module which is in use by another module cannot be unloaded).
+
+Another useful mechanism to prevent attackers from gaining kernel level access is to use signed kernel modules \cite{signed-modules}.
+If an attacker is able to insert its own loadable kernel module, he has access to the entire kernel space, and may be able to circumvent our defense as well.
+To avoid this, the kernel can be compiled including hard-coded public keys of trusted entities, who will be able to sign their own modules.
+A module, which is an ELF (Executable and Linkable Format) file, may be signed by simply including an extra section containing a digital signature
+computed on all the \verb|text| and \verb|data| sections. With this mechanism, the authenticity and the integrity of a module can be verified before being loaded.
+If a malicious users attempts to load its own unsigned module, the system can block it and may raise an alert signal,
+which can be forwarded to the industrial operator. Alternatively, if the system does not need loadable modules at all,
+the kernel module functionality may be completely disabled \cite{disable-modules}. Since it is available during run-time, this mechanism can be applied
+for both Ghostbuster variants. For built-in version, modules can be disabled at boot time; otherwise, they can be disabled as soon as Ghostbuster module is loaded.
+Note that this usage model is not based on an unreasonable assumption, because PLC systems are typically made of a very small and stable environment,
+and might be very likely that they do not need dynamic modules support.
+In fact, as confirmed by our experiments on Wago PLC, the system does not make use of any loadable kernel module.
