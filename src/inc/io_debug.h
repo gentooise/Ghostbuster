@@ -2,7 +2,7 @@
 #define __IO_DEBUG_H
 
 #include "log.h"
-#include <io_conf.h>
+#include "io_defs.h"
 
 /*
  * I/O debug subsystem.

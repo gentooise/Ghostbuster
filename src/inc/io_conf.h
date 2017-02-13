@@ -81,7 +81,7 @@ static inline void get_io_state(volatile void** addrs, void* state);
  * The information contained into detect_info_t must be enough to eventually restore the trusted state later.
  *
  * @block: the block base address (virtual)
- * @trusted_state: the trusted state base address, relative to this block
+ * @state: the trusted state base address, relative to this block
  * @index: the index of the block, that is, the position inside io_conf->addrs
  */
 static inline void check_io_state(volatile void* block, const void* state, unsigned index);
