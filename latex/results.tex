@@ -1,4 +1,62 @@
 \chapter{Experimental Results}
 \label{chap:results}
 
-TODO Experimental Results.
+This chapter describes the evaluation phase of our defense solution.
+Our purpose is to give an estimation of its efficacy and efficiency on different scenarios.
+After specifying the configuration of the target system used for our experiments, we define and implement different test cases
+and provide the experimental results for each one.
+
+
+\section{Experiments definition}
+
+To validate our detection system and to estimate its overhead, we performed different experiments.
+Given the technical problems described in \mysec{sec:dr-impl} for the Wago PLC version, we chose the Raspberry Pi with the CODESYS runtime as the target system for our tests.
+The system has the same configuration as reported in \mysec{sec:attack-pi} for the attack analysis.
+The specific attack implementation used for our tests depend on the particular test case, and are described in the following sections.
+Finally, the Ghostbuster module has been configured as follows (see \mysec{sec:def-impl}):
+\begin{itemize}
+	\item \itemname{global flags}: \verb|ARCH = arm| and \verb|SOC_MODEL = BCM2835|;
+	\item \itemname{I/O monitor}: enabled, active mode, debug disabled;
+	\item \itemname{DR monitor}: enabled, active mode, debug disabled;
+	\item \itemname{MAP monitor}: enabled, passive mode, debug disabled.
+\end{itemize}
+
+Given the above set-up, in the first phase we evaluated the effectiveness of our solution by estimating the detection rate over different values of the monitor scan intervals.
+In the second phase, we defined the following test cases to measure the performance overhead:
+\begin{itemize}
+	\item \itemname{steady state}: we measure the overhead during normal PLC logic operations, without any attack or external influence;
+	\item \itemname{pin configuration}: we estimate the overhead when a pin configuration attack is executed;
+	\item \itemname{pin multiplexing}: same as above, but for a pin multiplexing attack (note that their detection is different, see \mysec{sec:io-design});
+	\item \itemname{logic upload}: we provide an estimation of the overhead during the process of uploading a new logic (with a different I/O configuration) to the PLC runtime.
+\end{itemize}
+
+To measure the defense overhead, we leveraged Hardware Performance Counters (HPCs).
+HPCs allow the user to measure the number of active CPU cycles executed by a system process during a certain amount of time.
+The CPU cycles are strictly related to the operations performed by the CPU, since each instruction corresponds to a certain number of CPU cycles.
+The usage scheme of HPCs is the following:
+\begin{enumerate}
+	\item reset and start a hardware counter;
+	\item wait for target operations to complete, or set a timeout;
+	\item read the value contained into the hardware counter.
+\end{enumerate}
+Given this usage, we estimate the overhead of our solution as follows:
+\begin{enumerate}
+	\item we measure the operations performed by the whole kernel in a definite time interval $t$;
+	\item we deploy our detection system (loading the kernel module);
+	\item we measure again the whole kernel operations during the same time interval $t$;
+	\item we compare the results of the two cases.
+\end{enumerate}
+To measure the operations performed by the entire kernel, we built a minimal kernel module that uses a hardware counter from kernel space.
+To improve the accuracy of our results, this methodology is repeated several times, separately for each test case defined above.
+Moreover, we chose $t$ as multiple of the PLC logic scan cycle, in order to have an estimation of the overhead easily comparable to the PLC timing.
+The rest of the chapter reports and describes the results of our experiments.
+
+
+\section{Effectiveness}
+
+TODO Effectiveness.
+
+
+\section{Performance overhead}
+
+TODO Performance overhead.
