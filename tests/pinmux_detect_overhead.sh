@@ -4,20 +4,32 @@
 dmesg -C
 if [ $? -eq 0 ]
 then
+
+	# Clean environment
+	./clean.sh
+	dmesg -C
+
 	# Measure without defense
 	insmod perf.ko
-	sleep 12
+	sleep 5
+	insmod attacks/drk7/drk.ko
+	sleep 7
 	rmmod perf
 
+	rmmod drk
+
 	# Load defense
-	./loader.sh &> /dev/null
+	./loader.sh 10
 	sleep 5
 
 	# Measure with defense
 	insmod perf.ko
-	sleep 12
+	sleep 5
+	insmod attacks/drk7/drk.ko
+	sleep 7
 	rmmod perf
 
+	rmmod drk
 	rmmod ghostbuster
 	sleep 5
 

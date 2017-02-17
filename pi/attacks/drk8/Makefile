@@ -1,6 +1,5 @@
-obj-m += perf.o
-
-KDIR := ../../linux
+obj-m:= drk.o
+KDIR := ../../../../linux_pi
 PWD := $(shell pwd)
 
 default:
@@ -8,4 +7,3 @@ default:
 
 clean:
 	$(MAKE) -C $(KDIR) M=$(PWD) clean
-

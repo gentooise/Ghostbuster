@@ -4,6 +4,11 @@
 dmesg -C
 if [ $? -eq 0 ]
 then
+
+	# Clean environment
+	./clean.sh
+	dmesg -C
+	
 	# Measure without defense
 	insmod perf.ko
 	sleep 5
@@ -14,7 +19,7 @@ then
 	rmmod drk
 
 	# Load defense
-	./loader.sh &> /dev/null
+	./loader.sh 10
 	sleep 5
 
 	# Measure with defense
