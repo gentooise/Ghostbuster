@@ -61,7 +61,10 @@ static inline void __reset_dr(void* dr) {
 
 #ifdef DR_MONITOR_ENABLED
 
-#define DR_MONITOR_INTERVAL	10 // ms
+#define DR_MONITOR_INTERVAL 	2000 // Monitor interval in microseconds
+#define DR_INTERVAL_ACCURACY	50 // Accuracy of each sleep in microseconds
+#define DR_MIN_RANGE(t)     	(t - DR_INTERVAL_ACCURACY)
+#define DR_MAX_RANGE(t)     	(t + DR_INTERVAL_ACCURACY)
 
 int start_dr_monitor(void);
 

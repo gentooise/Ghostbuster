@@ -8,11 +8,11 @@ then
 	# Clean environment
 	./clean.sh
 	dmesg -C
+	sleep 1
 
-	sleep 2
 	# Measure without defense
 	insmod perf.ko
-	sleep 12
+	sleep 6
 	rmmod perf
 
 	# Load defense with t = 10
@@ -21,9 +21,8 @@ then
 
 	# Measure with defense
 	insmod perf.ko
-	sleep 12
+	sleep 6
 	rmmod perf
-
 	rmmod ghostbuster
 	sleep 2
 
@@ -33,9 +32,8 @@ then
 
 	# Measure with defense
 	insmod perf.ko
-	sleep 12
+	sleep 6
 	rmmod perf
-
 	rmmod ghostbuster
 	sleep 2
 
@@ -45,9 +43,8 @@ then
 
 	# Measure with defense
 	insmod perf.ko
-	sleep 12
+	sleep 6
 	rmmod perf
-
 	rmmod ghostbuster
 
 	echo "Test done!"

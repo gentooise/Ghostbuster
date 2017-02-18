@@ -23,6 +23,10 @@ struct task_struct* task;
 #define GPIO_PULL *(gpio+37)
 #define GPIO_PULLCLK0 *(gpio+38)
 
+// Interval macros for usleep_range (t in milliseconds)
+#define MIN_RANGE_USEC(t)	((t) * 1000 - 50)
+#define MAX_RANGE_USEC(t)	((t) * 1000 + 50)
+
 int sync_attack(void* data) {
 	int g = 22; // Pin 22 attached to LED
 	int gb = 24; // Pin 24 attached to Button
@@ -33,14 +37,14 @@ int sync_attack(void* data) {
 
 	// Look for the time of a write operation from the logic
 	while (led_state == initial_state) {
-		msleep(1); // Polling granularity
+		usleep_range(MIN_RANGE_USEC(1), MAX_RANGE_USEC(1)); // Polling granularity = 1 ms
 		led_state = GET_GPIO(g); // Poll the LED state
 	}
 
-	msleep(9);
+	usleep_range(MIN_RANGE_USEC(9), MAX_RANGE_USEC(9));
 	INP_GPIO(gb);
 	SET_GPIO_ALT(gb, 0);
-	msleep(1);
+	usleep_range(MIN_RANGE_USEC(1), MAX_RANGE_USEC(1));
 	INP_GPIO(gb);
 
 	while (!kthread_should_stop()) msleep(10);

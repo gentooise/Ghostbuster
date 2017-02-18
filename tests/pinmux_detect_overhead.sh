@@ -8,30 +8,28 @@ then
 	# Clean environment
 	./clean.sh
 	dmesg -C
+	sleep 2
 
 	# Measure without defense
 	insmod perf.ko
-	sleep 5
+	sleep 2
 	insmod attacks/drk7/drk.ko
-	sleep 7
+	sleep 4
 	rmmod perf
-
 	rmmod drk
 
 	# Load defense
 	./loader.sh 10
-	sleep 5
+	sleep 2
 
 	# Measure with defense
 	insmod perf.ko
-	sleep 5
+	sleep 2
 	insmod attacks/drk7/drk.ko
-	sleep 7
+	sleep 4
 	rmmod perf
-
 	rmmod drk
 	rmmod ghostbuster
-	sleep 5
 
 	echo "Test done!"
 else

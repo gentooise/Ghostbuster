@@ -2,6 +2,7 @@
 
 #number of iterations
 n=100
+d=0
 
 # Clear kernel buffer
 dmesg -C
@@ -15,42 +16,34 @@ then
 	for i in `seq 1 $n`
 	do
 
-		# Load defense
+		# Load defense at random time
+		for j in `seq 1 5`; do
+			./csleep $RANDOM
+		done
 		./loader.sh 10 # t = 10
 		#./loader.sh 5 # t = 5
 		#./loader.sh 2 # t = 2
-		r=`awk "BEGIN { srand(); printf(\"%.5f\n\", rand()) }"`
-		sleep $r
-		r=`awk "BEGIN { srand(${r}*10000); printf(\"%.5f\n\", rand()) }"`
-		sleep $r
-		r=`awk "BEGIN { srand(${r}*10000); printf(\"%.5f\n\", rand()) }"`
-		sleep $r
-		r=`awk "BEGIN { srand(${r}*10000); printf(\"%.5f\n\", rand()) }"`
-		sleep $r
-		sleep 1
-		r=`awk "BEGIN { srand(); printf(\"%.5f\n\", rand()) }"`
-		sleep $r
-		r=`awk "BEGIN { srand(${r}*10000); printf(\"%.5f\n\", rand()) }"`
-		sleep $r
-		r=`awk "BEGIN { srand(${r}*10000); printf(\"%.5f\n\", rand()) }"`
-		sleep $r
-		r=`awk "BEGIN { srand(${r}*10000); printf(\"%.5f\n\", rand()) }"`
-		sleep $r
 
-		# Attack after random time
+		# Execute attack after random time
+		for j in `seq 1 5`; do
+			./csleep $RANDOM
+		done
 		cd attacks/drk9/ 
 		./loader.sh &> /dev/null
 		cd ../../
-		sleep 2.5
-		rmmod drk
+		./csleep 2300000
 
+		rmmod drk
 		rmmod ghostbuster
-		echo $i
+		res=`dmesg -c | grep -i detected`
+		if [ -n "$res" ]; then
+			((d++))
+		fi
+		echo -ne "\r$i/$n"
 	done
-	echo "Test done!"
-	res=`dmesg | grep -i attack | wc -l`
-	rate=`awk "BEGIN { printf(\"%.2f\n\", (${res}) / (${n} / 100.0)) }"`
-	echo "$res successful attacks out of 1000: detection rate $rate %"
+	echo -e "\nTest done!"
+	rate=`awk "BEGIN { printf(\"%.2f\n\", (${d}) / (${n} / 100.0)) }"`
+	echo "$d attacks detected out of $n: detection rate $rate%"
 else
 	echo "Must be root!"
 fi

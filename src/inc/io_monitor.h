@@ -53,7 +53,10 @@
 
 #ifdef IO_MONITOR_ENABLED
 
-#define IO_MONITOR_INTERVAL	10 // ms
+#define IO_MONITOR_INTERVAL 	2000 // Monitor interval in microseconds
+#define IO_INTERVAL_ACCURACY	50 // Accuracy of each sleep in microseconds
+#define IO_MIN_RANGE(t)     	(t - IO_INTERVAL_ACCURACY)
+#define IO_MAX_RANGE(t)     	(t + IO_INTERVAL_ACCURACY)
 
 int start_io_monitor(int, void*);
 

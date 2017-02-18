@@ -4,8 +4,11 @@
 #include <linux/delay.h>
 
 #define SCAN_CYCLE_DURATION     	10 // ms
-#define SCAN_CYCLES_PER_INTERVAL	10
-#define PERF_INTERVAL_DURATION  	(SCAN_CYCLE_DURATION * SCAN_CYCLES_PER_INTERVAL)
+#define SCAN_CYCLES_PER_INTERVAL	5
+#define PERF_INTERVAL_DURATION  	(SCAN_CYCLE_DURATION * SCAN_CYCLES_PER_INTERVAL * 1000) // Duration in microseconds (us)
+#define PERF_INTERVAL_ACCURACY  	50 // us
+#define PERF_MIN_RANGE          	(PERF_INTERVAL_DURATION - PERF_INTERVAL_ACCURACY)
+#define PERF_MAX_RANGE          	(PERF_INTERVAL_DURATION + PERF_INTERVAL_ACCURACY)
 #define PERF_INTERVALS          	100
 #define WARMUP_INTERVALS        	2 // Skip first iterations to avoid cache-related overheads
 
@@ -22,7 +25,7 @@ static int perf_loop(void* data) {
 		
 		// Write Performance Monitor Control Register (PMCR)
 		asm volatile("mcr p15, 0, %0, c15, c12, 0" : : "r" (PMCR_VAL_NODIV));
-		msleep(PERF_INTERVAL_DURATION);
+		usleep_range(PERF_MIN_RANGE, PERF_MAX_RANGE);
 		// Read Cycle Counter Register value
 		asm volatile("mrc p15, 0, %0, c15, c12, 1" : "=r" (count));
 

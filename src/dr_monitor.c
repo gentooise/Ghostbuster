@@ -67,7 +67,7 @@ static int monitor_loop(void* data) {
 		check_dr_state(trusted_state);
 		mutex_unlock(&trusted_lock);
 
-		msleep(DR_MONITOR_INTERVAL);
+		usleep_range(DR_MIN_RANGE(DR_MONITOR_INTERVAL), DR_MAX_RANGE(DR_MONITOR_INTERVAL));
 		if (kthread_should_stop()) return 0;
 	}
 	return 0;

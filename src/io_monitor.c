@@ -77,8 +77,8 @@ static int monitor_loop(void* data) {
 			check_io_state(addrs[b], trusted_state + offset, b);
 		}
 
+		usleep_range(IO_MIN_RANGE(IO_MONITOR_INTERVAL), IO_MAX_RANGE(IO_MONITOR_INTERVAL));
 		if (kthread_should_stop()) return 0;
-		msleep(IO_MONITOR_INTERVAL);
 	}
 }
 
