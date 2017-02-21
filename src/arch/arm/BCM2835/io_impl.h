@@ -183,14 +183,14 @@ static inline int is_legitimate(io_detect_t* info, int pid, void* vaddr) {
 			// Output, operation should be WRITE
 			// If read watchpoint is triggered at least once on this pin,
 			// then it is Pin Control Attack.
-			pin = tinfo->pin; // Save global pin number for wathcpoint
+			pin = tinfo->pin; // Save global pin number for watchpoint
 			hw_break = set_read_dr(pid, vaddr + LEV_REG(pin), dr_read_handler);
 			msleep(WAIT_FOR_LOGIC_R);
 		} else {
 			// Input, operation should be READ
 			// If write watchpoint is triggered at least once on this pin,
 			// then it is Pin Control Attack.
-			pin = tinfo->pin; // Save global pin number for wathcpoint
+			pin = tinfo->pin; // Save global pin number for watchpoint
 			hw_break = set_write_dr(pid, vaddr + SET_REG(pin), dr_write_handler);
 			msleep(WAIT_FOR_LOGIC_W);
 		}
