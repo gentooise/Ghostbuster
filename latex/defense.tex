@@ -1,9 +1,9 @@
-\chapter{Pin Control Defense}
+\chapter{Attack detection}
 \label{chap:defense}
 
-This chapter proposes a possible countermeasure to Pin Control Attack.
-First, it describes the overall design of Pin Control Defense, showing different approaches to tackle the attack at different levels
-and explaining our design choices. Second, it contains a detailed report of the defense implementation.
+This chapter proposes a possible countermeasure to I/O level attacks.
+First, it describes the overall design of our detection system, showing the approaches to tackle the attack at different levels
+and explaining our design choices. Second, it contains a detailed report of the implementation for Linux kernel.
 
 
 \section{Design}
@@ -14,12 +14,12 @@ Then, a detailed description of the defense architecture concludes the section.
 \subsection{Preliminary analysis}
 \label{sec:pre-analysis}
 
-The main goal of our defense is to detect and hinder Pin Control Attack while being able to not consume the limited resources inside the target system,
+The main goal of our defense is to detect and hinder I/O attacks while being able to not consume the limited resources inside the target system,
 and to not affect real-time operations. The timing of the operations is fundamental in systems like PLCs, on which the minimum delay may alter the physical process.
 
 We make the same assumptions contained in the threat model of \mysec{sec:threat-model}.
 Therefore, we assume that the system, and our defense as well, is protected by the previously discussed HIDSs.
-Starting from the analysis reported in \mychap{chap:attack}, we identify the I/O configuration as the main resource we aim to protect from Pin Control Attack.
+Starting from the analysis reported in \mychap{chap:attack}, we identify the I/O configuration as the main resource we aim to protect.
 To target I/O configuration, the attacker may use other system capabilities, such as virtual address mapping and debug registers.
 First of all, we define the following components of a SoC, to which we refer several times in the rest of the paper:
 \begin{itemize}
@@ -102,7 +102,7 @@ The switching between Secure and Non-secure world is managed through a specific 
 which changes the core mode into Monitor Mode. The code executed into monitor mode is always Secure, and it basically performs the context switch
 between the two virtual cores. If a Secure process is loaded, NSTID bit is set accordingly.
 Since the Secure world may contain a whole parallel micro-kernel with trusted user applications, it may be possible
-to deploy Pin Control Defense inside the trusted domain, protecting the defense itself from defense-aware attackers.
+to deploy our detection system inside the trusted domain, protecting the defense itself from defense-aware attackers.
 However, the overhead imposed by a trusted execution environment may be unacceptable for embedded systems with real-time constraints like PLCs.
 Hence, the impact of this solution still needs to be investigated.
 
@@ -111,7 +111,8 @@ Hence, the impact of this solution still needs to be investigated.
 \label{sec:def-arch}
 
 Based on the previous considerations, we designed a detection system which is able to protect against Pin Control Attack at three different levels,
-corresponding to the SoC I/O, debug and map subsystems. The system is designed to run as part of the operating system, thus having kernel privilege level.
+corresponding to the SoC I/O, debug and map subsystems. With respect to the attack name, we can refer to our detection system as \emph{Pin Control Defense}.
+The system is designed to run as part of the operating system, thus having kernel privilege level.
 Its overall architecture is shown in \myfig{fig:defense}.
 \begin{figure}[h]
 \centerline{\includegraphics[width=0.8\textwidth]{res/defense}}
@@ -158,7 +159,7 @@ To tackle this problem, we designed the following strategy, which we used to imp
 	\item \label{enum:io-monitor} constantly monitor the I/O configuration to detect possible modifications;
 	\item if a change is detected, verify whether it is conforming to the defined behaviour or not;
 	\item if it is, accept the new configuration and go back to \ref{enum:io-monitor};
-	\item otherwise, it is probably Pin Control Attack: react according to the configured monitor action and go back to \ref{enum:io-monitor}.
+	\item otherwise, it is probably I/O Attack: react according to the configured monitor action and go back to \ref{enum:io-monitor}.
 \end{enumerate}
 The first step is to choose which registers should be included into the I/O configuration, \ie which registers should be protected.
 This set of registers includes, ideally, all the registers whose modification may produce an effect on the physical process.
@@ -229,7 +230,7 @@ Thus, we designed the following monitor strategy, that is required only if debug
 \begin{enumerate}
 	\item disable debug registers user space interface;
 	\item \label{enum:debug-monitor} constantly monitor debug registers to detect possible modifications (from kernel space);
-	\item if a change is detected, it is Pin Control Attack: react according to the configured monitor action and go back to \ref{enum:debug-monitor}.
+	\item if a change is detected, it is I/O Attack: react according to the configured monitor action and go back to \ref{enum:debug-monitor}.
 \end{enumerate}
 The strategy is (in part) a simplification of the I/O monitor approach, on which the trusted behavioural model assumes that debug registers never change in a production system.
 Based on this assumption, the debug module allows our defense to provide an early detection of the attack, before I/O configuration is actually altered.
@@ -269,7 +270,7 @@ We can summarise the strategy of the map monitor as follows:
 	\item if there is no overlap, forward the request to the original system function;
 	\item if an overlapping region is detected, verify whether the request is conforming to the trusted behaviour or not;
 	\item if it is, forward the request to the original system function;
-	\item if it is not, it is probably Pin Control Attack: react according to the configured monitor action.
+	\item if it is not, it is probably I/O Attack: react according to the configured monitor action.
 \end{enumerate}
 The behavioural model of step \ref{enum:map-model} should describe if and how the mapping interface is used by the PLC runtime.
 We analysed the behaviour of our target systems, with the following results:
@@ -460,7 +461,7 @@ and they are independent from any specific architecture or SoC model.
 	\If{\Call{IsLegitimate}{$D$}}
 		\State \Call{UpdateIOState}{$D$} \Comment{Accept new configuration, update trusted state}
 	\Else
-		\State report about Pin Control Attack
+		\State report about I/O Attack
 		\If{I/O monitor is active}
 			\State \Call{RestoreIOState}{$D$} \Comment{Reject new configuration, restore trusted state back}
 		\EndIf
@@ -734,7 +735,7 @@ The abstract strategy of the DR monitor is rather simple, and is listed in \myal
 	\If{DR debug enabled}
 		\State dump entire DR state
 	\EndIf
-	\State report about Pin Control Attack
+	\State report about I/O Attack
 	\If{DR monitor is active}
 		\State \Call{RestoreDRState}{$D$} \Comment{Restore debug register trusted state}
 	\EndIf

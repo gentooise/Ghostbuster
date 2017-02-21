@@ -1,9 +1,9 @@
-\chapter{Pin Control Attack}
+\chapter{Attack analysis}
 \label{chap:attack}
 
-Before describing Pin Control Attack, a deeper analysis of the architecture of the target system is needed.
+Before describing the attack, a deeper analysis of the architecture of the target system is needed.
 Note that, although this paper is focused on PLCs, the architecture described in the next section is still valid for almost any embedded system.
-After having a proper knowledge of the underlying architecture, we can go deep into the description of the design of Pin Control Attack.
+After having a proper knowledge of the underlying architecture, we can go deep into the description of the design of the I/O Attack.
 We consider the idea behind the attack, showing how it is able to evade the currently available detection mechanisms.
 Next, we go further and describe some implementations of the attack, extending its applicability to a real Programmable Logic Controller.
 Based on our architecture analysis and our tests, we can finally demonstrate that the attack is actually viable on real PLCs, even on a higher abstraction level.
@@ -144,7 +144,7 @@ For our purpose, at least two interesting properties can be inferred from pin mu
 As introduced in \mychap{chap:intro}, Programmable Logic Controllers are a particular kind of embedded systems,
 designed to work into harsh environments and to control a physical process, typically an industrial or other critical processes.
 In this section we examine the hardware and the software architecture of a PLC. This analysis will be needed later to better explain
-the threat model and the implementation of Pin Control Attack.
+the threat model and the implementation of the attack.
 
 
 \subsubsection{Hardware architecture}
@@ -177,7 +177,7 @@ The main portion of the PLC communicates with the I/O modules via a system bus, 
 This architecture with I/O modules adds one level of indirection between the targeted PLC and the external world, since there is another SoC in the middle.
 Anyway, the same concepts of Pin Control Attack can be applied to such an architecture as well. It is sufficient to consider that the I/O interface of the PLC,
 connected to the internal bus, is now the new direct target of our attack, while the final I/O becomes an indirect target. As we demonstrate in \mysec{sec:attack-plc},
-by tampering with the I/O related to the communication bus it is possible to achieve equivalent results, proving that Pin Control Attack is still applicable on real PLCs.
+by tampering with the I/O related to the communication bus it is possible to achieve equivalent results, proving that I/O Attack is still applicable on real PLCs.
 
 
 \subsubsection{Software architecture}
@@ -228,7 +228,7 @@ As briefly discussed in \mychap{chap:intro}, the PLC logic executes the main \em
 and writes to outputs. The control algorithm has been programmed by the industrial operator, and loaded through the interface provided by the PLC runtime.
 When the logic is running, input and output pins have already been configured by the runtime, and the logic assumes that the I/O configuration does not change during its execution.
 Both the logic and the runtime interacts with the I/O, but in different ways. The runtime deals with I/O configuration registers, while the logic performs read/write operations
-related to I/O values. Both kind of interactions, anyway, require the same privileges, which will be later leveraged by Pin Control Attack.
+related to I/O values. Both kind of interactions, anyway, require the same privileges.
 
 
 \section{Attack Design}
@@ -237,11 +237,11 @@ Given the properties discussed in \mysec{sec:embed-arch}, it is possible to misu
 and that is what Pin Control Attack does. This can happen at run-time, during the execution of the controller on a real process,
 without any reaction from the PLC runtime or the operating system, thus remaining completely stealth.
 
-We can argue that Pin Control Attack is actually applicable on any System on Chip having the
+We can argue that this low-level I/O Attack is actually applicable on any System on Chip having the
 architecture described in \mysec{sec:embed-arch}. However, PLCs represent a particularly interesting target among all the embedded systems based on SoC.
 PLCs leverage the interfaces of a SoC to interact with sensors and actuators, having direct effects on our physical world.
 Therefore, if the I/O of a PLC is compromised, this constitutes a much more significant security and safety risk with respect to other
-non-critical embedded system. For this reason, PLCs represent one of the most attractive targets for Pin Control Attack.
+non-critical embedded system. For this reason, PLCs represent one of the most attractive targets for I/O attacks.
 
 In this section we focus on the design of I/O attack. First, we summarise the host-based detection mechanisms taken into account
 during the attack design and the techniques used to evade them. Second, we analyse the attack itself in more detail.
@@ -249,8 +249,8 @@ The goal of this chapter is to help us having a better understanding of the atta
 
 Pin Control Attack has been designed to be different from previous attack techniques, and to circumvent the off-the-shelf host-based detection systems.
 The authors of I/O attack have identified two main defensive mechanisms whose properties makes them more easily applicable to PLCs.
-Here we want to generalise and consider them in our threat model, clarifying how and when Pin Control Attack becomes applicable and interesting for attackers.
-We also show how these defenses are circumvented by Pin Control Attack, and describe the available attack techniques.
+Here we want to generalise and consider them in our analysis, clarifying how and when the I/O attack becomes applicable and interesting for attackers.
+We also show how these defenses are circumvented by the attack, describe the available techniques.
 We do not repeat here the detailed description made in \cite{ghostplc}. We only want to have basic concepts definition,
 in order to be able to focus on our further analysis and implementation of the attack.
 
@@ -275,7 +275,7 @@ Given these considerations, we can list some of the applicable defenses:
 	\item \itemname{Autoscopy Jr.}: the lightweight intrusion detection system proposed in \cite{autoscopy}, effective against control flow manipulation inside the kernel.
 \end{itemize}
 
-The above detection systems still have some shortcomings, leveraged by Pin Control Attack.
+The above detection systems still have some shortcomings, leveraged by Pin Control Attack to remain stealth.
 First, they are based on a comparison with golden references (the symbiotes and the TLL, respectively) taken from a subset of the entire kernel space.
 If the attacker is able to find a portion of the kernel space which has not been considered by the detection system, then it can be circumvented.
 For example, Autoscopy Jr. can be bypassed if the attacker is able to craft a duplicate of the kernel functions it needs.
@@ -288,11 +288,11 @@ Therefore, it is able to detect only \emph{data hooks} but not \emph{code hooks}
 
 Anyway, these two defenses may be used in combination, thus providing a host-based IDS able to detect both code and data hooks.
 Even if they are deployed together, however, attacks through dynamic memory and without function hooking are still possible,
-since monitoring dynamic memory is a far more complex issue. One of the implementations of Pin Control Attack (see \mysec{sec:attack-impl})
-leverages exactly the kernel dynamic memory to reach its purpose.
+since monitoring dynamic memory is a far more complex issue. One of the attack implementations (see \mysec{sec:attack-impl})
+leverages exactly this kernel dynamic memory to reach its purpose.
 
 Host-based detection mechanisms like the ones discussed above will likely be deployed into many commercial products within the next years \cite{symbiote-web, autoscopy-web},
-raising the bar for attackers. Therefore, Pin Control Attack will become more and more interesting as long as classical techniques (\eg function hooking) are overcome.
+raising the bar for attackers. Therefore, I/O level attacks will become more and more interesting as long as classical techniques (\eg function hooking) are overcome.
 
 
 \subsection{Threat model}
@@ -303,7 +303,7 @@ Hence, we assume that the attacker cannot tamper with operating system (kernel) 
 and tamper with the I/O configuration. The attacker can also write its own version of kernel functions if needed, and call them separately in order to avoid HIDSs.
 This approach, anyway, requires very high effort and would really be the last option for an attacker.
 
-The attacker, depending on the attack implementation, may need different running privileges on the target system to execute Pin Control Attack.
+The attacker, depending on the attack implementation, may need different running privileges on the target system to conduct the attack.
 Generally speaking, the minimum privilege required is the privilege level of the PLC runtime, which has access to the I/O configuration registers.
 As already discussed in \cite{ghostplc}, many ICS-CERT advisories have shown that PLCs have vulnerabilities that could lead to malicious code execution
 \cite{plc-network,abb-codesys,codesys-server,schneider-bof,rockwell-vuln,rockwell-vuln2}, and they may affect PLC runtime software as well.
@@ -321,7 +321,7 @@ factually lowering the bar for attackers which do not need an a priori knowledge
 
 Based on the previous assumptions, Abbasi et al. \cite{ghostplc} crafted Pin Control Attack, which is capable of manipulating the physical process
 controlled by a PLC without requiring any firmware or logic modification.
-The idea of Pin Control Attack is that the attacker operates at the lowest level possible, targeting the interaction
+The idea is that the attacker operates at the lowest level possible, targeting the interaction
 between the firmware and the I/O, as shown in \myfig{fig:target}. For this reason, the attack is also known as I/O attack.
 Despite its crucial function in embedded systems, I/O hardware architecture and I/O drivers are currently designed
 without taking into account any concept of security, assuming that I/O is reliable. Unfortunately, given the properties inferred in \mysec{sec:embed-arch}
@@ -329,18 +329,18 @@ from a generic hardware architecture, this is often not the case.
 
 \begin{figure}[h]
 \centerline{\includegraphics[page=6,viewport=50 620 300 750,clip]{res/ghostplc}}
-\caption{Pin Control Attack target, from \cite{ghostplc} \label{fig:target}}
+\caption{I/O level attack, from \cite{ghostplc} \label{fig:target}}
 \end{figure}
 
-As described in \cite{ghostplc}, Pin Control Attack is designed to evade off-the-shelf HIDSs presented in \mysec{sec:def-analysis}.
+As described in \cite{ghostplc}, the attack is designed to evade off-the-shelf HIDSs presented in \mysec{sec:def-analysis}.
 In particular, it leverages kernel dynamic memory (in one implementation variant) or it uses a simple user code (in a second variant).
 Both variants are able to circumvent the above detection mechanisms.
 
-The authors of \cite{ghostplc} have found at least two different attack vectors for Pin Control Attack: \emph{Pin Configuration} and \emph{Pin Multiplexing}.
+The authors of \cite{ghostplc} have found at least two different attack vectors: \emph{pin configuration} and \emph{pin multiplexing}.
 Both kind of attacks leverage the SoC properties described in \mysec{sec:embed-arch}.
 The attack is performed by misusing the control registers used to program the I/O peripherals, writing malicious values into them.
-If the attack targets I/O configuration registers, it is a Pin Configuration Attack, otherwise, if the targeted registers are related to the multiplexing state of the pins,
-then it is a Pin Multiplexing attack. In some architectures, I/O configuration and multiplexing is achieved by using the same set of registers
+If the attack targets I/O configuration registers, it is a pin configuration attack, otherwise, if the targeted registers are related to the multiplexing state of the pins,
+then it is a pin multiplexing attack. In some architectures, I/O configuration and multiplexing is achieved by using the same set of registers
 (\eg different bits of the same register may have different purposes).
 
 In both cases, the main principle behind the attack is something that they called \emph{memory illusion}, which is represented in \myfig{fig:illusion}.
@@ -352,7 +352,7 @@ Once a mapping has been established, the I/O can be managed by accessing the map
 \begin{figure}[h]
 \centerline{
 \includegraphics[width=0.9\textwidth]{res/illusion}}
-\caption{Pin Control Attack memory illusion \label{fig:illusion}}
+\caption{Attack memory illusion \label{fig:illusion}}
 {\phantomsubcaption\ignorespaces\label{fig:mapping-request}}
 {\phantomsubcaption\ignorespaces\label{fig:mapping-provided}}
 {\phantomsubcaption\ignorespaces\label{fig:conf-change}}
@@ -376,7 +376,7 @@ As reported in \cite{ghostplc}, only by leveraging the configuration of pins the
 	\item reconfigure an I/O pin as output and write a malicious value when the PLC logic is attempting to read.
 \end{itemize}
 In this way, the attacker can disable specific output operations and feed the PLC logic with malicious input at the same time.
-In other words, Pin Control Attack takes the whole PLC logic as a black box. Instead of altering the logic code, it simply controls input and output values
+In other words, the whole PLC logic is considered as a black box. Instead of altering the logic code, the attack simply controls input and output values
 by means of the above operations. Whether this approach can lead to useful results (for the attacker) is highly dependent on the actual PLC logic and, of course,
 on the attacker purpose. In \mysec{sec:attack-pi} we show that this mechanism may be very interesting for the attacker, and we also discuss
 about some hardware limitations of this approach.
@@ -384,9 +384,9 @@ about some hardware limitations of this approach.
 Moreover, we imagine that many other attack possibilities may exist. An attacker can tamper with the I/O configuration in many other ways depending on the
 specific I/O peripheral and on its features (\eg event detect, interrupts, clock signals, etc.), and the effects of the attack are unpredictable.
 If the attacker can analyse the reference manual of the target SoC (mostly publicly available) and it has enough competence and time,
-the only limit to Pin Control Attack becomes fantasy.
+then its fantasy becomes the only limit to I/O level attacks.
 To give an idea of what such an attack can do, imagine a simple SoC pin which can be multiplexed between a memory controller and a PWM controller.
-If this pin is actually connected to an external memory, thus multiplexed to a memory controller, a Pin Multiplexing attack can lead to dangerous signals
+If this pin is actually connected to an external memory, thus multiplexed to a memory controller, a pin multiplexing attack can lead to dangerous signals
 sent from a PWM controller to a memory module, which may burn the memory. Furthermore, if a subset of pins is multiplexed to a specific controller (\eg I2C, SPI, DMA, etc.),
 the control registers of the device can be targeted as well, obtaining an indirect effect on the corresponding I/O pins.
 
@@ -624,7 +624,7 @@ Our findings about possible attacks are described in the next section.
 \subsubsection{PLC attack}
 
 One of the first attack attempts we made was hooking the \verb|kbus_ioctl| function and tampering the values
-inside the buffer. The effect was more powerful as the one achieved by Pin Control Attack, because we were able to control both inputs and outputs.
+inside the buffer. The effect was more powerful as the one achieved by the original I/O attack, because we were able to control both inputs and outputs.
 Anyway, this approach required function hooking, which is forbidden by our threat model (\mysec{sec:threat-model}).
 A second attempt was multiplexing the SPI data pins to GPIO, to prevent the SPI controller to write to its I/O pins.
 This condition, unfortunately, led to an indefinite wait of e!RUNTIME, noticeable by the operator running the e!COCKPIT software.
@@ -633,7 +633,7 @@ through a technique known as \emph{GPIO bit bang}. The bit banging technique con
 a hardware controller (\eg SPI) on I/O pins.
 
 After having a good knowledge of the KBUS driver, we finally crafted three different attacks able to break the I/O communication without \emph{e!RUNTIME}
-noticing anything and without hooking any function. The first two attacks are about Pin Configuration and Pin Multiplexing.
+noticing anything and without hooking any function. The first two attacks are about pin configuration and pin multiplexing.
 From the previous analysis, we know that the pin 97, multiplexed as GPIO and configured as output, is used by KBUS to send the \emph{transfer start} signal.
 If we either multiplex or configure the pin in a different way, we are able to prevent e!RUNTIME from reading and writing values to the I/O.
 This implementation demonstrates that I/O attack is perfectly applicable to real PLCs, even though it is still less powerful with respect to the
@@ -658,7 +658,7 @@ they are multiplexed to the corresponding controllers inside the SoC. Therefore,
 (\eg faking data via GPIO bit bang), further research effort is required.
 
 To conclude our PLC analysis, we briefly describe the implementation of our attacks on Wago PLC.
-Pin Configuration and Pin Multiplexing attacks are basically the same as for Raspberry Pi system. They can be executed in both kernel and user variants,
+Pin configuration and pin multiplexing attacks are basically the same as for Raspberry Pi system. They can be executed in both kernel and user variants,
 requiring the corresponding privilege level as discussed in \mysec{sec:attack-pi}.
 One important difference here is that e!RUNTIME does not have its own mapped virtual addresses in user space, because the I/O is managed in kernel space
 by the KBUS driver. Thus, we distinguish two cases:

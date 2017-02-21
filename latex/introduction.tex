@@ -13,8 +13,8 @@ Unfortunately, this could be a more challenging problem with respect to security
 	\item the physical side effects a security breach may lead to, \eg property damage, personal injury, death and even environmental or nuclear disaster.
 \end{itemize}
 
-In the next sections we first describe a particular type of embedded systems, then present the problem on which the rest of the paper is focused
-and clarify the goal of this thesis.
+In the next sections we first describe a particular type of embedded systems, then present the problem on which the rest of the paper is focused,
+and define the goal of this thesis.
 
 
 \section{Programmable Logic Controllers}
@@ -31,10 +31,10 @@ A simplified version of the environment in which a PLC may operate is outlined i
 
 The PLC interacts with the physical world through external components called \emph{sensors} and \emph{actuators}.
 The sensors are responsible for reporting measurements about a set of properties of the physical process,
-while the actuators, as the name suggests, acts on the process modifying its current state.
+while the actuators, as the name suggests, act on the process modifying its current state.
 
-The main task of the PLC is contained into the control program (the \emph{logic}) which is programmed and loaded by the industrial operator or supervisor.
-The logic is executed repeatedly as long as the controlled system is running. Each single execution is known as \emph{scan cycle}.
+The main task of a PLC is contained into the control program (the \emph{PLC logic}) which is programmed and loaded by an industrial operator.
+The logic is executed repeatedly as long as the controlled system is running. Each single execution is known as \emph{PLC scan cycle}.
 For each scan cycle, the PLC reads the current state of the physical process measured by sensors.
 Internally, the logic takes these values as input and performs some calculations based on the loaded control algorithm.
 The output of the logic is then sent to the actuators, thus modifying the state of the controlled process.
@@ -52,20 +52,21 @@ A violation of these requirements may lead to an unsafe behaviour of the physica
 
 \section{Problem statement}
 
-From a computer engineering perspective, PLCs control the outside world via their Input/Output (I/O) interfaces, also known as \emph{pins}.
-Therefore, it is crucial that they are both reliable and secure. I/O pins are accessible through a specific memory region, called I/O memory.
-The I/O memory includes a set of registers through which the I/O can be configured. The I/O configuration (also called I/O initialisation) is typically performed at start-up time,
-according to the specific implementation. However, on almost every system it is possible to overwrite this configuration at run-time.
+From a computer engineering perspective, PLCs control the outside world via their Input/Output (I/O) interfaces (or I/O \emph{pins}).
+Therefore, it is crucial that these interfaces are both reliable and secure. They are accessible through specific memory regions inside the system, called I/O memory.
+By accessing I/O memory, I/O interfaces can be configured in several different ways, according to the desired behaviour.
+On almost every system, it is possible to change this configuration while the system is running. This feature is managed by a subsystem called \emph{pin controller}.
 
 The problem here relies on the fact that there is neither any memory protection mechanism nor any hardware interrupt designed for restricting the access to I/O memory addresses.
-They can be easily written by a malicious application even while the system is running, thus over-writing the hardware configuration.
+They can be easily written by a malicious application even while the system is active, over-writing the hardware configuration.
+Therefore, a malicious user, can manipulate I/O configuration at his will.
 As a consequence, the behaviour of the I/O interface, hence the interaction with the physical process, may be altered in a dramatic way.
 In \cite{ghostplc}, Abbasi et al. showed how this feature is exploitable by attackers, who can tamper with
 the integrity or the availability of legitimate I/O operations, factually changing how a PLC interacts with sensors and actuators.
 Based on these observations, they introduced a novel attack technique against PLCs, which they call Pin Control Attack (also I/O attack \cite{tech-ghostplc}).
-The salient features of this new class of attacks are:
+In the rest of the paper, we use these two names interchangeably. The salient features of this new class of attacks are:
 \begin{enumerate}[itemsep=2pt,topsep=0pt]
-	\item It is intrinsically stealth. The alteration of the pin configuration does not generate any interrupt, preventing the Operating System (OS) to react to it.
+	\item It is intrinsically stealth. The alteration of I/O configuration does not generate any interrupt signal, preventing the Operating System (OS) to react to it.
 	\item It is entirely different in execution from traditional techniques (\eg manipulation of kernel structures or system call hooking) which are typically
 		monitored by off-the-shelf protection systems.
 	\item It is viable. It is possible to build concrete attack using it.
@@ -82,9 +83,9 @@ The PLC is connected to a SCADA server (Supervisory Control And Data Acquisition
 The server is accessible from a terminal, through which an operator can load the logic into the PLC and monitor its current state.
 
 Suppose that the PLC logic is programmed to read the values from the temperature sensor, and to open the relief valve if the temperature goes over $80^\circ C$.
-An attacker could tamper the temperature value read by the PLC, re-configuring the pin related to the sensor as output and writing its own desired value
+An attacker could tamper the temperature value read by the PLC, re-configuring the I/O interface related to the sensor as output and writing its own desired value
 (\eg always $\SI{50}{\degree C}$) regardless of the actual temperature.
-Even simpler, one could reconfigure the pin connected to the valve (\eg setting it as input) factually disabling any eventual command to the actuator.
+Even simpler, one could reconfigure the I/O pin connected to the valve (\eg setting it as input) factually disabling any eventual command to the actuator.
 
 Actually there is no detection mechanism able to react to these configuration changes, neither in the PLC firmware nor in the control system.
 Moreover, the operator of the control system will not be able to see the real temperature nor the actual valve state from the terminal,
@@ -94,24 +95,23 @@ Such a condition may lead to an uncontrolled overheating, and if it is not detec
 
 \section{Aim of the thesis}
 
-The goal of this thesis is to design and develop a defensive mechanism against Pin Control Attack, extending the pin controller in order to be able to detect it.
+The goal of this thesis is to analyse the threat, design and implement a detection system for I/O Attack.
 It is a challenging task for two reasons:
 \begin{enumerate}
-	\item The pin control mechanism lacks hardware interrupts, so it is not possible to directly react to any configuration change. More complex detection mechanisms are needed
+	\item The system lacks hardware interrupts, so it is not possible to directly react to any configuration change. More complex detection mechanisms are needed
 		in order to achieve the highest possible detection rate.
-	\item The resources available within an embedded system like a PLC are extremely limited. Therefore, our solution must be extremely agile and light
+	\item The resources available within an embedded system like a PLC are extremely limited. Therefore, our solution must be extremely agile and light,
 		since the smallest delay in the PLC I/O operation may have unintended consequences for the controlled process.
 \end{enumerate}
 
 The work has been divided into three main steps.
-First, we discuss the idea behind Pin Control Attack, analyse its threat model and different implementations on an Embedded Linux ARM-based architecture.
-Second, based on the assumptions contained in the threat model, we describe and evaluate the design and the implementation of our defense.
-Finally, we validate the proposed architecture on the target system.
+First, we discuss the idea behind the attack, analyse its threat model and its different implementations on an Embedded Linux ARM-based architecture.
+Second, based on the assumptions contained in the threat model and on the findings of the analysis, we describe the design and the implementation of our defense.
+Finally, we validate the proposed architecture with respect to the following parameters: detection rate and performance overhead.
 
-The target of our implementation is a real-time version of the Linux kernel running on an ARM-based SoC,
-as this is one of the solutions actually used for mid-range embedded systems, in particular PLCs.
+The target of our implementation is a real-time version of the Linux kernel running on an ARM-based System on Chip,
+as this is one of the solutions actually used for mid-range embedded systems as PLCs.
 In the context of the Linux kernel, the pin controller is known as Pin Control Subsystem \cite{pinctrl}.
-The implementation will be validated with respect to the following parameters: detection rate and performance overhead.
 
 A brief organisation of the rest of the thesis follows in the next section.
 
@@ -119,8 +119,8 @@ A brief organisation of the rest of the thesis follows in the next section.
 \section{Organisation}
 
 In \mychap{chap:related} we list the known attacks to embedded systems existing in the literature, and then discuss the off-the-shelf protection mechanisms.
-To the best of our knowledge at the time of writing, as Pin Control Attack is a new kind of attack, none of the existing protections is able to prevent nor detect it.
-\mychap{chap:attack} contains, after a brief description of the embedded systems architecture, a detailed analysis of Pin Control Attack design and implementation.
-In \mychap{chap:defense} we present the architecture of our proposed Pin Control Defense, then we describe the implementation and provide developer and user manual for it.
+To the best of our knowledge at the time of writing, as I/O Attack is a new kind of attack, none of the existing protections is able to prevent nor detect it.
+\mychap{chap:attack} contains, after a brief description of the embedded systems architecture, a detailed analysis of the attack design and implementation.
+In \mychap{chap:defense} we present the architecture of our proposed detection mechanism, and describe the implementation in detail.
 The \mychap{chap:results} provides the results obtained during the experiments, showing the detection rate and the performance overhead on a PLC environment.
 Finally, in \mychap{chap:conclusions} we analyse the shortcomings of our defense and the possible future works and improvements.

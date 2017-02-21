@@ -26,8 +26,8 @@
 \logosede{res/logopolito}
 \ateneo{Politecnico di Torino}
 
-\titolo{Pin Control Defense}
-\sottotitolo{Protecting Linux Kernel Pin Control Subsystem from Pin Control Attack}
+\titolo{Analysis and detection of low-level I/O attack on Programmable Logic Controllers}
+%\sottotitolo{Protecting Linux Kernel Pin Control Subsystem from Pin Control Attack}
 
 \corsodilaurea{Ingegneria Informatica}
 
@@ -55,13 +55,17 @@
 
 \sommario
 
-Recently embedded systems have become more and more integrated with all aspects of our lives, and their security concerns have risen as well.
-They spread in various fields such as automotive, electronic devices, home automation, manufacturing and mission critical applications. These systems, in particular PLCs
-deployed within the context of an Industrial Control System, use Input/Output interfaces to interact with the physical world by means of sensors and actuators.
-As demonstrated by a novel kind of attack called Pin Control Attack, one can tamper with the integrity or the availability of legitimate I/O operations,
-factually changing how a PLC interacts with the outside world and possibly causing physical damage to people and environment.
-In this thesis we design a possible countermeasure to the attack and implement it for Linux Kernel on an ARM-based Programmable Logic Controller,
-showing its effectiveness and impact on PLCs which usually have very limited resources and strict timing requirements.
+Recently embedded systems have become more and more integrated with several aspects of our lives, and their security concerns have risen as well.
+In particular, Programmable Logic Controllers (PLCs), which are embedded systems deployed within the context of an Industrial Control System (ICS),
+needs to be reliable and secure because they can have direct effects on critical processes.
+From an engineering perspective, they are connected to sensors and actuators and use Input/Output (I/O) interfaces to interact with the physical world.
+As demonstrated by a novel kind of attack, called Pin Control Attack or I/O attack, a malicious user can tamper with the integrity or
+the availability of legitimate I/O operations, possibly causing physical damage to people and environment.
+The purpose of this thesis can be divided into two main steps.
+First, we want to analyse this new threat and discuss its applicability on real PLCs.
+Second, we design and implement a detection system able to raise the bar for the attacker.
+The implementation, provided as a Linux kernel module, is evaluated on an ARM-based architecture,
+showing its effectiveness and impact on PLCs, which typically have very limited resources and strict timing requirements.
 
 
 \ringraziamenti
