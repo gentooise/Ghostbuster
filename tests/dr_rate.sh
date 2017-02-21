@@ -14,7 +14,7 @@ then
 	cd attacks/drk8/ 
 	./loader.sh &> /dev/null
 	cd ../../
-	sleep 0.2
+	./csleep 200000
 	rmmod drk
 
 	# Clean environment
