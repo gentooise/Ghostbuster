@@ -175,7 +175,8 @@ Generally speaking, they can be represented by simple time constraints (\eg the 
 logical conditions (\eg the value must be conforming to the running PLC logic), a statistical model, or a combination of these.
 Each condition can either provide an exact distinction between a trustworthy and a malicious modification (typically logical conditions),
 or a heuristic only. For this purpose, we analyse in more detail the proposed logical condition, since it is able to completely exclude false positives.
-The condition states that a change can be accepted only if the new I/O configuration is in line with the operations performed by the running PLC logic.
+The condition states that a change can be accepted only if the new I/O configuration is in line with the operations performed by the running PLC logic
+(see \mysec{sec:io-impl} for more details).
 Checking this condition is feasible as long as enough knowledge of the PLC runtime is available. To obtain this knowledge, two ways are doable:
 \begin{itemize}
 	\item \itemname{reverse engineering}: by analysing the PLC software it is possible to dynamically obtain the required information from the running logic;
@@ -187,6 +188,9 @@ and can effectively detect Pin Control Attack (see our approach in \mysec{sec:io
 Note that, if the information on the current I/O operations is made available by the PLC runtime, the attacker can modify it as well while conducting the attack.
 In this case, however, the attacker needs to modify the PLC logic, and this may be easily noticed if further protection mechanisms are provided by the PLC runtime.
 Therefore, the attack would lose one of the features that made it stealth.
+Moreover, from our experiments, we found that the PLC programming software typically does not perform any check about the I/O configuration.
+For instance, it is possible to upload a new PLC logic together with an I/O configuration which is in conflict with the logic itself.
+Thus, our approach could also be useful to detect not only I/O attacks, but any conflict between the actual I/O configuration and the expected behaviour of the logic.
 
 An important parameter to discuss is the time interval of the main monitor loop. Since no other mechanisms are provided by the hardware,
 such as interrupts, we can only detect I/O configuration changes by cyclically checking its current values. Greater scanning intervals may give the attacker
@@ -323,12 +327,13 @@ independently from these variables.
 \centerline{\includegraphics[width=\textwidth]{res/def-impl}}
 \caption{Ghostbuster implementation architecture \label{fig:def-impl}}
 \end{figure}
-The resulting architecture is shown in \myfig{fig:def-impl}, which associates each specific role to the corresponding
-source file(s) (in red).
+
+The resulting architecture is shown in \myfig{fig:def-impl}, which associates each specific role to the corresponding source file(s) (in red).
 Furthermore, the compilation of our module can be parameterised in different ways, as shown by the green labels in the figure.
-Each green label, associated to a rectangle container in the figure, corresponds to a compiler flag that affects the compilation of the enclosed portion.
-The compilation is managed by a \verb|Makefile|, in which all the required flags are defined.
-The \verb|Makefile| needs to know the location of the target Linux kernel source directory.
+Each green label, associated to a rectangle container in the figure, corresponds to a compiler flag or parameter that affects the compilation of the enclosed portion,
+either enabling/disabling the component or changing its default behaviour.
+The compilation is managed by a \verb|Makefile|, in which all the required flags are defined and passed to the compiler.
+The \verb|Makefile| needs to know the location of the target Linux kernel source directory, in order to link Ghostbuster with the kernel code.
 
 In particular, each monitor can be enabled or disabled by means of the following flags:
 \begin{Verbatim}[fontsize=\small]
@@ -482,8 +487,6 @@ Otherwise, we report the attack to the system and, since we have an exact detect
 we may safely restore the previous configuration back if the I/O monitor is in active mode.
 
 All the low-level I/O functions are defined into the implementation part, and may be different for each target system.
-These functions deal with the effective accesses to I/O registers, which depend on many factors. The implementation knows the way to access these registers,
-their size and their bits arrangement.
 \begin{algorithm}[h!]
 \caption{I/O monitor implementation functions}
 \label{alg:io-impl}
@@ -546,6 +549,8 @@ their size and their bits arrangement.
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
+These functions deal with the effective accesses to I/O registers, which depend on many factors.
+The implementation knows the way to access these registers, their size and their bits arrangement.
 In \myalg{alg:io-impl} we show our implementation related to the BCM2835 SoC, where all registers are 32-bits wide.
 
 The detection events are managed at pin level, \ie if an attacker modifies the configuration of more than one pin at a time, only one pin at a time is verified.
@@ -922,8 +927,9 @@ functions provided by the page list structure. We omit their implementation beca
 \textproc{PageAlign} (and \textproc{PageMask}), \textproc{PageShift} and \textproc{error}, instead, refer to corresponding Linux kernel macros that deal with
 page alignment, page offset and error handling, respectively.
 For system calls that do not have the file descriptor as parameter, to check if a request refers to a physical memory mapping, and not to other files/devices,
-we look into our page list.
-\begin{algorithm}[h]
+we look into our page list. If the given virtual address \verb|addr| is not mapped into the list by the current \verb|pid|, \ie it does not map a valid physical address,
+then two possibilities exist.
+\begin{algorithm}[b!]
 \caption{MAP monitor interface: hook functions for mapping system calls}
 \label{alg:map-iface}
 \begin{algorithmic}[1]
@@ -1020,8 +1026,7 @@ we look into our page list.
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
-If the given virtual address \verb|addr| is not mapped into the list by the current \verb|pid|, \ie it does not map a valid physical address,
-then two possibilities exist. Either the virtual address is mapped to some other device (not included into the list by our mmap hook), or the process is sending
+Either the virtual address is mapped to some other device (not included into the list by our mmap hook), or the process is sending
 a bad virtual address. In both cases we are not interested to the request, and we can let the original system call manage it.
 
 The implementation part of the MAP monitor deals with the actual hooking procedure, which includes the following operations:
@@ -1101,6 +1106,8 @@ else
 	echo "Loading Ghostbuster... failed!"
 fi
 \end{lstlisting}
+The mechanism used above to obtain the process identifier and the mapped virtual address of the PLC runtime is just part of our prototype implementation.
+In a final version, a proper integration with the PLC runtime is required (see \mysec{sec:def-sec} for more details).
 
 When the module is running, all the information about detection events is reported among the other kernel messages, accessible by the \verb|dmesg| tool as follows:
 \begin{Verbatim}
@@ -1130,6 +1137,28 @@ Our detection system has been designed having in mind the threat model in \mysec
 The design is meant to be as much general as possible, since it aims to cover different attack vectors and to be applicable
 on several target systems that may be heterogeneous in their characteristics.
 The definition of the monitor strategies and policies is a key aspect for having a significant solution that raises the bar for the attacker.
+For instance, the MAP monitor may have two completely different usages on the target systems we used for experiments.
+On Raspberry Pi with CODESYS runtime, the map monitor must be able to distinguish between PLC runtime mapping requests and malicious requests.
+The optimal solution would require to design the PLC runtime to be aware of our defense and cooperate by using some sort of authentication.
+On Wago PLC with e!COCKPIT runtime, instead, since the PLC runtime does not request any user space I/O mapping, the MAP monitor could be used to deny
+any request coming from user space, factually preventing any possible attack from user space and forcing the attacker to gain kernel level access.
+
+The integration between PLC runtime and Ghostbuster could also serve another purpose. Since in our current implementation we need the PLC runtime mapped address
+to detect a conflict between the actual I/O configuration and the loaded PLC logic, we pass this information as argument for our module.
+Of course this is not a final solution, because our detection system is supposed to be started much earlier than the PLC runtime,
+and should not be related to the PLC runtime process life time. Therefore, we propose the following approach, which makes use of the Public Key Infrastructure (PKI),
+to design and integrate Ghostbuster with the PLC runtime:
+\begin{enumerate}
+	\item compile Ghostbuster with a hard-coded public key certificate owned by the PLC runtime vendor and a digital signature of the PLC runtime code,
+		computed with the corresponding private key;
+	\item configure Ghostbuster to be loaded at boot time (either as loadable module or built-in into the kernel);
+	\item when the PLC runtime is started (or stopped), Ghostbuster can recognise the process by computing the hash on the actual PLC runtime code,
+		and comparing the result with the hard-coded signature.
+	\item once the PLC runtime is recognised, Ghostbuster can get its identifier and virtual address dynamically.
+\end{enumerate}
+This approach should be evaluated, at least with respect to performance overhead. Moreover, the PLC runtime vendor must design its own process to support secure
+PLC runtime software updates. In fact, each update would require a new digital signature to be loaded into Ghostbuster as well (\eg it could be done dynamically,
+by including the upload procedure into the already signed PLC runtime code).
 
 In our work we assumed that the system is protected from classical function and data hooking techniques, as it will likely be in the next years.
 In this scenario, malicious users will be forced to avoid these techniques, and to leverage lower level mechanisms such as I/O configuration.
@@ -1148,11 +1177,14 @@ Unfortunately, this is not always applicable, as in our case, due to its unaccep
 
 As previously discussed, Ghostbuster could be deployed as loadable kernel module, or it can be built-in into the kernel itself.
 In general, integrating the module directly into the kernel would be a better choice from a security point of view,
-because a loadable kernel module may be unloaded at any time. However, using a loadable version allows module users to upgrade it
-when necessary without having to reboot the machine.
+because a loadable kernel module may be unloaded at any time. Furthermore, a module is loaded into dynamic memory, \ie it is not part of the static kernel code; thus,
+it cannot be protected by static mechanisms such as Symbiotes (see \mysec{sec:def-analysis}). However, using a loadable version allows module users to upgrade it
+when necessary, without requiring a machine reboot.
 If the loadable version is chosen, it should be deployed with care. First, the privilege level required to unload the module (typically root) should be properly protected
 (\eg no default password). Second, the module itself can be protected against unloading, by leveraging the mechanisms available into the kernel
-(\eg a module which is in use by another module cannot be unloaded).
+(\eg a module which is in use by another module cannot be unloaded). Third, information leaking to user space should be avoided. In particular,
+the virtual dynamic address where the module is loaded should not be available. Note that this is typically not the case (\eg any (even non-root) user can get such an address
+from \verb|/proc/modules| or similar).
 
 Another useful mechanism to prevent attackers from gaining kernel level access is to use signed kernel modules \cite{signed-modules}.
 If an attacker is able to insert its own loadable kernel module, he has access to the entire kernel space, and may be able to circumvent our defense as well.
