@@ -263,6 +263,9 @@ We estimated the Ghostbuster overhead from the data shown in the plot, consideri
 When our defense is not present, the system performs $0.992 \times 10^{7}$ CPU cycles on average.
 After deploying Ghostbuster, the system consumes $1.019 \times 10^{7}$, $1.049 \times 10^{7}$, and $1.107 \times 10^{7}$ CPU cycles on average,
 causing an overhead of $2.72\%$, $5.82\%$, and $11.59\%$ for $t = 10,5,2~\SI{}{ms}$ respectively.
+Thus, depending on the target system, the user must choose the best trade-off between detection rate and overhead.
+For instance, the solution having a monitor scan interval $t = \SI{2}{ms}$ has a desirable detection rate, but its overhead may be unacceptable for many embedded systems
+with limited resources and strict timing requirements.
 
 
 \subsection{Pin configuration detection}

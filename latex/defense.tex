@@ -186,8 +186,8 @@ Checking this condition is feasible as long as enough knowledge of the PLC runti
 Once the I/O monitor is able to determine which operations the PLC logic is carrying on, it can easily decide if an I/O configuration is malicious or not,
 and can effectively detect Pin Control Attack (see our approach in \mysec{sec:io-impl}).
 Note that, if the information on the current I/O operations is made available by the PLC runtime, the attacker can modify it as well while conducting the attack.
-In this case, however, the attacker needs to modify the PLC logic, and this may be easily noticed if further protection mechanisms are provided by the PLC runtime.
-Therefore, the attack would lose one of the features that made it stealth.
+In this case, however, the attacker needs to modify the PLC logic, and this may be easily noticed if further protection mechanisms are provided by the PLC runtime
+(see \mysec{sec:def-sec}). Therefore, the attack would lose one of the features that made it stealth.
 Moreover, from our experiments, we found that the PLC programming software typically does not perform any check about the I/O configuration.
 For instance, it is possible to upload a new PLC logic together with an I/O configuration which is in conflict with the logic itself.
 Thus, our approach could also be useful to detect not only I/O attacks, but any conflict between the actual I/O configuration and the expected behaviour of the logic.
@@ -1159,12 +1159,18 @@ to design and integrate Ghostbuster with the PLC runtime:
 This approach should be evaluated, at least with respect to performance overhead. Moreover, the PLC runtime vendor must design its own process to support secure
 PLC runtime software updates. In fact, each update would require a new digital signature to be loaded into Ghostbuster as well (\eg it could be done dynamically,
 by including the upload procedure into the already signed PLC runtime code).
+Furthermore, since we assumed that a modification of the PLC logic is easily detectable (see \mysec{sec:io-design}), the PLC runtime must implement this feature.
+For instance, the PLC programming software may use an authenticated channel to upload a new PLC logic, together with the corresponding digital signature.
+Once the signature is verified by the PLC during the upload phase, the hash of the PLC logic can be stored in kernel space and compared to the actual hash,
+computed at random times.
 
 In our work we assumed that the system is protected from classical function and data hooking techniques, as it will likely be in the next years.
 In this scenario, malicious users will be forced to avoid these techniques, and to leverage lower level mechanisms such as I/O configuration.
 At the time of writing, the above protection mechanisms are not complete, and they still have limitations.
 In particular, an attacker who is able to gain kernel privilege level, can still duplicate some kernel code or directly write to kernel text without being noticed.
-One of the main problems to overcome is the leaking of kernel information, in particular kernel addresses.
+Note that, as shown by recent research \cite{siemens-s7} and confirmed by our experiments, the PLC runtime software is typically executed having admin privilege level (\ie root).
+Thus, is not unrealistic to gain kernel level access, by simply exploiting a vulnerability in the PLC runtime.
+One of the main problems to overcome for kernel manipulation is leaking of kernel information, in particular kernel addresses.
 Once the attacker knows the address of its specific target inside the kernel, he can easily reach its goal.
 For instance, if the attacker knows the starting address of our monitor instructions that are responsible for verifying a configuration,
 then he could simply replace them with no-operations.

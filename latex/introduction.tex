@@ -53,25 +53,29 @@ A violation of these requirements may lead to an unsafe behaviour of the physica
 \section{Problem statement}
 
 From a computer engineering perspective, PLCs control the outside world via their Input/Output (I/O) interfaces (or I/O \emph{pins}).
-Therefore, it is crucial that these interfaces are both reliable and secure. They are accessible through specific memory regions inside the system, called I/O memory.
-By accessing I/O memory, I/O interfaces can be configured in several different ways, according to the desired behaviour.
-On almost every system, it is possible to change this configuration while the system is running. This feature is managed by a subsystem called \emph{pin controller}.
+Therefore, it is crucial that these interfaces are both reliable and secure. They are accessible through specific registers within a particular memory region of the system,
+called I/O memory. By accessing I/O memory, I/O interfaces can be configured in several different ways, according to the desired behaviour.
+On almost every system, it is possible to change this configuration while the system is running.
+This feature is managed by a subsystem called \emph{pin controller}, and the registers used for this purpose are known as \emph{pin control registers}.
 
-The problem here relies on the fact that there is neither any memory protection mechanism nor any hardware interrupt designed for restricting the access to I/O memory addresses.
-They can be easily written by a malicious application even while the system is active, over-writing the hardware configuration.
-Therefore, a malicious user, can manipulate I/O configuration at his will.
-As a consequence, the behaviour of the I/O interface, hence the interaction with the physical process, may be altered in a dramatic way.
-In \cite{ghostplc}, Abbasi et al. showed how this feature is exploitable by attackers, who can tamper with
-the integrity or the availability of legitimate I/O operations, factually changing how a PLC interacts with sensors and actuators.
-Based on these observations, they introduced a novel attack technique against PLCs, which they call Pin Control Attack (also I/O attack \cite{tech-ghostplc}).
-In the rest of the paper, we use these two names interchangeably. The salient features of this new class of attacks are:
+The problem here relies on the fact that there is neither any memory protection mechanism nor any hardware interrupt designed for restricting the access
+to the addresses of these registers. They can be easily written by a malicious application even while the system is active, over-writing the current hardware configuration.
+Therefore, a malicious user, can manipulate I/O configuration at his will, modifying the behaviour of I/O interfaces.
+Hence, the interaction with the physical process may be altered in a dramatic way.
+In \cite{ghostplc}, Abbasi et al. showed how this feature is actually exploitable by attackers, who can tamper with
+the integrity or the availability of legitimate I/O operations of PLCs, factually changing the way they interact with sensors and actuators.
+Based on these observations, they introduced a novel attack technique against PLCs, which they call \emph{Pin Control Attack}, or \emph{I/O attack} \cite{tech-ghostplc}.
+In the rest of the paper, we use these two names interchangeably, although the former strictly refers to pin control registers, while the latter
+might be used to refer to a wider range of attacks, by extending the target to any other I/O register that could affect PLC operations
+(\eg devices' registers, interrupt registers, etc.). The salient features of this new class of attacks are:
 \begin{enumerate}[itemsep=2pt,topsep=0pt]
-	\item It is intrinsically stealth. The alteration of I/O configuration does not generate any interrupt signal, preventing the Operating System (OS) to react to it.
-	\item It is entirely different in execution from traditional techniques (\eg manipulation of kernel structures or system call hooking) which are typically
-		monitored by off-the-shelf protection systems.
-	\item It is viable. It is possible to build concrete attack using it.
+	\item \itemname{Stealthiness}: the alteration of I/O configuration does not generate any interrupt signal, preventing the Operating System (OS) to react to it.
+		Moreover, it is entirely different in execution from traditional techniques typically monitored by off-the-shelf protection systems
+		(\eg manipulation of kernel structures or system call hooking).
+	\item \itemname{Low-level target}: the attack is not directed to the firmware, nor the PLC runtime/logic, as typical state-of-the-art attacks do.
+		Here the attacker, instead, aims to lower level resources of the system, such as the I/O hardware configuration.
+	\item \itemname{Viability}: as demonstrated in \mychap{chap:attack}, it is possible to build concrete attack using it.
 \end{enumerate}
-
 To better understand a possible attack scenario, \myfig{fig:control} shows a simplified control system.
 \begin{figure}[h!]
 \centerline{\includegraphics[width=0.6\textwidth]{res/control}}
@@ -96,7 +100,7 @@ Such a condition may lead to an uncontrolled overheating, and if it is not detec
 \section{Aim of the thesis}
 
 The goal of this thesis is to analyse the threat, design and implement a detection system for I/O Attack.
-It is a challenging task for two reasons:
+It is a challenging task for at least two reasons:
 \begin{enumerate}
 	\item The system lacks hardware interrupts, so it is not possible to directly react to any configuration change. More complex detection mechanisms are needed
 		in order to achieve the highest possible detection rate.
@@ -105,14 +109,12 @@ It is a challenging task for two reasons:
 \end{enumerate}
 
 The work has been divided into three main steps.
-First, we discuss the idea behind the attack, analyse its threat model and its different implementations on an Embedded Linux ARM-based architecture.
-Second, based on the assumptions contained in the threat model and on the findings of the analysis, we describe the design and the implementation of our defense.
-Finally, we validate the proposed architecture with respect to the following parameters: detection rate and performance overhead.
-
-The target of our implementation is a real-time version of the Linux kernel running on an ARM-based System on Chip,
+First, we discuss the idea behind the attack, describe its threat model and its different implementations on an Embedded Linux ARM-based architecture.
+We also analyse and experiment the feasibility of the attack on a real PLC.
+Second, based on the assumptions contained in the threat model and on the findings of our analysis, we describe the design and the implementation of our defense.
+The target of our implementation is a non real-time version of the Linux kernel running on an ARM-based System on Chip,
 as this is one of the solutions actually used for mid-range embedded systems as PLCs.
-In the context of the Linux kernel, the pin controller is known as Pin Control Subsystem \cite{pinctrl}.
-
+Finally, we validate the proposed solution with respect to the following parameters: detection rate and performance overhead.
 A brief organisation of the rest of the thesis follows in the next section.
 
 

@@ -1,4 +1,69 @@
 \chapter{Conclusions}
 \label{chap:conclusions}
 
-TODO Conclusions.
+This final chapter concludes the presented work, highlighting its main contribution and drawbacks, and suggesting possible future works.
+
+
+\section{Contribution and drawbacks}
+\label{sec:contrib}
+
+The scientific contribution of this work is made of two main components:
+\begin{enumerate}
+	\item analyse I/O attack and prove that it is actually feasible on real PLCs;
+	\item design and implement a possible countermeasure, achieving a good detection rate without causing an unacceptable performance overhead.
+\end{enumerate}
+Both parts can obviously be improved and continued, as discussed later in \mysec{sec:future}.
+
+By analysing the attack, we demonstrated that it is possible to tamper with the I/O operations even in a real PLC architecture, where input/output is managed by external modules.
+Furthermore, we were able to clearly define the requirements and the attack vectors available for the attacker, useful to abstract the problem and design a proper solution.
+In the first part of \mychap{chap:defense}, we tried to define abstract strategies that could be applied to any embedded system to tackle any kind of I/O attack.
+Furthermore, the implementation has been designed to minimise the effort required to adapt the solution to different systems and architectures.
+
+Nevertheless, our detection system is still the first step against I/O attack, and, of course, it has some limitations.
+First, it is not a complete solution, in the sense that I/O attacks could still be possible if the attacker is able to gain accurate timing precision and evade our time-based monitors.
+Of course this raises the bar for the attacker, who has to conduct more elaborated attacks to achieve the same result.
+Moreover, our detection monitors can be improved and optimized to increase their detection rate, factually discouraging any malicious attempt.
+Second, an attacker who gains kernel level access may still be able to circumvent our defensive mechanism, and other techniques should be used in combination with it,
+as previously discussed in \mysec{sec:def-sec}. In the next section we discuss some possible future works regarding both our contributions.
+
+
+\section{Future works}
+\label{sec:future}
+
+During each phase of this work, many ideas about possible future works came out.
+First, for the attack phase, further possibilities can be analysed to implement more elaborated attacks on the real PLC with external I/O modules.
+For instance, in our Wago PLC, it may be possible to fake both input and output by leveraging SPI bitbanging technique.
+A possible implementation of this attack can do the following:
+\begin{itemize}
+	\item synchronise itself with PLC I/O operation;
+	\item disable next PLC I/O operation using one of the techniques presented in \mysec{sec:attack-plc};
+	\item perform malicious I/O operation within the next scan cycle, \eg shifted by $\SI{5}{ms}$ after the real one (accurate synchronisation is required).
+\end{itemize}
+Note that all these operations can be done with the same assumptions made for the described I/O attack, without hooking any function nor modifying PLC logic/runtime.
+Moreover, several vendors are currently producing different PLCs having a small subset of I/O interfaces directly available without the need of external modules.
+If this feature, known as \emph{Integrated I/O}, is actively used on a control system, then the attacker can have direct access to sensors and actuators as well,
+without needing to go through the additional level of indirection caused by external modules. In this case, the original version of Pin Control Attack would be applicable.
+
+For the defense phase, many improvements and extension are doable.
+First, detection rates of DR and I/O monitor can be improved by synchronising them with respect to the timing of the PLC scan cycle.
+In fact, if they are triggered in proximity of each PLC I/O operation, detecting more sophisticated attacks becomes easier.
+To get accurate results, this approach needs to be tested in a real-time system.
+Of course, if the vendor decides to integrate the defense with the PLC runtime itself, this would be the optimal solution, because it can simply check I/O configuration
+right before performing an I/O operation.
+
+Another benefit deriving from an integration with the PLC runtime would be a significant simplification of our defense,
+in particular when it has to check whether the I/O configuration is in line with the current PLC logic.
+We largely discussed this aspect in \mysec{sec:io-design}. Briefly, if the PLC runtime is designed to be aware of the defense,
+it can provide a simpler interface for Ghostbuster to check if a conflict between configuration and logic occurred.
+In fact, in our prototype implementation, described in \mysec{sec:io-impl}, we leveraged reverse engineering techniques to collect the necessary information.
+
+Additionally, our solution may be extended with a performance monitor, to cover a larger set of attacks and increase the overall detection rate.
+We can argue that a performance-based mechanism would be effective on a PLC system, which executes the same operations at each scan cycle, thus, it is very stable.
+As previously discussed in \mysec{sec:pre-analysis}, the operations performed by the PLC runtime when a new logic is uploaded should be excluded from the detection.
+Again, an integration with the PLC runtime would be helpful to design this behaviour as well.
+For instance, the performance monitor may be disabled and re-enabled by the PLC runtime process through authenticated commands sent to the defense module.
+All these proposed approaches should be evaluated with respect to the overhead imposed to the system.
+
+Finally, our entire solution can be deployed within a Trusted Execution Environment, such as ARM TrustZone \cite{trustzone}.
+However, this approach may not be feasible due to the excessive CPU performance degradation to switch between secure and non-secure world.
+Therefore, a carefully designed solution is required to minimise its overhead.
