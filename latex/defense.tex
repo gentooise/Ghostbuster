@@ -77,7 +77,7 @@ although, as discussed in the following sections, those are very limited cases.
 Deploying a performance monitoring system, anyway, does not require very high effort because it can leverage \emph{Hardware Performance Counters} (HPC),
 nowadays available in almost all the SoC processors. The most challenging part would be, of course, integrating the monitor with the PLC runtime.
 When a new logic is uploaded to the PLC, a burst of operations are executed by the runtime to check the new logic code, apply the new configuration and start the logic.
-These extra operations, of course, must not be labeled as malicious. Furthermore, once a new logic started, it may perform operations that are different
+These extra operations, of course, must not be labelled as malicious. Furthermore, once a new logic started, it may perform operations that are different
 with respect to the previous one; therefore, the monitor should be able to recognise this change and update its statistics as well.
 
 
@@ -385,7 +385,7 @@ From now on, we will refer to the abstract part of each monitor as the \emph{int
 \label{sec:io-impl}
 
 This monitor is responsible for protecting I/O configuration memory from malicious usage.
-The monitor interface includes the I/O configuration data type, modeled as a set of memory blocks by means of the \verb|io_conf_t| structure:
+The monitor interface includes the I/O configuration data type, modelled as a set of memory blocks by means of the \verb|io_conf_t| structure:
 \begin{lstlisting}
 typedef struct {
 	const void** addrs; // Set of block base addresses
@@ -1063,10 +1063,10 @@ This could be improved by providing reports based on a statistical model of the 
 For instance, if our detection mechanism is integrated with the PLC runtime as described later in \mysec{sec:def-usage}, the MAP monitor may be used in the following way:
 \begin{itemize}
 	\item when a new mapping request has been detected, Ghostbuster can signal the PLC runtime;
-	\item the PLC runtime knows if the request is due to a current logic update; if it is not, the runtime can rethrow the alert to the operator terminal.
+	\item the PLC runtime knows if the request is due to a current logic update; if it is not, the runtime can re-throw the alert to the operator terminal.
 \end{itemize}
 The optimal solution, of course, would be to completely avoid using mapped I/O addresses from user space, and manage the I/O from kernel space only.
-However, depending on the actual implementation, this could require several changes in the PLC software. Therefore, using the signaling approach might be preferred in that case.
+However, depending on the actual implementation, this could require several changes in the PLC software. Therefore, using the signalling approach might be preferred in that case.
 
 
 \subsubsection{Wago PLC version}
@@ -1130,6 +1130,41 @@ Then, the runtime itself must be designed to handle and report these signals to 
 to allow the industrial operator to analyse the report and take further countermeasures according to the industrial policies.
 
 
+\subsection{Solution deployment}
+As discussed in the previous sections, in this work we only provided a prototype implementation of the defense.
+Our goal is to demonstrate the feasibility of the approach in terms of detection rate and performance.
+In order to deploy it into a real system, our solution needs to be adapted to the specific case.
+In particular, the final implementation may differ for at least the following parameters:
+\begin{itemize}
+	\item I/O configuration registers;
+	\item debug registers;
+	\item I/O mapping behaviour.
+\end{itemize}
+The PLC vendor should analyse the target system and extend our solution to support the specific architecture.
+For instance, the definition of the set of I/O configuration registers depends on the specific System on Chip,
+and may depend on the particular PLC hardware architecture and the PLC runtime implementation. Thus, the detection system must be modified accordingly.
+One of our design goals was to minimise the effort required to adapt our solution to different implementations.
+
+When all the necessary modifications are implemented, the solution can be deployed inside the PLC itself, factually resulting in a host-based detection system.
+The deployment must guarantee that the assumptions made during the design phase remain valid into the final system.
+In particular, it is required that the defensive mechanisms against kernel code and data hooking discussed in \mysec{sec:def-analysis}, or equivalent, are deployed as well.
+They are necessary to prevent the detection system itself from being circumvented by defense-aware attackers. More importantly, if they are not present,
+a malicious user can simply use classical attack techniques to tamper with PLC I/O operations, without bothering I/O attack.
+Furthermore, another assumption states that the attacker should not be able to modify the PLC logic code.
+This assumption may be enforced by using authenticated protocols to communicate with the PLC and digitally signed PLC logic codes.
+
+The described scenario in which our solution could be deployed is illustrated in \myfig{fig:def-scenario}.
+Ghostbuster is deployed into the PLC at kernel level, either as built-in or loadable module,
+alongside anti-hooking defenses and in combination with proper cryptographic mechanisms applied to the PLC runtime.
+Our solution interacts with the given set of registers of the System on Chip and with the PLC runtime to detect malicious configurations, possibly caused by I/O attacks.
+Once the system has gained enough protection against classical attack techniques (such as function hooking, PLC logic modification, firmware modification, etc.),
+I/O attacks may become interesting for attackers, and our defense will become more convenient as well.
+\begin{figure}[h]
+\centerline{\includegraphics[width=0.6\textwidth]{res/def-scenario}}
+\caption{Solution deployment scenario \label{fig:def-scenario}}
+\end{figure}
+
+
 \section{Security considerations}
 \label{sec:def-sec}
 
@@ -1177,7 +1212,7 @@ then he could simply replace them with no-operations.
 For this reason, our defense should be protected against these attacks as well, in order to prevent defense-aware attackers from circumventing the protection mechanisms.
 This is not a problem of our module, but is quite a general problem affecting the whole kernel.
 The approach aimed to protect the kernel itself and reduce its attack surface is known in literature as \emph{kernel hardening} \cite{hardening}.
-Kernel hardening techniques, such as Kernel Address Space Layout Randomization (KASLR), read-only memory, execute-only memory, etc.,
+Kernel hardening techniques, such as Kernel Address Space Layout Randomisation (KASLR), read-only memory, execute-only memory, etc.,
 would be useful to protect our defense from kernel level attacks. Of course, the ultimate solution to this problem would be using a Trusted Execution Environment.
 Unfortunately, this is not always applicable, as in our case, due to its unacceptable overhead.
 

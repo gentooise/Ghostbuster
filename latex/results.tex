@@ -199,25 +199,31 @@ Thus, $t$ becomes the \emph{average} I/O monitor interval. We tested this monito
 and restores it $\SI{0.5}{ms}$ after the I/O operation. We estimate the probability that the attack is detected at each scan cycle, as we did for DR monitor.
 
 The results of our approach are shown in \myfig{fig:io-rates}.
+The detection rate $r$ related to one single scan cycle is lower with respect to the DR monitor case, because we used a more sophisticated attack.
+However, since the attacker has to repeat the I/O attack for more than one scan cycle to obtain significant effects on the physical process,
+we consider the probability of getting noticed after $n$ manipulated scan cycles, which is $1 - (1 - r)^{n}$, where $r$ is the detection rate related to each scan cycle.
+Therefore, the probability of remaining unnoticed actually decreases exponentially at each scan cycle.
+For instance, given the detection rate $r = 0.2$ of the monitor with $t = 5$, the probability that the attacker
+gets noticed after just $10$ scan cycles is $1 - (1 - r)^{10} = 0.89 = 89\%$.
+Note that, if the attacker is using debug registers, both DR monitor and I/O monitor detection rates must be taken into account,
+making the probability of being detected even higher.
 \begin{figure}[h]
 \centering
 \begin{tikzpicture}
 \begin{axis}[xlabel=Monitor interval (ms),xtick={2,5,10},ylabel=Detection rate,width=0.7\textwidth,height=6cm]
 
 \addplot coordinates {(2,0.55) (5,0.20) (10,0.09)};
+\addlegendentry{$1$ scan cycle}
+\addplot coordinates {(2,0.98) (5,0.67) (10,0.38)};
+\addlegendentry{$5$ scan cycles}
+\addplot coordinates {(2,0.9997) (5,0.89) (10,0.61)};
+\addlegendentry{$10$ scan cycles}
 
 \end{axis}
 \end{tikzpicture}
 \caption{I/O monitor detection rates}
 \label{fig:io-rates}
 \end{figure}
-The detection rates are lower with respect to the DR monitor case because we used a more sophisticated attack.
-However, since the attacker has to repeat the I/O attack for more than one scan cycle to obtain significant effects on the physical process,
-the probability of remaining unnoticed decreases exponentially at each scan cycle.
-For instance, given the detection rate $r = 0.2$ of the monitor with $t = 5$, the probability that the attacker
-gets noticed after just $10$ scan cycles is $1 - (1 - r)^{10} = 0.89 = 89\%$.
-Note that, if the attacker is using debug registers, both DR monitor and I/O monitor detection rates must be taken into account,
-making the probability of being detected even higher.
 
 
 \section{Performance overhead}
@@ -273,8 +279,6 @@ with limited resources and strict timing requirements.
 For this test case (and the following ones), we focused on just one Ghostbuster configuration, having $t = \SI{10}{ms}$.
 In fact, the overhead in case of an attack detection is independent from the value of $t$.
 The test is conducted in the same way as the previous case, except that in the middle of measurements we execute a pin configuration attack.
-Note that our solution, in order to distinguish a malicious manipulation from a PLC runtime configuration update, sets a watchpoint and looks into the actual PLC logic.
-The results are shown in \myfig{fig:pinconf-overhead}.
 \begin{figure}[h]
 \centering
 \begin{tikzpicture}
@@ -290,6 +294,8 @@ The results are shown in \myfig{fig:pinconf-overhead}.
 \caption{Ghostbuster overhead during normal condition}
 \label{fig:pinconf-overhead}
 \end{figure}
+Note that our solution, in order to distinguish a malicious manipulation from a PLC runtime configuration update, sets a watchpoint and looks into the actual PLC logic.
+The results are shown in \myfig{fig:pinconf-overhead}.
 The plot shows just an instance of our test case. To estimate the detection overhead, we repeated the same test several times.
 The overhead has been computed as the extra \emph{detection area} below the red plot line (with Ghostbuster) with respect to the area of the blue graph (without Ghostbuster).
 Note that the overhead of the blue plot is entirely related to the attack itself, and it has been excluded from our defense overhead.
